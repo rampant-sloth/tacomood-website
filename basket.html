@@ -153,6 +153,112 @@
             display: block;
         }
 
+        /* Prominent Date / Opening Day Banner */
+        .collection-date-banner {
+            background: linear-gradient(135deg, rgba(123, 179, 58, 0.12) 0%, rgba(12, 32, 24, 0.85) 100%);
+            border: 2px solid var(--accent-lime);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .collection-date-banner.is-closed-notice {
+            background: linear-gradient(135deg, rgba(232, 80, 37, 0.12) 0%, rgba(12, 32, 24, 0.85) 100%);
+            border-color: var(--accent-orange);
+        }
+
+        .date-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-banner-icon {
+            font-size: 2.25rem;
+            line-height: 1;
+        }
+
+        .date-banner-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            background: rgba(123, 179, 58, 0.2);
+            color: var(--accent-lime);
+            border: 1px solid rgba(123, 179, 58, 0.4);
+        }
+
+        .is-closed-notice .date-banner-badge {
+            background: rgba(232, 80, 37, 0.2);
+            color: #ff9f87;
+            border-color: rgba(232, 80, 37, 0.4);
+        }
+
+        .date-banner-headline {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        .date-banner-sub {
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.85;
+            margin: 3px 0 0;
+        }
+
+        .date-banner-right {
+            text-align: right;
+            padding-left: 1rem;
+            border-left: 1px solid var(--border-green);
+        }
+
+        .date-banner-hours-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-lime);
+        }
+
+        .is-closed-notice .date-banner-hours-label {
+            color: #ff9f87;
+        }
+
+        .date-banner-hours-val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-cream);
+            margin-top: 2px;
+        }
+
+        @media (max-width: 650px) {
+            .collection-date-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .date-banner-right {
+                text-align: left;
+                padding-left: 0;
+                border-left: none;
+                border-top: 1px solid var(--border-green);
+                padding-top: 0.75rem;
+                width: 100%;
+            }
+        }
+
         /* Two Column Layout: Items + Customer Form */
         .basket-grid {
             display: grid;
@@ -370,6 +476,38 @@
         .form-textarea {
             resize: vertical;
             min-height: 60px;
+        }
+
+        .form-select {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            border-color: var(--accent-lime);
+            box-shadow: 0 0 0 3px rgba(123, 179, 58, 0.2);
+            color: #ffffff;
+        }
+
+        .form-select option {
+            background-color: #0c2018;
+            color: var(--text-cream);
+        }
+
+        .form-hint {
+            font-size: 0.78rem;
+            color: var(--accent-lime);
+            margin-top: 5px;
+            display: block;
         }
 
         /* Store Location Info Pill */
@@ -654,7 +792,24 @@
     </header>
 
     <main class="container">
-        <!-- Prominent Closed Alert Banner if store is outside Fri-Sun 12:00-20:30 -->
+        <!-- Prominent Collection Date & Status Banner -->
+        <div id="collection-date-banner" class="collection-date-banner">
+            <div class="date-banner-left">
+                <div class="date-banner-icon" id="date-banner-icon">🌮</div>
+                <div>
+                    <span class="date-banner-badge" id="date-banner-badge">Collection Available</span>
+                    <h2 class="date-banner-headline" id="date-banner-day">Checking opening hours…</h2>
+                    <p class="date-banner-sub" id="date-banner-sub">Orders available Friday – Sunday &bull; 12:00 PM – 9:00 PM (Cutoff 8:30 PM)</p>
+                </div>
+            </div>
+            <div class="date-banner-right">
+                <div class="date-banner-hours-label" id="date-banner-hours-label">Collection Hours</div>
+                <div class="date-banner-hours-val" id="date-banner-hours-val">12:00 PM – 9:00 PM</div>
+                <div style="font-size: 0.76rem; opacity: 0.75; margin-top: 3px;">Online cutoff: 8:30 PM</div>
+            </div>
+        </div>
+
+        <!-- Prominent Closed Alert Banner if store is outside order window -->
         <div id="ordering-closed-banner" class="closed-banner">
             ⚠️ Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).
         </div>
@@ -714,6 +869,15 @@
                     </div>
 
                     <form id="checkout-form">
+                        <!-- Collection Time Allocation (15-min blocks) -->
+                        <div class="form-group">
+                            <label for="collection-time-slot" class="form-label">🕒 Collection Time Slot *</label>
+                            <select id="collection-time-slot" class="form-select" required>
+                                <option value="">Loading available times…</option>
+                            </select>
+                            <small class="form-hint" id="collection-slot-hint">Available in 15-minute blocks (min 15 mins from now up to 8:30 PM).</small>
+                        </div>
+
                         <div class="form-group">
                             <label for="cust-name" class="form-label">Full Name *</label>
                             <input type="text" id="cust-name" class="form-input" required placeholder="e.g. Alex Morgan" autocomplete="name">
@@ -772,8 +936,12 @@
                         <span class="detail-value">137 Stranmillis Rd, Belfast BT9 5AJ</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Estimated Collection Time:</span>
-                        <span id="conf-pickup-time" class="detail-value" style="color: var(--accent-lime);">Ready in 20-30 mins</span>
+                        <span class="detail-label">Collection Date:</span>
+                        <span id="conf-pickup-date" class="detail-value" style="color: var(--accent-lime);">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Collection Time Slot:</span>
+                        <span id="conf-pickup-time" class="detail-value" style="color: var(--accent-lime);">--</span>
                     </div>
                     <div id="conf-notes-row" class="detail-row" style="display: none;">
                         <span class="detail-label">Special Notes:</span>
@@ -832,8 +1000,17 @@
     </footer>
 
     <script>
+        // Opening schedule configuration (Europe/London time)
+        const OPEN_DAYS = ['Fri', 'Sat', 'Sun'];
+        const OPEN_HOUR = 12, OPEN_MIN = 0;      // 12:00 PM
+        const CLOSE_HOUR = 21, CLOSE_MIN = 0;    // 9:00 PM store closing
+        const CUTOFF_HOUR = 20, CUTOFF_MIN = 30; // 8:30 PM last collection order
+        const SLOT_INTERVAL_MINS = 15;           // 15-minute slot blocks
+        const MIN_LEAD_TIME_MINS = 15;           // earliest pickup is at least 15 mins from now
+
         // State
         let basket = [];
+        let currentCollectionDayInfo = null;     // { isToday, isOpenNow, dateStr, ... }
 
         // Elements
         const emptyBasketCard = document.getElementById('empty-basket-card');
@@ -846,6 +1023,16 @@
         const btnSubmitOrder = document.getElementById('btn-submit-order');
         const closedBanner = document.getElementById('ordering-closed-banner');
 
+        // Date Banner & Slot Elements
+        const collectionDateBanner = document.getElementById('collection-date-banner');
+        const dateBannerBadge = document.getElementById('date-banner-badge');
+        const dateBannerHeadline = document.getElementById('date-banner-day');
+        const dateBannerSub = document.getElementById('date-banner-sub');
+        const dateBannerIcon = document.getElementById('date-banner-icon');
+        const dateBannerHoursLabel = document.getElementById('date-banner-hours-label');
+        const collectionTimeSlot = document.getElementById('collection-time-slot');
+        const collectionSlotHint = document.getElementById('collection-slot-hint');
+
         // Confirmation Elements
         const confirmationSection = document.getElementById('confirmation-section');
         const basketViewSection = document.getElementById('basket-view-section');
@@ -853,6 +1040,7 @@
         const confCustomerName = document.getElementById('conf-customer-name');
         const confCustomerPhone = document.getElementById('conf-customer-phone');
         const confCustomerEmail = document.getElementById('conf-customer-email');
+        const confPickupDate = document.getElementById('conf-pickup-date');
         const confPickupTime = document.getElementById('conf-pickup-time');
         const confNotesRow = document.getElementById('conf-notes-row');
         const confCustomerNotes = document.getElementById('conf-customer-notes');
@@ -861,44 +1049,222 @@
         const btnWhatsappSend = document.getElementById('btn-whatsapp-send');
 
         // -------------------------------------------------------------
-        // 1. Time Window Availability (Fri-Sun 12:00 PM - 8:30 PM Europe/London)
+        // 1. Belfast / London Time & Opening Calculation
         // -------------------------------------------------------------
-        function checkStoreAvailability() {
+        function getBelfastTimeNow() {
             const now = new Date();
             const formatter = new Intl.DateTimeFormat('en-GB', {
                 timeZone: 'Europe/London',
                 hour12: false,
                 weekday: 'short',
-                hour: 'numeric',
-                minute: 'numeric'
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
             });
 
-            const parts = formatter.formatToParts(now);
-            const timeObj = {};
-            parts.forEach(p => timeObj[p.type] = p.value);
+            const parts = {};
+            formatter.formatToParts(now).forEach(p => { parts[p.type] = p.value; });
 
-            const dayName = timeObj.weekday; // 'Fri', 'Sat', 'Sun'
-            const hour = parseInt(timeObj.hour, 10);
-            const minute = parseInt(timeObj.minute, 10);
-            const currentMinutes = hour * 60 + minute;
+            return {
+                nowDate: now,
+                dayName: parts.weekday,
+                year: parseInt(parts.year, 10),
+                month: parseInt(parts.month, 10) - 1,
+                dayNum: parseInt(parts.day, 10),
+                hour: parseInt(parts.hour, 10),
+                minute: parseInt(parts.minute, 10),
+                currentMinutes: parseInt(parts.hour, 10) * 60 + parseInt(parts.minute, 10)
+            };
+        }
 
-            const isOpenDay = (dayName === 'Fri' || dayName === 'Sat' || dayName === 'Sun');
-            const startMinutes = 12 * 60; // 12:00 PM
-            const cutoffMinutes = 20 * 60 + 30; // 8:30 PM
+        /**
+         * Resolves the eligible collection day:
+         * - If today is an OPEN day AND current time < 20:30 -> TODAY.
+         * - Otherwise -> the NEXT open day (e.g. tomorrow or next Friday).
+         */
+        function getTargetCollectionDay(bt) {
+            const openStartMins = OPEN_HOUR * 60 + OPEN_MIN;
+            const openCutoffMins = CUTOFF_HOUR * 60 + CUTOFF_MIN;
 
-            const isOpen = isOpenDay && (currentMinutes >= startMinutes && currentMinutes < cutoffMinutes);
+            const isTodayOpenDay = OPEN_DAYS.includes(bt.dayName);
+            const canOrderForToday = isTodayOpenDay && (bt.currentMinutes < openCutoffMins);
 
-            if (isOpen) {
-                closedBanner.classList.remove('show');
-                btnSubmitOrder.disabled = false;
-                btnSubmitOrder.title = 'Confirm Collection Order';
-            } else {
-                closedBanner.classList.add('show');
-                btnSubmitOrder.disabled = true;
-                btnSubmitOrder.title = 'Online collection ordering is currently closed';
+            if (canOrderForToday) {
+                const isCurrentlyOpen = bt.currentMinutes >= openStartMins && bt.currentMinutes < openCutoffMins;
+                const dateObj = new Date(bt.year, bt.month, bt.dayNum);
+                const dateFormatted = dateObj.toLocaleDateString('en-GB', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                });
+
+                return {
+                    isToday: true,
+                    isOpenNow: isCurrentlyOpen,
+                    isBeforeOpenToday: bt.currentMinutes < openStartMins,
+                    dayName: bt.dayName,
+                    dateStr: dateFormatted,
+                    badgeText: isCurrentlyOpen ? 'Open Now for Collection' : 'Opening Today',
+                    headline: `Today — ${dateFormatted}`,
+                    subText: isCurrentlyOpen
+                        ? 'Select your collection time below (15-min blocks, min 15 mins from now).'
+                        : 'Pre-order for collection today starting from 12:00 PM.'
+                };
             }
 
-            return isOpen;
+            const dayNameToOffset = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+            const currentDayIdx = dayNameToOffset[bt.dayName];
+            const SHORT_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            let daysAhead = 1;
+            while (daysAhead <= 7) {
+                const nextIdx = (currentDayIdx + daysAhead) % 7;
+                const nextDayShort = SHORT_NAMES[nextIdx];
+                if (OPEN_DAYS.includes(nextDayShort)) {
+                    const nextDateObj = new Date(bt.year, bt.month, bt.dayNum + daysAhead);
+                    const nextDateFormatted = nextDateObj.toLocaleDateString('en-GB', {
+                        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                    });
+
+                    const dayLabel = daysAhead === 1 ? 'Tomorrow' : `Next ${nextDateObj.toLocaleDateString('en-GB', { weekday: 'long' })}`;
+
+                    return {
+                        isToday: false,
+                        isOpenNow: false,
+                        isBeforeOpenToday: false,
+                        dayName: nextDayShort,
+                        daysAhead: daysAhead,
+                        dateStr: nextDateFormatted,
+                        badgeText: daysAhead === 1 ? 'Ordering for Tomorrow' : 'Next Opening Day',
+                        headline: `${dayLabel} — ${nextDateFormatted}`,
+                        subText: `Online ordering for today is closed. Place your order for collection on our next opening day (${nextDateFormatted}).`
+                    };
+                }
+                daysAhead++;
+            }
+
+            return null;
+        }
+
+        /**
+         * Generates 15-minute slot options for the target collection day:
+         * - Minimum 15 minutes from now (for today).
+         * - No later than closing time (21:00).
+         * - Starts at opening time (12:00) if before open or on next day.
+         * - Formats times nicely: e.g. "12:00 PM", "12:15 PM" ... "8:30 PM", "8:45 PM", "9:00 PM".
+         */
+        function generateTimeSlots(bt, targetDay) {
+            const openMins = OPEN_HOUR * 60 + OPEN_MIN;     // 12:00 PM (720)
+            const closeMins = CLOSE_HOUR * 60 + CLOSE_MIN;   // 9:00 PM (1260)
+
+            let startMins;
+
+            if (targetDay.isToday) {
+                if (bt.currentMinutes < openMins) {
+                    startMins = openMins;
+                } else {
+                    const earliestMins = bt.currentMinutes + MIN_LEAD_TIME_MINS;
+                    startMins = Math.ceil(earliestMins / SLOT_INTERVAL_MINS) * SLOT_INTERVAL_MINS;
+                }
+            } else {
+                startMins = openMins;
+            }
+
+            const slots = [];
+            for (let m = startMins; m <= closeMins; m += SLOT_INTERVAL_MINS) {
+                const hour24 = Math.floor(m / 60);
+                const mins = m % 60;
+                const suffix = hour24 >= 12 ? 'PM' : 'AM';
+                const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+                const formattedTime = `${hour12}:${mins.toString().padStart(2, '0')} ${suffix}`;
+
+                let label = formattedTime;
+                if (targetDay.isToday && m === startMins && bt.currentMinutes >= openMins) {
+                    label += ' (Earliest available)';
+                } else if (m === closeMins) {
+                    label += ' (Closing time)';
+                }
+
+                slots.push({
+                    value: formattedTime,
+                    label: label
+                });
+            }
+
+            return slots;
+        }
+
+        /**
+         * Updates UI banners, collection date display, and slot dropdown.
+         */
+        function updateAvailabilityAndSlots() {
+            const bt = getBelfastTimeNow();
+            currentCollectionDayInfo = getTargetCollectionDay(bt);
+            const slots = generateTimeSlots(bt, currentCollectionDayInfo);
+
+            // Update Prominent Date Banner
+            dateBannerBadge.textContent = currentCollectionDayInfo.badgeText;
+            dateBannerHeadline.textContent = currentCollectionDayInfo.headline;
+            dateBannerSub.textContent = currentCollectionDayInfo.subText;
+
+            if (currentCollectionDayInfo.isToday && currentCollectionDayInfo.isOpenNow) {
+                collectionDateBanner.classList.remove('is-closed-notice');
+                dateBannerIcon.textContent = '🌮';
+                dateBannerHoursLabel.textContent = 'Collection Hours Today';
+                closedBanner.classList.remove('show');
+            } else {
+                collectionDateBanner.classList.add('is-closed-notice');
+                dateBannerIcon.textContent = '📅';
+                dateBannerHoursLabel.textContent = currentCollectionDayInfo.isToday ? 'Hours Today' : 'Next Day Hours';
+                if (!currentCollectionDayInfo.isOpenNow) {
+                    closedBanner.classList.add('show');
+                    if (currentCollectionDayInfo.isToday && currentCollectionDayInfo.isBeforeOpenToday) {
+                        closedBanner.textContent = '🕒 We open at 12:00 PM today. You can select your preferred collection time slot below!';
+                    } else {
+                        closedBanner.textContent = `⚠️ Same-day collection is currently closed. You can pre-order now for collection on ${currentCollectionDayInfo.dateStr}.`;
+                    }
+                }
+            }
+
+            // Populate Time Slot Dropdown
+            const currentSelected = collectionTimeSlot.value;
+            collectionTimeSlot.innerHTML = '';
+
+            if (slots.length === 0) {
+                const emptyOpt = document.createElement('option');
+                emptyOpt.value = '';
+                emptyOpt.textContent = 'No slots available for this day';
+                collectionTimeSlot.appendChild(emptyOpt);
+                collectionTimeSlot.disabled = true;
+                btnSubmitOrder.disabled = true;
+                btnSubmitOrder.title = 'No collection slots available';
+                collectionSlotHint.textContent = 'No remaining collection slots available.';
+            } else {
+                collectionTimeSlot.disabled = false;
+                btnSubmitOrder.disabled = false;
+                btnSubmitOrder.title = 'Confirm Collection Order';
+
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = `— Select collection time for ${currentCollectionDayInfo.isToday ? 'Today' : currentCollectionDayInfo.dayName} —`;
+                collectionTimeSlot.appendChild(defaultOpt);
+
+                slots.forEach(slot => {
+                    const opt = document.createElement('option');
+                    opt.value = slot.value;
+                    opt.textContent = slot.label;
+                    if (slot.value === currentSelected) {
+                        opt.selected = true;
+                    }
+                    collectionTimeSlot.appendChild(opt);
+                });
+
+                if (currentCollectionDayInfo.isToday) {
+                    collectionSlotHint.textContent = `15-minute blocks from ${slots[0].value} up to 9:00 PM closing (minimum 15 mins lead time).`;
+                } else {
+                    collectionSlotHint.textContent = `15-minute blocks on ${currentCollectionDayInfo.dateStr} from 12:00 PM to 9:00 PM closing.`;
+                }
+            }
         }
 
         // -------------------------------------------------------------
@@ -1033,15 +1399,17 @@
         checkoutForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            // Validate store hours
-            if (!checkStoreAvailability()) {
-                alert("Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).");
-                return;
-            }
-
             // Validate basket
             if (basket.length === 0) {
                 alert("Your basket is empty. Please add items before placing an order.");
+                return;
+            }
+
+            // Validate time slot
+            const selectedSlot = collectionTimeSlot.value;
+            if (!selectedSlot) {
+                alert("Please select a collection time slot.");
+                collectionTimeSlot.focus();
                 return;
             }
 
@@ -1058,14 +1426,15 @@
             // Generate order reference: #TM- + 4 random digits
             const orderId = '#TM-' + Math.floor(1000 + Math.random() * 9000);
 
-            // Compute Ready Time (~25 mins in London time)
-            const pickupDate = new Date(Date.now() + 25 * 60 * 1000);
-            const pickupTimeStr = pickupDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            // Target collection date
+            const targetDateStr = currentCollectionDayInfo ? currentCollectionDayInfo.dateStr : 'Scheduled Collection';
+            const targetDayLabel = (currentCollectionDayInfo && currentCollectionDayInfo.isToday)
+                ? `Today (${targetDateStr})`
+                : targetDateStr;
 
             // Calculate totals
             let grandTotal = 0;
             confReceiptItems.innerHTML = '';
-
             let waItemsList = '';
 
             basket.forEach(item => {
@@ -1092,7 +1461,8 @@
             confCustomerName.textContent = name;
             confCustomerPhone.textContent = phone;
             confCustomerEmail.textContent = email;
-            confPickupTime.textContent = `Today around ${pickupTimeStr} (in ~25 mins)`;
+            confPickupDate.textContent = targetDayLabel;
+            confPickupTime.textContent = selectedSlot;
             confReceiptGrandTotal.textContent = `£${grandTotal.toFixed(2)}`;
 
             if (notes) {
@@ -1109,6 +1479,8 @@
             waMsg += `👤 *Customer Name:* ${name}\n`;
             waMsg += `📞 *Contact Number:* ${phone}\n`;
             waMsg += `📧 *Email Address:* ${email}\n`;
+            waMsg += `📅 *Collection Date:* ${targetDayLabel}\n`;
+            waMsg += `🕒 *Collection Time Slot:* ${selectedSlot}\n`;
             if (notes) {
                 waMsg += `📝 *Notes:* ${notes}\n`;
             }
@@ -1117,7 +1489,6 @@
             waMsg += waItemsList;
             waMsg += `━━━━━━━━━━━━━━━━━━━━━\n`;
             waMsg += `💰 *Grand Total:* £${grandTotal.toFixed(2)}\n`;
-            waMsg += `🕒 *Estimated Pickup:* ${pickupTimeStr}\n`;
             waMsg += `📍 *Collection Location:* 137 Stranmillis Rd, Belfast BT9 5AJ\n`;
 
             btnWhatsappSend.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
@@ -1130,7 +1501,7 @@
             // Clear basket from storage
             localStorage.removeItem('tacomood_basket');
             basket = [];
-        }
+        });
 
         function escapeHtml(str) {
             if (typeof str !== 'string') return '';
@@ -1138,9 +1509,9 @@
         }
 
         // Initialize on load
-        checkStoreAvailability();
+        updateAvailabilityAndSlots();
         loadBasket();
-        setInterval(checkStoreAvailability, 60000);
+        setInterval(updateAvailabilityAndSlots, 60000);
     </script>
 </body>
 </html>
