@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Basket &amp; Collection Checkout | Taco Mood Belfast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark-green: #0C2018;   /* Main Background */
+            --accent-lime: #7BB33A;     /* Headers and Primary Buttons */
+            --accent-orange: #E85025;   /* 'Sold Out' Badges and Secondary Highlights */
+            --text-cream: #F5E5C9;      /* Body Text */
+            --border-green: #1D3C2C;    /* Dividing Lines and Card Borders */
+            --card-surface: #11281F;    /* Card Surface */
+            --card-surface-hover: #153428;
+            --input-bg: #071510;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark-green);
+            color: var(--text-cream);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #081711;
+            border-bottom: 2px solid var(--border-green);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-lime);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .brand-badge {
+            background-color: rgba(123, 179, 58, 0.15);
+            border: 1px solid var(--accent-lime);
+            color: var(--accent-lime);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-back-menu {
+            color: var(--text-cream);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            border: 1px solid var(--border-green);
+            border-radius: 6px;
+            background: rgba(29, 60, 44, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-back-menu:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem 4rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .page-title-section {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--accent-lime);
+            font-size: 2.3rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            color: var(--text-cream);
+            opacity: 0.85;
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        /* Closed Alert Banner */
+        .closed-banner {
+            display: none;
+            background-color: rgba(232, 80, 37, 0.15);
+            border: 1.5px solid var(--accent-orange);
+            color: #ffb5a0;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 0 auto 1.5rem auto;
+            max-width: 700px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            line-height: 1.45;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(232, 80, 37, 0.2);
+        }
+
+        .closed-banner.show {
+            display: block;
+        }
+
+        /* Two Column Layout: Items + Customer Form */
+        .basket-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .card {
+            background-color: var(--card-surface);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header-title {
+            color: var(--accent-lime);
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            margin: 0 0 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-green);
+        }
+
+        /* Empty Basket State */
+        .empty-basket {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            display: none;
+        }
+
+        .empty-basket-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-basket h3 {
+            color: var(--accent-lime);
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem;
+        }
+
+        .empty-basket p {
+            color: var(--text-cream);
+            opacity: 0.8;
+            max-width: 420px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Basket Items List */
+        .basket-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .basket-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(12, 32, 24, 0.6);
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 1rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .item-main-info {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .item-row-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-cream);
+            margin: 0 0 4px;
+        }
+
+        .item-row-price {
+            font-size: 0.9rem;
+            color: var(--accent-lime);
+            font-weight: 600;
+        }
+
+        /* Stepper */
+        .stepper-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-qty {
+            background-color: #0c2018;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            transition: all 0.15s;
+        }
+
+        .btn-qty:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .qty-number {
+            font-weight: 700;
+            font-size: 1.05rem;
+            min-width: 24px;
+            text-align: center;
+            color: var(--text-cream);
+        }
+
+        .item-row-total {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-lime);
+            min-width: 75px;
+            text-align: right;
+        }
+
+        .btn-remove-item {
+            background: transparent;
+            border: none;
+            color: #ff9980;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .btn-remove-item:hover {
+            opacity: 1;
+        }
+
+        /* Summary Total Box */
+        .basket-summary-box {
+            background: #091a13;
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: var(--text-cream);
+            opacity: 0.85;
+        }
+
+        .summary-line.total-line {
+            border-top: 1px solid var(--border-green);
+            padding-top: 0.75rem;
+            margin-top: 0.25rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent-lime);
+            opacity: 1;
+        }
+
+        /* Checkout Details Form */
+        .form-group {
+            margin-bottom: 1.15rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-cream);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-lime);
+            box-shadow: 0 0 0 3px rgba(123, 179, 58, 0.2);
+            color: #ffffff;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* Store Location Info Pill */
+        .collection-info-pill {
+            background: rgba(12, 32, 24, 0.8);
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            line-height: 1.45;
+        }
+
+        .collection-info-pill strong {
+            color: var(--accent-lime);
+        }
+
+        /* Place Order Button */
+        .btn-place-order {
+            width: 100%;
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(123, 179, 58, 0.35);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-place-order:hover:not(:disabled) {
+            background-color: #8cc443;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123, 179, 58, 0.5);
+        }
+
+        .btn-place-order:disabled {
+            background-color: #21352a !important;
+            color: #6d887a !important;
+            border: 1px solid #2d4a3b !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+            opacity: 0.75;
+        }
+
+        /* -------------------------------------------------------------
+           Order Confirmation Screen (Shown after placing order)
+           ------------------------------------------------------------- */
+        #confirmation-section {
+            display: none;
+            max-width: 680px;
+            margin: 0 auto;
+            text-align: center;
+            animation: fadeIn 0.35s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .confirmation-card {
+            background-color: var(--card-surface);
+            border: 2px solid var(--accent-lime);
+            border-radius: 14px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: left;
+        }
+
+        .success-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(123, 179, 58, 0.15);
+            border: 1px solid var(--accent-lime);
+            color: var(--accent-lime);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .order-ref-title {
+            color: var(--text-cream);
+            font-size: 1.85rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem;
+        }
+
+        .order-ref-code {
+            color: var(--accent-lime);
+        }
+
+        .confirmation-msg {
+            color: var(--text-cream);
+            opacity: 0.9;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin: 0 0 1.75rem;
+        }
+
+        .confirmation-details-box {
+            background: #091a13;
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(29, 60, 44, 0.4);
+            font-size: 0.95rem;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-cream);
+            opacity: 0.75;
+        }
+
+        .detail-value {
+            color: var(--text-cream);
+            font-weight: 700;
+        }
+
+        .receipt-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        .receipt-items-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1.5px solid var(--border-green);
+            color: var(--accent-lime);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .receipt-items-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(29, 60, 44, 0.4);
+            color: var(--text-cream);
+        }
+
+        .receipt-total-row td {
+            border-bottom: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent-lime);
+            padding-top: 12px;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.75rem;
+        }
+
+        .btn-whatsapp-dispatch {
+            background-color: #25D366;
+            color: #000;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-whatsapp-dispatch:hover {
+            background-color: #20ba5a;
+            transform: translateY(-1px);
+        }
+
+        .action-row-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        footer {
+            margin-top: auto;
+            background-color: #081711;
+            border-top: 2px solid var(--border-green);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-cream);
+            opacity: 0.85;
+        }
+
+        @media (max-width: 768px) {
+            .basket-grid { grid-template-columns: 1fr; }
+            .action-row-buttons { flex-direction: column; }
+        }
+
+        @media print {
+            header, footer, .confirmation-actions, .closed-banner, .btn-back-menu {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .confirmation-card {
+                border: 1px solid #000 !important;
+                background: #fff !important;
+                box-shadow: none !important;
+            }
+            .detail-value, .receipt-items-table td, .order-ref-title {
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="brand-link">
+                <span class="brand-title">Taco Mood</span>
+                <span class="brand-badge">Collection Portal</span>
+            </a>
+            <a href="index.html" class="btn-back-menu">
+                &larr; Back to Menu
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Prominent Closed Alert Banner if store is outside Fri-Sun 12:00-20:30 -->
+        <div id="ordering-closed-banner" class="closed-banner">
+            ⚠️ Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).
+        </div>
+
+        <!-- 1. BASKET & CHECKOUT FORM SECTION -->
+        <div id="basket-view-section">
+            <div class="page-title-section">
+                <h1>Your Order Basket</h1>
+                <p class="page-subtitle">Review your Mexican street food selection and enter your pickup details.</p>
+            </div>
+
+            <!-- Empty Basket Message -->
+            <div id="empty-basket-card" class="card empty-basket">
+                <div class="empty-basket-icon">🌮</div>
+                <h3>Your basket is empty</h3>
+                <p>Looks like you haven't added any tacos or dishes yet. Explore our freshly prepared Mexican street food menu!</p>
+                <a href="index.html#menu-container" class="btn-place-order" style="max-width: 260px; margin: 0 auto; text-decoration: none;">
+                    Browse Taco Menu &rarr;
+                </a>
+            </div>
+
+            <!-- Active Basket & Checkout -->
+            <div id="active-basket-grid" class="basket-grid" style="display: none;">
+                <!-- Column 1: Items List -->
+                <div class="card">
+                    <div class="card-header-title">
+                        <span>Selected Dishes</span>
+                        <span id="basket-item-count-badge" style="font-size: 0.85rem; color: var(--accent-lime); font-weight: 700;">0 items</span>
+                    </div>
+
+                    <div id="basket-items-list" class="basket-items-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <!-- Summary Box -->
+                    <div class="basket-summary-box">
+                        <div class="summary-line">
+                            <span>Subtotal:</span>
+                            <span id="summary-subtotal">£0.00</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Pickup Location:</span>
+                            <span>137 Stranmillis Rd</span>
+                        </div>
+                        <div class="summary-line total-line">
+                            <span>Estimated Total:</span>
+                            <span id="summary-grand-total">£0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Customer Details & Confirmation Form -->
+                <div class="card">
+                    <div class="card-header-title">
+                        <span>Pickup Details</span>
+                        <span style="font-size: 0.8rem; opacity: 0.7; text-transform: none;">* Required</span>
+                    </div>
+
+                    <form id="checkout-form">
+                        <div class="form-group">
+                            <label for="cust-name" class="form-label">Full Name *</label>
+                            <input type="text" id="cust-name" class="form-input" required placeholder="e.g. Alex Morgan" autocomplete="name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cust-phone" class="form-label">Contact Number *</label>
+                            <input type="tel" id="cust-phone" class="form-input" required placeholder="e.g. 07123 456789" autocomplete="tel">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cust-email" class="form-label">Email Address *</label>
+                            <input type="email" id="cust-email" class="form-input" required placeholder="e.g. alex@example.com" autocomplete="email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cust-notes" class="form-label">Special Instructions (Optional)</label>
+                            <textarea id="cust-notes" class="form-input form-textarea" placeholder="Allergies, extra lime, specific pickup time..."></textarea>
+                        </div>
+
+                        <div class="collection-info-pill">
+                            📍 <strong>Pickup:</strong> 137 Stranmillis Rd, Belfast BT9 5AJ<br>
+                            🕒 <strong>Prep Time:</strong> ~20–30 mins upon confirmation<br>
+                            📅 <strong>Hours:</strong> Fri–Sun 12:00 PM – 9:00 PM (Cutoff 8:30 PM)
+                        </div>
+
+                        <button type="submit" id="btn-submit-order" class="btn-place-order">
+                            Confirm Collection Order &rarr;
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ORDER CONFIRMATION SCREEN (Shown after submission) -->
+        <section id="confirmation-section">
+            <div class="confirmation-card">
+                <div class="success-badge">✅ Order Received &amp; Confirmed</div>
+                <h2 class="order-ref-title">Order <span id="conf-order-id" class="order-ref-code">#TM-0000</span></h2>
+                <p class="confirmation-msg">
+                    Thank you, <strong id="conf-customer-name" style="color: var(--accent-lime);">Customer</strong>! Your collection order has been placed with Taco Mood.
+                </p>
+
+                <!-- Customer & Pickup Info -->
+                <div class="confirmation-details-box">
+                    <div class="detail-row">
+                        <span class="detail-label">Contact Phone:</span>
+                        <span id="conf-customer-phone" class="detail-value">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Confirmation Email:</span>
+                        <span id="conf-customer-email" class="detail-value">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Pickup Location:</span>
+                        <span class="detail-value">137 Stranmillis Rd, Belfast BT9 5AJ</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Estimated Collection Time:</span>
+                        <span id="conf-pickup-time" class="detail-value" style="color: var(--accent-lime);">Ready in 20-30 mins</span>
+                    </div>
+                    <div id="conf-notes-row" class="detail-row" style="display: none;">
+                        <span class="detail-label">Special Notes:</span>
+                        <span id="conf-customer-notes" class="detail-value">--</span>
+                    </div>
+                </div>
+
+                <!-- Receipt Table -->
+                <h4 style="color: var(--accent-lime); text-transform: uppercase; margin: 1rem 0 0.5rem; font-size: 1rem;">Order Receipt</h4>
+                <table class="receipt-items-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th style="text-align: center;">Qty</th>
+                            <th style="text-align: right;">Price</th>
+                            <th style="text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conf-receipt-items">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="receipt-total-row">
+                            <td colspan="3" style="text-align: right;">Grand Total:</td>
+                            <td id="conf-receipt-grand-total" style="text-align: right;">£0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Actions: WhatsApp Dispatch fallback, Print, Return -->
+                <div class="confirmation-actions">
+                    <a id="btn-whatsapp-send" href="#" target="_blank" rel="noopener" class="btn-whatsapp-dispatch">
+                        <span>📲 Send Confirmation via WhatsApp</span>
+                    </a>
+                    <div class="action-row-buttons">
+                        <button type="button" class="btn-secondary" onclick="window.print()">
+                            🖨️ Print Receipt
+                        </button>
+                        <a href="index.html" class="btn-secondary">
+                            &larr; Back to Taco Mood Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>Taco Mood</strong> — 137 Stranmillis Rd, Belfast BT9 5AJ</p>
+        <p>Friday to Sunday: 12:00 PM – 9:00 PM (Orders stop at 8:30 PM)</p>
+        <p style="margin-top: 8px;">
+            <a href="https://www.instagram.com/tacoo.mood/" target="_blank" rel="noopener" style="color: var(--accent-lime); text-decoration: none;">Follow @tacoo.mood on Instagram</a> &bull; 
+            <a href="index.html" style="color: var(--text-cream); text-decoration: none;">Menu</a> &bull; 
+            <a href="admin.html" style="color: var(--text-cream); text-decoration: none;">Owner Portal</a>
+        </p>
+    </footer>
+
+    <script>
+        // State
+        let basket = [];
+
+        // Elements
+        const emptyBasketCard = document.getElementById('empty-basket-card');
+        const activeBasketGrid = document.getElementById('active-basket-grid');
+        const basketItemsList = document.getElementById('basket-items-list');
+        const basketItemCountBadge = document.getElementById('basket-item-count-badge');
+        const summarySubtotal = document.getElementById('summary-subtotal');
+        const summaryGrandTotal = document.getElementById('summary-grand-total');
+        const checkoutForm = document.getElementById('checkout-form');
+        const btnSubmitOrder = document.getElementById('btn-submit-order');
+        const closedBanner = document.getElementById('ordering-closed-banner');
+
+        // Confirmation Elements
+        const confirmationSection = document.getElementById('confirmation-section');
+        const basketViewSection = document.getElementById('basket-view-section');
+        const confOrderId = document.getElementById('conf-order-id');
+        const confCustomerName = document.getElementById('conf-customer-name');
+        const confCustomerPhone = document.getElementById('conf-customer-phone');
+        const confCustomerEmail = document.getElementById('conf-customer-email');
+        const confPickupTime = document.getElementById('conf-pickup-time');
+        const confNotesRow = document.getElementById('conf-notes-row');
+        const confCustomerNotes = document.getElementById('conf-customer-notes');
+        const confReceiptItems = document.getElementById('conf-receipt-items');
+        const confReceiptGrandTotal = document.getElementById('conf-receipt-grand-total');
+        const btnWhatsappSend = document.getElementById('btn-whatsapp-send');
+
+        // -------------------------------------------------------------
+        // 1. Time Window Availability (Fri-Sun 12:00 PM - 8:30 PM Europe/London)
+        // -------------------------------------------------------------
+        function checkStoreAvailability() {
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/London',
+                hour12: false,
+                weekday: 'short',
+                hour: 'numeric',
+                minute: 'numeric'
+            });
+
+            const parts = formatter.formatToParts(now);
+            const timeObj = {};
+            parts.forEach(p => timeObj[p.type] = p.value);
+
+            const dayName = timeObj.weekday; // 'Fri', 'Sat', 'Sun'
+            const hour = parseInt(timeObj.hour, 10);
+            const minute = parseInt(timeObj.minute, 10);
+            const currentMinutes = hour * 60 + minute;
+
+            const isOpenDay = (dayName === 'Fri' || dayName === 'Sat' || dayName === 'Sun');
+            const startMinutes = 12 * 60; // 12:00 PM
+            const cutoffMinutes = 20 * 60 + 30; // 8:30 PM
+
+            const isOpen = isOpenDay && (currentMinutes >= startMinutes && currentMinutes < cutoffMinutes);
+
+            if (isOpen) {
+                closedBanner.classList.remove('show');
+                btnSubmitOrder.disabled = false;
+                btnSubmitOrder.title = 'Confirm Collection Order';
+            } else {
+                closedBanner.classList.add('show');
+                btnSubmitOrder.disabled = true;
+                btnSubmitOrder.title = 'Online collection ordering is currently closed';
+            }
+
+            return isOpen;
+        }
+
+        // -------------------------------------------------------------
+        // 2. Load & Render Basket
+        // -------------------------------------------------------------
+        function loadBasket() {
+            try {
+                const stored = localStorage.getItem('tacomood_basket');
+                basket = stored ? JSON.parse(stored) : [];
+                if (!Array.isArray(basket)) basket = [];
+            } catch (e) {
+                basket = [];
+            }
+            renderBasketUI();
+        }
+
+        function saveBasket() {
+            localStorage.setItem('tacomood_basket', JSON.stringify(basket));
+            renderBasketUI();
+        }
+
+        function renderBasketUI() {
+            if (basket.length === 0) {
+                emptyBasketCard.style.display = 'block';
+                activeBasketGrid.style.display = 'none';
+                return;
+            }
+
+            emptyBasketCard.style.display = 'none';
+            activeBasketGrid.style.display = 'grid';
+            basketItemsList.innerHTML = '';
+
+            let grandTotal = 0;
+            let totalCount = 0;
+
+            basket.forEach((item, index) => {
+                const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
+                const itemTotal = priceNum * item.qty;
+                grandTotal += itemTotal;
+                totalCount += item.qty;
+
+                const row = document.createElement('div');
+                row.className = 'basket-item-row';
+
+                // Item info
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'item-main-info';
+
+                const nameEl = document.createElement('h4');
+                nameEl.className = 'item-row-name';
+                nameEl.textContent = item.name;
+                infoDiv.appendChild(nameEl);
+
+                const priceEl = document.createElement('span');
+                priceEl.className = 'item-row-price';
+                priceEl.textContent = `${item.price} each`;
+                infoDiv.appendChild(priceEl);
+
+                row.appendChild(infoDiv);
+
+                // Stepper
+                const stepper = document.createElement('div');
+                stepper.className = 'stepper-control';
+
+                const minusBtn = document.createElement('button');
+                minusBtn.type = 'button';
+                minusBtn.className = 'btn-qty';
+                minusBtn.textContent = '−';
+                minusBtn.title = 'Decrease quantity';
+                minusBtn.addEventListener('click', () => changeItemQuantity(index, -1));
+
+                const qtySpan = document.createElement('span');
+                qtySpan.className = 'qty-number';
+                qtySpan.textContent = item.qty;
+
+                const plusBtn = document.createElement('button');
+                plusBtn.type = 'button';
+                plusBtn.className = 'btn-qty';
+                plusBtn.textContent = '+';
+                plusBtn.title = 'Increase quantity';
+                plusBtn.addEventListener('click', () => changeItemQuantity(index, 1));
+
+                stepper.appendChild(minusBtn);
+                stepper.appendChild(qtySpan);
+                stepper.appendChild(plusBtn);
+                row.appendChild(stepper);
+
+                // Total
+                const totalSpan = document.createElement('span');
+                totalSpan.className = 'item-row-total';
+                totalSpan.textContent = `£${itemTotal.toFixed(2)}`;
+                row.appendChild(totalSpan);
+
+                // Remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn-remove-item';
+                removeBtn.title = 'Remove item from basket';
+                removeBtn.innerHTML = '🗑️';
+                removeBtn.addEventListener('click', () => removeItem(index));
+                row.appendChild(removeBtn);
+
+                basketItemsList.appendChild(row);
+            });
+
+            // Update summaries
+            basketItemCountBadge.textContent = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
+            summarySubtotal.textContent = `£${grandTotal.toFixed(2)}`;
+            summaryGrandTotal.textContent = `£${grandTotal.toFixed(2)}`;
+        }
+
+        function changeItemQuantity(index, delta) {
+            if (!basket[index]) return;
+            const updated = basket[index].qty + delta;
+            if (updated <= 0) {
+                basket.splice(index, 1);
+            } else {
+                basket[index].qty = Math.min(25, updated);
+            }
+            saveBasket();
+        }
+
+        function removeItem(index) {
+            if (!basket[index]) return;
+            basket.splice(index, 1);
+            saveBasket();
+        }
+
+        // -------------------------------------------------------------
+        // 3. Checkout Submission & Confirmation Screen
+        // -------------------------------------------------------------
+        checkoutForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Validate store hours
+            if (!checkStoreAvailability()) {
+                alert("Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).");
+                return;
+            }
+
+            // Validate basket
+            if (basket.length === 0) {
+                alert("Your basket is empty. Please add items before placing an order.");
+                return;
+            }
+
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const email = document.getElementById('cust-email').value.trim();
+            const notes = document.getElementById('cust-notes').value.trim();
+
+            if (!name || !phone || !email) {
+                alert("Please provide your Name, Contact Number, and Email Address.");
+                return;
+            }
+
+            // Generate order reference: #TM- + 4 random digits
+            const orderId = '#TM-' + Math.floor(1000 + Math.random() * 9000);
+
+            // Compute Ready Time (~25 mins in London time)
+            const pickupDate = new Date(Date.now() + 25 * 60 * 1000);
+            const pickupTimeStr = pickupDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Calculate totals
+            let grandTotal = 0;
+            confReceiptItems.innerHTML = '';
+
+            let waItemsList = '';
+
+            basket.forEach(item => {
+                const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
+                const itemTotal = priceNum * item.qty;
+                grandTotal += itemTotal;
+
+                // Table row
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(item.name)}</strong></td>
+                    <td style="text-align: center;">${item.qty}</td>
+                    <td style="text-align: right;">${escapeHtml(item.price)}</td>
+                    <td style="text-align: right; font-weight: 700; color: var(--accent-lime);">£${itemTotal.toFixed(2)}</td>
+                `;
+                confReceiptItems.appendChild(tr);
+
+                // WhatsApp line
+                waItemsList += `• ${item.qty}x ${item.name} (£${itemTotal.toFixed(2)})\n`;
+            });
+
+            // Populate confirmation details
+            confOrderId.textContent = orderId;
+            confCustomerName.textContent = name;
+            confCustomerPhone.textContent = phone;
+            confCustomerEmail.textContent = email;
+            confPickupTime.textContent = `Today around ${pickupTimeStr} (in ~25 mins)`;
+            confReceiptGrandTotal.textContent = `£${grandTotal.toFixed(2)}`;
+
+            if (notes) {
+                confNotesRow.style.display = 'flex';
+                confCustomerNotes.textContent = notes;
+            } else {
+                confNotesRow.style.display = 'none';
+            }
+
+            // Construct WhatsApp message fallback
+            let waMsg = `🌮 *TACO MOOD - COLLECTION ORDER CONFIRMATION*\n`;
+            waMsg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            waMsg += `🔖 *Order Ref:* ${orderId}\n`;
+            waMsg += `👤 *Customer Name:* ${name}\n`;
+            waMsg += `📞 *Contact Number:* ${phone}\n`;
+            waMsg += `📧 *Email Address:* ${email}\n`;
+            if (notes) {
+                waMsg += `📝 *Notes:* ${notes}\n`;
+            }
+            waMsg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            waMsg += `📦 *Ordered Items:*\n`;
+            waMsg += waItemsList;
+            waMsg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            waMsg += `💰 *Grand Total:* £${grandTotal.toFixed(2)}\n`;
+            waMsg += `🕒 *Estimated Pickup:* ${pickupTimeStr}\n`;
+            waMsg += `📍 *Collection Location:* 137 Stranmillis Rd, Belfast BT9 5AJ\n`;
+
+            btnWhatsappSend.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+
+            // Switch views
+            basketViewSection.style.display = 'none';
+            confirmationSection.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Clear basket from storage
+            localStorage.removeItem('tacomood_basket');
+            basket = [];
+        }
+
+        function escapeHtml(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Initialize on load
+        checkStoreAvailability();
+        loadBasket();
+        setInterval(checkStoreAvailability, 60000);
+    </script>
+</body>
+</html>

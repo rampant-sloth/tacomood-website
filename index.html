@@ -38,7 +38,7 @@
         header {
             background-color: #081711;
             border-bottom: 2px solid var(--border-green);
-            padding: 3rem 1.5rem 2.5rem;
+            padding: 2.75rem 1.5rem 2.25rem;
             text-align: center;
             position: relative;
         }
@@ -103,10 +103,22 @@
             transform: translateY(-1px);
         }
 
+        .cart-header-badge {
+            background-color: rgba(123, 179, 58, 0.2);
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+            font-weight: 700;
+        }
+
+        .cart-header-badge:hover {
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+        }
+
         .container {
             max-width: 960px;
             margin: 0 auto;
-            padding: 2.5rem 1.25rem;
+            padding: 2.5rem 1.25rem 5rem;
             width: 100%;
             flex: 1;
         }
@@ -208,7 +220,6 @@
             box-shadow: 0 6px 20px rgba(123, 179, 58, 0.5);
         }
 
-        /* Disabled / Grayed out state when store is closed */
         .btn-collection.is-closed,
         .btn-collection:disabled {
             background-color: #21352a !important;
@@ -279,6 +290,7 @@
             gap: 1.2rem;
         }
 
+        /* Clickable Food Card */
         .menu-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-green);
@@ -291,14 +303,22 @@
             position: relative;
         }
 
-        .menu-card:hover {
-            border-color: rgba(123, 179, 58, 0.6);
+        .menu-card:not(.is-sold-out) {
+            cursor: pointer;
+        }
+
+        .menu-card:not(.is-sold-out):hover {
+            border-color: rgba(123, 179, 58, 0.7);
             background-color: var(--card-bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
         }
 
         .menu-card.is-sold-out {
             border-color: rgba(232, 80, 37, 0.4);
             background-color: rgba(20, 35, 27, 0.85);
+            cursor: not-allowed;
+            opacity: 0.85;
         }
 
         .card-header {
@@ -352,25 +372,158 @@
             font-size: 0.92rem;
             line-height: 1.45;
             margin: 0.35rem 0 0;
+            flex: 1;
         }
 
-        /* Loading & Error Notice */
-        .loading-notice, .error-notice {
-            text-align: center;
-            padding: 2.5rem;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-green);
-            border-radius: 8px;
+        /* Card Interactive Action Area */
+        .card-action-bar {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(29, 60, 44, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-action-hint {
+            font-size: 0.78rem;
             color: var(--text-cream);
-            font-size: 1.1rem;
+            opacity: 0.6;
         }
 
-        .error-notice {
+        .btn-card-add {
+            background: rgba(123, 179, 58, 0.15);
+            border: 1px solid var(--accent-lime);
+            color: var(--accent-lime);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-card-add:hover {
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+        }
+
+        .card-stepper {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #091912;
+            border: 1px solid var(--border-green);
+            border-radius: 6px;
+            padding: 2px 4px;
+        }
+
+        .btn-step-sm {
+            background: #11281f;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            transition: all 0.15s;
+            line-height: 1;
+        }
+
+        .btn-step-sm:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .card-qty-num {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--accent-lime);
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .soldout-notice {
+            font-size: 0.8rem;
             color: #ff9980;
-            border-color: var(--accent-orange);
+            font-style: italic;
         }
 
-        /* Order Modal */
+        /* Floating Bottom Basket Bar */
+        .floating-basket-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            width: calc(100% - 32px);
+            max-width: 650px;
+            background-color: #0b1f17;
+            border: 1.5px solid var(--accent-lime);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .floating-basket-bar.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .basket-bar-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .basket-bar-icon {
+            font-size: 1.5rem;
+        }
+
+        .basket-bar-count {
+            color: var(--text-cream);
+            font-weight: 700;
+            font-size: 1rem;
+            display: block;
+        }
+
+        .basket-bar-price {
+            color: var(--accent-lime);
+            font-weight: 800;
+            font-size: 1.15rem;
+        }
+
+        .btn-view-basket {
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-view-basket:hover {
+            background-color: #8cc443;
+            transform: translateY(-1px);
+        }
+
+        /* Quick Item Detail Modal */
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -393,12 +546,9 @@
         .modal-dialog {
             background-color: #0e241b;
             border: 1.5px solid var(--border-green);
-            border-radius: 12px;
-            max-width: 620px;
+            border-radius: 14px;
+            max-width: 480px;
             width: 100%;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
             box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
             overflow: hidden;
             animation: modalScale 0.25s ease;
@@ -421,17 +571,9 @@
         .modal-header h3 {
             margin: 0;
             color: var(--accent-lime);
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 800;
-            text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        .modal-subtitle {
-            margin: 4px 0 0;
-            font-size: 0.88rem;
-            color: var(--text-cream);
-            opacity: 0.8;
         }
 
         .modal-close-btn {
@@ -443,7 +585,6 @@
             line-height: 1;
             padding: 0 6px;
             opacity: 0.7;
-            transition: opacity 0.2s;
         }
 
         .modal-close-btn:hover {
@@ -452,229 +593,76 @@
         }
 
         .modal-body {
-            padding: 1.25rem 1.5rem;
-            overflow-y: auto;
-            flex: 1;
+            padding: 1.5rem;
         }
 
-        .form-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-section-title {
-            color: var(--accent-lime);
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0 0 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-field label {
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-cream);
-            opacity: 0.85;
-        }
-
-        .form-field input {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-green);
-            color: var(--text-cream);
-            padding: 9px 12px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .form-field input:focus {
-            border-color: var(--accent-lime);
-        }
-
-        /* Modal Menu Items List */
-        .modal-menu-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            max-height: 280px;
-            overflow-y: auto;
-            padding-right: 6px;
-        }
-
-        .modal-menu-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-menu-list::-webkit-scrollbar-thumb {
-            background: var(--border-green);
-            border-radius: 3px;
-        }
-
-        .modal-category-heading {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            color: var(--accent-lime);
-            margin: 0.6rem 0 0.3rem;
-            padding-bottom: 2px;
-            border-bottom: 1px solid rgba(29, 60, 44, 0.6);
-        }
-
-        .modal-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(17, 40, 31, 0.5);
-            border: 1px solid var(--border-green);
-            border-radius: 6px;
-            padding: 8px 12px;
-            gap: 0.75rem;
-        }
-
-        .modal-item-row.is-sold-out {
-            opacity: 0.5;
-            background: rgba(12, 32, 24, 0.6);
-        }
-
-        .modal-item-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            flex: 1;
-        }
-
-        .modal-item-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-cream);
-        }
-
-        .modal-item-price {
-            font-weight: 700;
-            color: var(--accent-lime);
-            font-size: 0.95rem;
-        }
-
-        .item-stepper {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-step {
-            background: var(--card-bg);
-            border: 1px solid var(--border-green);
-            color: var(--text-cream);
-            width: 28px;
-            height: 28px;
-            border-radius: 4px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            line-height: 1;
-            cursor: pointer;
-            display: grid;
-            place-content: center;
-            transition: all 0.15s;
-        }
-
-        .btn-step:hover {
-            border-color: var(--accent-lime);
-            color: var(--accent-lime);
-        }
-
-        .qty-display {
-            font-weight: 700;
-            min-width: 22px;
-            text-align: center;
-            font-size: 0.95rem;
-            color: var(--text-cream);
-        }
-
-        .modal-footer {
-            padding: 1.25rem 1.5rem;
-            background-color: #081711;
-            border-top: 1px solid var(--border-green);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .order-total-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-cream);
-        }
-
-        .order-total-amount {
-            color: var(--accent-lime);
+        .modal-dish-price {
             font-size: 1.4rem;
             font-weight: 800;
+            color: var(--accent-lime);
+            margin: 0 0 0.75rem;
+        }
+
+        .modal-dish-desc {
+            color: var(--text-cream);
+            opacity: 0.85;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0 0 1.5rem;
+        }
+
+        .modal-stepper-box {
+            background: #081711;
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
         }
 
         .modal-actions {
             display: flex;
-            justify-content: flex-end;
+            flex-direction: column;
             gap: 0.75rem;
-            flex-wrap: wrap;
         }
 
-        .btn-cancel {
-            background: transparent;
-            border: 1px solid var(--border-green);
-            color: var(--text-cream);
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .btn-cancel:hover {
-            border-color: var(--text-cream);
-        }
-
-        .btn-submit-order {
+        .btn-add-modal {
             background-color: var(--accent-lime);
             color: var(--bg-dark-green);
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 13px;
+            border-radius: 8px;
             font-weight: 800;
             font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(123, 179, 58, 0.3);
+            transition: all 0.2s;
             font-family: inherit;
         }
 
-        .btn-submit-order:hover {
+        .btn-add-modal:hover {
             background-color: #8cc443;
+        }
+
+        .btn-checkout-link {
+            background: transparent;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-checkout-link:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
         }
 
         /* Footer */
@@ -801,7 +789,6 @@
             h1 { font-size: 2.3rem; }
             h2 { font-size: 1.7rem; }
             .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
-            .form-grid { grid-template-columns: 1fr; }
             .btn-collection { width: 100%; }
             .btn { display: block; margin: 8px 0; }
             .footer-bottom { justify-content: center; }
@@ -815,7 +802,7 @@
             <h1>Taco Mood</h1>
             <div class="tagline">Good Food. Good Mood.</div>
 
-            <!-- Real Store Details: Address, Hours, Social -->
+            <!-- Real Store Details: Address, Hours, Social, Basket -->
             <div class="header-badges">
                 <span class="info-badge">📍 137 Stranmillis Rd, Belfast BT9 5AJ</span>
                 <span class="info-badge">🕒 Fri – Sun: 12:00 PM – 9:00 PM</span>
@@ -826,6 +813,9 @@
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                     </svg>
                     <span>@tacoo.mood</span>
+                </a>
+                <a href="basket.html" class="info-badge cart-header-badge" id="header-cart-badge">
+                    🛒 Basket (<span id="header-cart-count">0</span>)
                 </a>
             </div>
         </div>
@@ -844,9 +834,9 @@
 
             <!-- Collection Button -->
             <div style="margin-top: 1.5rem;">
-                <button type="button" id="btn-collection-order" class="btn btn-collection">
+                <a href="basket.html" id="btn-collection-order" class="btn btn-collection">
                     Order for Collection
-                </button>
+                </a>
             </div>
 
             <!-- Third Party Aggregators -->
@@ -859,74 +849,63 @@
         </section>
 
         <!-- Menu Section -->
-        <section class="menu-wrapper">
+        <section class="menu-wrapper" id="menu-section">
             <div class="section-header">
                 <h2>Our Street Food Menu</h2>
-                <p class="section-desc">Freshly prepared, slow-cooked authentic Mexican flavours.</p>
+                <p class="section-desc">Click any dish to customize quantity and add directly to your collection basket.</p>
             </div>
             
             <div id="menu-container">
-                <div class="loading-notice">Loading today's fresh menu...</div>
+                <div class="loading-notice" style="text-align: center; padding: 2.5rem; background: var(--card-bg); border-radius: 8px;">
+                    Loading today's fresh menu...
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Collection Ordering Modal -->
-    <div id="order-modal" class="modal-backdrop" aria-hidden="true">
+    <!-- Floating Basket Bar (Visible when basket has items) -->
+    <div id="floating-basket-bar" class="floating-basket-bar">
+        <div class="basket-bar-info">
+            <span class="basket-bar-icon">🌮</span>
+            <div>
+                <span id="floating-basket-items" class="basket-bar-count">0 items</span>
+                <span id="floating-basket-total" class="basket-bar-price">£0.00</span>
+            </div>
+        </div>
+        <a href="basket.html" class="btn-view-basket">
+            <span>View Basket &amp; Checkout</span> &rarr;
+        </a>
+    </div>
+
+    <!-- Quick Item Detail & Quantity Modal -->
+    <div id="quick-item-modal" class="modal-backdrop" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-header">
-                <div>
-                    <h3>🌮 Order for Collection</h3>
-                    <p class="modal-subtitle">Pick up at 137 Stranmillis Rd, Belfast BT9 5AJ</p>
-                </div>
-                <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Close modal">&times;</button>
+                <h3 id="modal-dish-name">Dish Name</h3>
+                <button type="button" class="modal-close-btn" id="modal-item-close">&times;</button>
             </div>
+            <div class="modal-body">
+                <div id="modal-dish-price" class="modal-dish-price">£0.00</div>
+                <p id="modal-dish-desc" class="modal-dish-desc">Dish description here...</p>
 
-            <form id="order-form" class="modal-body">
-                <!-- Customer Information -->
-                <div class="form-section">
-                    <div class="form-section-title">1. Your Contact Info</div>
-                    <div class="form-grid">
-                        <div class="form-field">
-                            <label for="customer-name">Full Name *</label>
-                            <input type="text" id="customer-name" required placeholder="e.g. Alex Morgan" autocomplete="name">
-                        </div>
-                        <div class="form-field">
-                            <label for="customer-phone">Phone Number *</label>
-                            <input type="tel" id="customer-phone" required placeholder="e.g. 07123 456789" autocomplete="tel">
-                        </div>
-                    </div>
-                    <div class="form-field" style="margin-top: 0.6rem;">
-                        <label for="customer-notes">Special Instructions (Optional)</label>
-                        <input type="text" id="customer-notes" placeholder="e.g. Extra lime, ready for 6:15 PM, allergies">
+                <div class="modal-stepper-box">
+                    <span style="font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Quantity:</span>
+                    <div class="stepper-control" style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" class="btn-step-sm" id="modal-step-minus">−</button>
+                        <span id="modal-qty-val" style="font-weight: 800; font-size: 1.15rem; min-width: 28px; text-align: center;">1</span>
+                        <button type="button" class="btn-step-sm" id="modal-step-plus">+</button>
                     </div>
                 </div>
 
-                <!-- Menu Item Selection -->
-                <div class="form-section">
-                    <div class="form-section-title">
-                        <span>2. Select Food Items</span>
-                        <span id="selected-items-badge" style="font-size: 0.8rem; color: var(--text-cream); opacity: 0.8; text-transform: none;">0 items</span>
-                    </div>
-                    <div id="modal-items-container" class="modal-menu-list">
-                        <p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Loading menu options...</p>
-                    </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-add-modal" id="modal-btn-confirm-add">
+                        Add to Basket &bull; <span id="modal-subtotal-display">£0.00</span>
+                    </button>
+                    <a href="basket.html" class="btn-checkout-link">
+                        Go to Basket &amp; Checkout &rarr;
+                    </a>
                 </div>
-
-                <!-- Total & Submit -->
-                <div class="modal-footer">
-                    <div class="order-total-bar">
-                        <span>Estimated Total:</span>
-                        <strong id="order-total-display" class="order-total-amount">£0.00</strong>
-                    </div>
-                    <div class="modal-actions">
-                        <button type="button" class="btn-cancel" id="btn-cancel-modal">Cancel</button>
-                        <button type="submit" class="btn-submit-order" id="btn-submit-modal">
-                            Send via WhatsApp &rarr;
-                        </button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -982,6 +961,7 @@
             <div class="footer-bottom">
                 <div>&copy; 2026 Taco Mood. All rights reserved. 137 Stranmillis Rd, Belfast BT9 5AJ.</div>
                 <div>
+                    <a href="basket.html" style="margin-right: 12px;">Your Basket</a>
                     <a href="admin.html">Owner Portal &rarr;</a>
                 </div>
             </div>
@@ -991,14 +971,34 @@
     <script>
         // State
         let cachedMenu = null;
-        const itemQuantities = {}; // key: "catIdx-itemIdx", val: number
+        let basket = [];
+        let activeModalItem = null;
+        let activeModalQty = 1;
+
+        // Elements
+        const headerCartCount = document.getElementById('header-cart-count');
+        const floatingBasketBar = document.getElementById('floating-basket-bar');
+        const floatingBasketItems = document.getElementById('floating-basket-items');
+        const floatingBasketTotal = document.getElementById('floating-basket-total');
+        const btnCollectionOrder = document.getElementById('btn-collection-order');
+        const closedBanner = document.getElementById('ordering-closed-banner');
+
+        // Modal Elements
+        const quickItemModal = document.getElementById('quick-item-modal');
+        const modalDishName = document.getElementById('modal-dish-name');
+        const modalDishPrice = document.getElementById('modal-dish-price');
+        const modalDishDesc = document.getElementById('modal-dish-desc');
+        const modalQtyVal = document.getElementById('modal-qty-val');
+        const modalStepMinus = document.getElementById('modal-step-minus');
+        const modalStepPlus = document.getElementById('modal-step-plus');
+        const modalBtnConfirmAdd = document.getElementById('modal-btn-confirm-add');
+        const modalSubtotalDisplay = document.getElementById('modal-subtotal-display');
+        const modalItemClose = document.getElementById('modal-item-close');
 
         // -------------------------------------------------------------
-        // 1. Time Window Logic for Collection Ordering
-        // Open Window: Friday, Saturday, Sunday between 12:00 PM and 8:30 PM.
+        // 1. Time Window Logic for Collection Ordering (Fri-Sun 12:00 PM - 8:30 PM)
         // -------------------------------------------------------------
         function checkOrderingAvailability() {
-            // Evaluates current time in Belfast / Europe/London timezone
             const now = new Date();
             const formatter = new Intl.DateTimeFormat('en-GB', {
                 timeZone: 'Europe/London',
@@ -1012,7 +1012,7 @@
             const timeObj = {};
             parts.forEach(p => timeObj[p.type] = p.value);
 
-            const dayName = timeObj.weekday; // 'Fri', 'Sat', 'Sun', etc.
+            const dayName = timeObj.weekday; // 'Fri', 'Sat', 'Sun'
             const hour = parseInt(timeObj.hour, 10);
             const minute = parseInt(timeObj.minute, 10);
             const currentMinutes = hour * 60 + minute;
@@ -1023,31 +1023,195 @@
 
             const isOpen = isOpenDay && (currentMinutes >= startMinutes && currentMinutes < cutoffMinutes);
 
-            applyOrderingAvailability(isOpen);
+            if (isOpen) {
+                closedBanner.classList.remove('show');
+                btnCollectionOrder.classList.remove('is-closed');
+            } else {
+                closedBanner.classList.add('show');
+                btnCollectionOrder.classList.add('is-closed');
+                btnCollectionOrder.title = 'Online collection ordering is currently closed';
+            }
+
             return isOpen;
         }
 
-        function applyOrderingAvailability(isOpen) {
-            const btnOrder = document.getElementById('btn-collection-order');
-            const closedBanner = document.getElementById('ordering-closed-banner');
+        // -------------------------------------------------------------
+        // 2. Basket State Management (localStorage)
+        // -------------------------------------------------------------
+        function loadBasket() {
+            try {
+                const stored = localStorage.getItem('tacomood_basket');
+                basket = stored ? JSON.parse(stored) : [];
+                if (!Array.isArray(basket)) basket = [];
+            } catch (e) {
+                basket = [];
+            }
+            updateBasketUI();
+        }
 
-            if (isOpen) {
-                // Store is OPEN for collection
-                closedBanner.classList.remove('show');
-                btnOrder.disabled = false;
-                btnOrder.classList.remove('is-closed');
-                btnOrder.title = 'Order for Collection';
+        function saveBasket() {
+            localStorage.setItem('tacomood_basket', JSON.stringify(basket));
+            updateBasketUI();
+            updateAllCardSteppers();
+        }
+
+        function getItemQtyInBasket(itemName) {
+            const entry = basket.find(i => i.name === itemName);
+            return entry ? entry.qty : 0;
+        }
+
+        function setItemQuantity(itemName, price, newQty) {
+            const idx = basket.findIndex(i => i.name === itemName);
+            if (newQty <= 0) {
+                if (idx !== -1) basket.splice(idx, 1);
             } else {
-                // Store is CLOSED for collection or past 8:30 PM
-                closedBanner.classList.add('show');
-                btnOrder.disabled = true;
-                btnOrder.classList.add('is-closed');
-                btnOrder.title = 'Online collection ordering is currently closed';
+                if (idx !== -1) {
+                    basket[idx].qty = Math.min(25, newQty);
+                } else {
+                    basket.push({ name: itemName, price: price, qty: Math.min(25, newQty) });
+                }
+            }
+            saveBasket();
+        }
+
+        function updateBasketUI() {
+            let totalCount = 0;
+            let totalPrice = 0;
+
+            basket.forEach(item => {
+                totalCount += item.qty;
+                const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
+                totalPrice += priceNum * item.qty;
+            });
+
+            // Update Header Cart Count
+            headerCartCount.textContent = totalCount;
+
+            // Update Floating Bar
+            if (totalCount > 0) {
+                floatingBasketBar.classList.add('show');
+                floatingBasketItems.textContent = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
+                floatingBasketTotal.textContent = `£${totalPrice.toFixed(2)}`;
+            } else {
+                floatingBasketBar.classList.remove('show');
+            }
+
+            // Update Order Section Button text
+            if (totalCount > 0) {
+                btnCollectionOrder.textContent = `Go to Basket & Checkout (${totalCount}) →`;
+                btnCollectionOrder.href = 'basket.html';
+            } else {
+                btnCollectionOrder.textContent = 'Order for Collection';
+                btnCollectionOrder.href = '#menu-section';
             }
         }
 
+        function updateAllCardSteppers() {
+            document.querySelectorAll('.menu-card').forEach(card => {
+                const itemName = card.dataset.itemName;
+                if (!itemName) return;
+
+                const qty = getItemQtyInBasket(itemName);
+                const actionContainer = card.querySelector('.card-action-container');
+                if (!actionContainer) return;
+
+                const price = card.dataset.itemPrice || '';
+
+                if (qty === 0) {
+                    actionContainer.innerHTML = `
+                        <button type="button" class="btn-card-add">+ Add</button>
+                    `;
+                    const addBtn = actionContainer.querySelector('.btn-card-add');
+                    addBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        setItemQuantity(itemName, price, 1);
+                    });
+                } else {
+                    actionContainer.innerHTML = `
+                        <div class="card-stepper">
+                            <button type="button" class="btn-step-sm btn-minus">−</button>
+                            <span class="card-qty-num">${qty}</span>
+                            <button type="button" class="btn-step-sm btn-plus">+</button>
+                        </div>
+                    `;
+                    const minusBtn = actionContainer.querySelector('.btn-minus');
+                    const plusBtn = actionContainer.querySelector('.btn-plus');
+
+                    minusBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        setItemQuantity(itemName, price, qty - 1);
+                    });
+
+                    plusBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        setItemQuantity(itemName, price, qty + 1);
+                    });
+                }
+            });
+        }
+
         // -------------------------------------------------------------
-        // 2. Fetch and Render Public Menu
+        // 3. Quick Item Detail & Quantity Modal
+        // -------------------------------------------------------------
+        function openItemModal(item) {
+            if (item.soldOut) return;
+
+            activeModalItem = item;
+            const currentBasketQty = getItemQtyInBasket(item.name);
+            activeModalQty = currentBasketQty > 0 ? currentBasketQty : 1;
+
+            modalDishName.textContent = item.name;
+            modalDishPrice.textContent = item.price;
+            modalDishDesc.textContent = item.description || "Authentic freshly prepared Mexican street food specialty.";
+            modalQtyVal.textContent = activeModalQty;
+
+            updateModalSubtotal();
+
+            quickItemModal.classList.add('open');
+            quickItemModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeItemModal() {
+            quickItemModal.classList.remove('open');
+            quickItemModal.setAttribute('aria-hidden', 'true');
+            activeModalItem = null;
+        }
+
+        function updateModalSubtotal() {
+            if (!activeModalItem) return;
+            const priceNum = parseFloat((activeModalItem.price || '').replace(/[^0-9.]/g, '')) || 0;
+            const subtotal = priceNum * activeModalQty;
+            modalSubtotalDisplay.textContent = `£${subtotal.toFixed(2)}`;
+            modalQtyVal.textContent = activeModalQty;
+        }
+
+        modalStepMinus.addEventListener('click', () => {
+            if (activeModalQty > 1) {
+                activeModalQty--;
+                updateModalSubtotal();
+            }
+        });
+
+        modalStepPlus.addEventListener('click', () => {
+            if (activeModalQty < 25) {
+                activeModalQty++;
+                updateModalSubtotal();
+            }
+        });
+
+        modalBtnConfirmAdd.addEventListener('click', () => {
+            if (!activeModalItem) return;
+            setItemQuantity(activeModalItem.name, activeModalItem.price, activeModalQty);
+            closeItemModal();
+        });
+
+        modalItemClose.addEventListener('click', closeItemModal);
+        quickItemModal.addEventListener('click', (e) => {
+            if (e.target === quickItemModal) closeItemModal();
+        });
+
+        // -------------------------------------------------------------
+        // 4. Fetch & Render Menu with Clickable Cards & Quantity Controls
         // -------------------------------------------------------------
         fetch('menu.json')
             .then(response => {
@@ -1067,11 +1231,10 @@
                 }
 
                 menu.categories.forEach(category => {
-                    // Category Section Wrapper
                     const section = document.createElement('section');
                     section.className = 'menu-category-section';
 
-                    // Category Header
+                    // Header
                     const categoryHeader = document.createElement('div');
                     categoryHeader.className = 'category-header';
 
@@ -1080,7 +1243,6 @@
                     title.textContent = category.category;
                     categoryHeader.appendChild(title);
 
-                    // Category Note in italics (if it exists)
                     if (category.note) {
                         const note = document.createElement('p');
                         note.className = 'category-note';
@@ -1092,7 +1254,7 @@
 
                     section.appendChild(categoryHeader);
 
-                    // Items Grid
+                    // Grid
                     const grid = document.createElement('div');
                     grid.className = 'menu-grid';
 
@@ -1100,7 +1262,15 @@
                         category.items.forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'menu-card' + (item.soldOut ? ' is-sold-out' : '');
+                            card.dataset.itemName = item.name;
+                            card.dataset.itemPrice = item.price || '';
 
+                            // Click card to open modal if not sold out
+                            if (!item.soldOut) {
+                                card.addEventListener('click', () => openItemModal(item));
+                            }
+
+                            // Card header
                             const cardHeader = document.createElement('div');
                             cardHeader.className = 'card-header';
 
@@ -1112,7 +1282,6 @@
                             itemName.textContent = item.name;
                             titleWrapper.appendChild(itemName);
 
-                            // Orange SOLD OUT badge if item is sold out
                             if (item.soldOut) {
                                 const badge = document.createElement('span');
                                 badge.className = 'badge-sold-out';
@@ -1128,13 +1297,32 @@
                             cardHeader.appendChild(itemPrice);
                             card.appendChild(cardHeader);
 
-                            // Description if it exists
+                            // Description
                             if (item.description) {
                                 const desc = document.createElement('p');
                                 desc.className = 'item-desc';
                                 desc.textContent = item.description;
                                 card.appendChild(desc);
                             }
+
+                            // Action footer with Stepper / Add button
+                            const actionBar = document.createElement('div');
+                            actionBar.className = 'card-action-bar';
+
+                            const hintSpan = document.createElement('span');
+                            hintSpan.className = 'card-action-hint';
+                            hintSpan.textContent = item.soldOut ? '' : 'Click to customize';
+                            actionBar.appendChild(hintSpan);
+
+                            const actionContainer = document.createElement('div');
+                            actionContainer.className = 'card-action-container';
+
+                            if (item.soldOut) {
+                                actionContainer.innerHTML = '<span class="soldout-notice">Sold Out</span>';
+                            }
+
+                            actionBar.appendChild(actionContainer);
+                            card.appendChild(actionBar);
 
                             grid.appendChild(card);
                         });
@@ -1144,8 +1332,8 @@
                     container.appendChild(section);
                 });
 
-                // Also populate the modal selector
-                populateModalMenu(menu);
+                // Update steppers with stored quantities
+                updateAllCardSteppers();
             })
             .catch(error => {
                 console.error('Error loading menu:', error);
@@ -1153,260 +1341,15 @@
                 container.innerHTML = '<div class="error-notice">Sorry, our menu is temporarily unavailable. Please visit us in store!</div>';
             });
 
-        // -------------------------------------------------------------
-        // 3. Collection Ordering Modal Logic & WhatsApp Fallback
-        // -------------------------------------------------------------
-        const orderModal = document.getElementById('order-modal');
-        const btnCollectionOrder = document.getElementById('btn-collection-order');
-        const modalCloseBtn = document.getElementById('modal-close-btn');
-        const btnCancelModal = document.getElementById('btn-cancel-modal');
-        const orderForm = document.getElementById('order-form');
-        const modalItemsContainer = document.getElementById('modal-items-container');
-        const orderTotalDisplay = document.getElementById('order-total-display');
-        const selectedItemsBadge = document.getElementById('selected-items-badge');
-
-        function openModal() {
-            // Guard: ensure store is currently open
-            if (!checkOrderingAvailability()) {
-                alert("Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).");
-                return;
-            }
-            orderModal.classList.add('open');
-            orderModal.setAttribute('aria-hidden', 'false');
-            document.getElementById('customer-name').focus();
-        }
-
-        function closeModal() {
-            orderModal.classList.remove('open');
-            orderModal.setAttribute('aria-hidden', 'true');
-        }
-
-        btnCollectionOrder.addEventListener('click', () => {
-            if (!btnCollectionOrder.disabled && !btnCollectionOrder.classList.contains('is-closed')) {
-                openModal();
-            }
+        // Listen for storage events (e.g. if user updates basket in another tab or returns from basket.html)
+        window.addEventListener('storage', () => {
+            loadBasket();
         });
 
-        modalCloseBtn.addEventListener('click', closeModal);
-        btnCancelModal.addEventListener('click', closeModal);
-
-        // Close on clicking outside modal
-        orderModal.addEventListener('click', (e) => {
-            if (e.target === orderModal) closeModal();
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && orderModal.classList.contains('open')) {
-                closeModal();
-            }
-        });
-
-        // Populate items in modal
-        function populateModalMenu(menu) {
-            if (!menu || !menu.categories) return;
-
-            modalItemsContainer.innerHTML = '';
-
-            menu.categories.forEach((cat, catIdx) => {
-                const catHeading = document.createElement('div');
-                catHeading.className = 'modal-category-heading';
-                catHeading.textContent = cat.category;
-                modalItemsContainer.appendChild(catHeading);
-
-                if (cat.items && Array.isArray(cat.items)) {
-                    cat.items.forEach((item, itemIdx) => {
-                        const itemKey = `${catIdx}-${itemIdx}`;
-                        itemQuantities[itemKey] = 0;
-
-                        const row = document.createElement('div');
-                        row.className = 'modal-item-row' + (item.soldOut ? ' is-sold-out' : '');
-
-                        const info = document.createElement('div');
-                        info.className = 'modal-item-info';
-
-                        const nameSpan = document.createElement('span');
-                        nameSpan.className = 'modal-item-name';
-                        nameSpan.textContent = item.name;
-                        info.appendChild(nameSpan);
-
-                        const priceSpan = document.createElement('span');
-                        priceSpan.className = 'modal-item-price';
-                        priceSpan.textContent = item.price || '';
-                        info.appendChild(priceSpan);
-
-                        if (item.soldOut) {
-                            const badge = document.createElement('span');
-                            badge.className = 'badge-sold-out';
-                            badge.style.fontSize = '0.65rem';
-                            badge.style.padding = '2px 6px';
-                            badge.textContent = 'SOLD OUT';
-                            info.appendChild(badge);
-                        }
-
-                        row.appendChild(info);
-
-                        // Stepper controls
-                        const stepper = document.createElement('div');
-                        stepper.className = 'item-stepper';
-
-                        if (item.soldOut) {
-                            const unavailable = document.createElement('span');
-                            unavailable.style.fontSize = '0.8rem';
-                            unavailable.style.color = '#ff9980';
-                            unavailable.style.fontStyle = 'italic';
-                            unavailable.textContent = 'Unavailable';
-                            stepper.appendChild(unavailable);
-                        } else {
-                            const btnMinus = document.createElement('button');
-                            btnMinus.type = 'button';
-                            btnMinus.className = 'btn-step';
-                            btnMinus.textContent = '−';
-                            btnMinus.title = 'Decrease quantity';
-                            btnMinus.addEventListener('click', () => updateItemQty(itemKey, -1));
-
-                            const qtyText = document.createElement('span');
-                            qtyText.className = 'qty-display';
-                            qtyText.id = `qty-${itemKey}`;
-                            qtyText.textContent = '0';
-
-                            const btnPlus = document.createElement('button');
-                            btnPlus.type = 'button';
-                            btnPlus.className = 'btn-step';
-                            btnPlus.textContent = '+';
-                            btnPlus.title = 'Increase quantity';
-                            btnPlus.addEventListener('click', () => updateItemQty(itemKey, 1));
-
-                            stepper.appendChild(btnMinus);
-                            stepper.appendChild(qtyText);
-                            stepper.appendChild(btnPlus);
-                        }
-
-                        row.appendChild(stepper);
-                        modalItemsContainer.appendChild(row);
-                    });
-                }
-            });
-        }
-
-        function updateItemQty(itemKey, delta) {
-            const current = itemQuantities[itemKey] || 0;
-            const updated = Math.max(0, Math.min(25, current + delta));
-            itemQuantities[itemKey] = updated;
-
-            const displayEl = document.getElementById(`qty-${itemKey}`);
-            if (displayEl) displayEl.textContent = updated;
-
-            calculateOrderTotal();
-        }
-
-        function calculateOrderTotal() {
-            if (!cachedMenu) return;
-
-            let total = 0;
-            let totalCount = 0;
-
-            cachedMenu.categories.forEach((cat, catIdx) => {
-                if (cat.items) {
-                    cat.items.forEach((item, itemIdx) => {
-                        const key = `${catIdx}-${itemIdx}`;
-                        const qty = itemQuantities[key] || 0;
-                        if (qty > 0) {
-                            totalCount += qty;
-                            const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
-                            total += priceNum * qty;
-                        }
-                    });
-                }
-            });
-
-            orderTotalDisplay.textContent = `£${total.toFixed(2)}`;
-            selectedItemsBadge.textContent = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
-        }
-
-        // Handle Order Form Submission -> WhatsApp Fallback
-        orderForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            // Check availability again
-            if (!checkOrderingAvailability()) {
-                alert("Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).");
-                closeModal();
-                return;
-            }
-
-            const customerName = document.getElementById('customer-name').value.trim();
-            const customerPhone = document.getElementById('customer-phone').value.trim();
-            const customerNotes = document.getElementById('customer-notes').value.trim();
-
-            if (!customerName || !customerPhone) {
-                alert("Please enter your name and phone number.");
-                return;
-            }
-
-            // Gather items
-            const orderList = [];
-            let total = 0;
-
-            if (cachedMenu && cachedMenu.categories) {
-                cachedMenu.categories.forEach((cat, catIdx) => {
-                    if (cat.items) {
-                        cat.items.forEach((item, itemIdx) => {
-                            const key = `${catIdx}-${itemIdx}`;
-                            const qty = itemQuantities[key] || 0;
-                            if (qty > 0 && !item.soldOut) {
-                                const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
-                                const itemTotal = priceNum * qty;
-                                total += itemTotal;
-                                orderList.push({
-                                    name: item.name,
-                                    qty: qty,
-                                    unitPrice: item.price,
-                                    itemTotal: `£${itemTotal.toFixed(2)}`
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
-            if (orderList.length === 0) {
-                alert("Please select at least one available food item from the menu.");
-                return;
-            }
-
-            // Construct formatted WhatsApp message
-            let msg = `🌮 *TACO MOOD - COLLECTION ORDER*\n`;
-            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `👤 *Customer:* ${customerName}\n`;
-            msg += `📞 *Phone:* ${customerPhone}\n`;
-            if (customerNotes) {
-                msg += `📝 *Notes:* ${customerNotes}\n`;
-            }
-            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `📦 *Order Items:*\n`;
-            orderList.forEach(item => {
-                msg += `• ${item.qty}x ${item.name} (${item.itemTotal})\n`;
-            });
-            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `💰 *Estimated Total:* £${total.toFixed(2)}\n`;
-            msg += `📍 *Collection:* 137 Stranmillis Rd, Belfast BT9 5AJ\n`;
-            msg += `🕒 *Store Hours:* Fri–Sun 12:00 PM – 9:00 PM`;
-
-            const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-            // Dispatch fallback to WhatsApp
-            window.open(waUrl, '_blank');
-
-            // Reset and close
-            closeModal();
-            alert("🎉 Thank you! Your order has been formatted and opened in WhatsApp to send to Taco Mood.");
-        });
-
-        // Initialize availability check on load and check periodically
+        // Initialize on load
         checkOrderingAvailability();
-        setInterval(checkOrderingAvailability, 60000); // Re-check every minute
+        loadBasket();
+        setInterval(checkOrderingAvailability, 60000);
     </script>
-
 </body>
 </html>
