@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taco Mood | Belfast</title>
     <style>
-        :root {
-            --brand-dark: #222;
-            --brand-accent: #e63946;
-            --brand-light: #f8f9fa;
-        }
+:root {
+    --bg-dark-green: #0C2018;   /* Deep Forest Green Background */
+    --accent-lime: #7BB33A;     /* Bright Lime Green Headers */
+    --accent-orange: #E85025;   /* Rust Orange Badges & Highlights */
+    --text-cream: #F5E5C9;      /* Off-White / Cream Body Text */
+    --border-green: #1D3C2C;    /* Subtle Container Borders */
+}
         body {
             font-family: system-ui, -apple-system, sans-serif;
             margin: 0;
@@ -70,6 +72,13 @@
             <a href="#" class="btn btn-collection">Order for Collection</a>
         </div>
 
+        <div class="container">
+            <h2>Menu Highlights</h2>
+            <div id="menu-container" style="display: grid; gap: 1rem; text-align: left;">
+                <!-- Menu items will load here automatically -->
+            </div>
+        </div>
+
         <!-- Third Party Aggregators -->
         <div style="margin-top: 2rem;">
             <h3>Delivery Partners</h3>
@@ -83,6 +92,24 @@
         <p>📍 Stranmillis Road, Belfast, BT9</p>
         <p>Follow us on our social channels for updates and specials.</p>
     </footer>
+
+    <script>
+    fetch('menu.json')
+        .then(response => response.json())
+        .then(menu => {
+            const container = document.getElementById('menu-container');
+            menu.forEach(item => {
+                const status = item.soldOut ? '<span style="color: red; font-weight: bold;">(SOLD OUT)</span>' : '';
+                const card = `
+                    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 8px; background: white;">
+                        <h3 style="margin: 0 0 0.5rem 0;">${item.name} <span style="float: right;">${item.price}</span></h3>
+                        <p style="margin: 0; color: #555;">${item.description} ${status}</p>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        });
+</script>
 
 </body>
 </html>

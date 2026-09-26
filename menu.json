@@ -1,0 +1,104 @@
+{
+  "categories": [
+    {
+      "category": "Birria",
+      "items": [
+        {
+          "name": "3x Beef Birria Tacos",
+          "description": "14-hour slow-cooked beef brisket, cheddar cheese, pico de gallo, salsa roja, coriander & lime. Served with beef broth dip.",
+          "price": "£13.00",
+          "soldOut": false
+        },
+        {
+          "name": "Birria Quesadilla",
+          "description": "14-hour slow-cooked beef brisket, cheddar cheese, pico de gallo, salsa roja, coriander & lime. Served with beef broth dip.",
+          "price": "£12.00",
+          "soldOut": false
+        }
+      ]
+    },
+    {
+      "category": "Tacos",
+      "note": "3x Soft Tacos — Served with pico de gallo, pickled onions, pickled cabbage, salsa roja, taco sauce, coriander & lime.",
+      "items": [
+        { "name": "Beef Tacos", "price": "£13.00", "soldOut": false },
+        { "name": "Chicken Tacos", "price": "£12.00", "soldOut": false },
+        { "name": "Mexican Chorizo Tacos", "price": "£11.00", "soldOut": false },
+        { "name": "Mixed Meats Tacos", "price": "£14.00", "soldOut": false },
+        { "name": "Shrimp Tacos", "price": "£14.00", "soldOut": false },
+        { "name": "Vegan / Veggie Tacos", "price": "£10.00", "soldOut": false }
+      ]
+    },
+    {
+      "category": "Burritos",
+      "note": "Served with spicy Mexican rice, pickled onions, pico de gallo, cheddar cheese, salsa roja, taco sauce, coriander & charred pineapple.",
+      "items": [
+        { "name": "Beef Burrito", "price": "£12.00", "soldOut": false },
+        { "name": "Chicken Adobo Burrito", "price": "£11.00", "soldOut": false },
+        { "name": "Mexican Chorizo Burrito", "price": "£10.00", "soldOut": false },
+        { "name": "All Meats Burrito", "price": "£14.00", "soldOut": false }
+      ]
+    },
+    {
+      "category": "Rice Bowls",
+      "note": "Served with pico de gallo, pickled onions, pickled cabbage, salsa roja, cheese, jalapeños, Mexican beans, taco sauce, coriander & lime. Add Guacamole +£1.",
+      "items": [
+        { "name": "Beef Barbacoa Bowl", "price": "£13.00", "soldOut": false },
+        { "name": "Chicken Adobo Bowl", "price": "£11.00", "soldOut": false },
+        { "name": "Mexican Chorizo Bowl", "price": "£10.00", "soldOut": false },
+        { "name": "Shrimp Bowl", "price": "£14.00", "soldOut": false },
+        { "name": "All Meats Bowl", "price": "£14.00", "soldOut": false },
+        { "name": "Vegan / Veggie Bowl", "price": "£9.00", "soldOut": false }
+      ]
+    },
+    {
+      "category": "Loaded & Sides",
+      "items": [
+        {
+          "name": "Taco Chips",
+          "description": "Spicy pork mince on chips, taco sauce, pico de gallo, onion, cheese, jalapeños, coriander & lime.",
+          "price": "£12.00",
+          "soldOut": false
+        },
+        {
+          "name": "Loaded Nachos - Beef",
+          "description": "Served with pico de gallo, cheese, salsa, taco sauce, charred pineapple, pickled onions, pickled cabbage, coriander, guacamole & lime.",
+          "price": "£13.00",
+          "soldOut": false
+        },
+        {
+          "name": "Loaded Nachos - Chicken",
+          "description": "Served with pico de gallo, cheese, salsa, taco sauce, charred pineapple, pickled onions, pickled cabbage, coriander, guacamole & lime.",
+          "price": "£11.00",
+          "soldOut": false
+        },
+        {
+          "name": "Loaded Nachos - Pork",
+          "description": "Served with pico de gallo, cheese, salsa, taco sauce, charred pineapple, pickled onions, pickled cabbage, coriander, guacamole & lime.",
+          "price": "£10.00",
+          "soldOut": false
+        },
+        {
+          "name": "Loaded Nachos - Vegan / Veggie",
+          "description": "Served with pico de gallo, cheese, salsa, taco sauce, charred pineapple, pickled onions, pickled cabbage, coriander, guacamole & lime.",
+          "price": "£9.00",
+          "soldOut": false
+        },
+        { "name": "Plain Chips", "price": "£4.50", "soldOut": false },
+        { "name": "Churros", "description": "Served with chocolate dip.", "price": "£5.00", "soldOut": false }
+      ]
+    },
+    {
+      "category": "Drinks & Dips",
+      "items": [
+        { "name": "Jarritos", "price": "£3.50", "soldOut": false },
+        { "name": "Coke / Coke Zero", "price": "£2.00", "soldOut": false },
+        { "name": "Fanta", "price": "£2.00", "soldOut": false },
+        { "name": "Water", "price": "£1.50", "soldOut": false },
+        { "name": "Taco Sauce Dip", "price": "£1.50", "soldOut": false },
+        { "name": "Garlic Dip", "price": "£1.50", "soldOut": false },
+        { "name": "Salsa Roja Dip", "price": "£1.50", "soldOut": false }
+      ]
+    }
+  ]
+}
