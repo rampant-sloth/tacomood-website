@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taco Mood | Admin Menu Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark-green: #0C2018;   /* Main Background */
+            --accent-lime: #7BB33A;     /* Headers and Primary Buttons */
+            --accent-orange: #E85025;   /* 'Sold Out' Badges and Secondary Highlights */
+            --text-cream: #F5E5C9;      /* Body Text */
+            --border-green: #1D3C2C;    /* Dividing Lines and Card Borders */
+            --card-surface: #10261D;    /* Card Surface */
+            --card-surface-hover: #143126;
+            --input-bg: #071510;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark-green);
+            color: var(--text-cream);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Header */
+        header {
+            background-color: #081711;
+            border-bottom: 2px solid var(--border-green);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-lime);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .portal-badge {
+            background-color: rgba(123, 179, 58, 0.15);
+            border: 1px solid var(--accent-lime);
+            color: var(--accent-lime);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-view-site {
+            color: var(--text-cream);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            border: 1px solid var(--border-green);
+            border-radius: 6px;
+            background: rgba(29, 60, 44, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-view-site:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .btn-key-manage {
+            color: var(--text-cream);
+            background: transparent;
+            border: 1px solid var(--border-green);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-key-manage:hover {
+            border-color: var(--text-cream);
+        }
+
+        .btn-publish {
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(123, 179, 58, 0.35);
+        }
+
+        .btn-publish:hover:not(:disabled) {
+            background-color: #8cc443;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(123, 179, 58, 0.5);
+        }
+
+        .btn-publish:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Sub-bar / Stats & Status */
+        .status-bar {
+            background: #091a13;
+            border-bottom: 1px solid var(--border-green);
+            padding: 0.75rem 2rem;
+            font-size: 0.9rem;
+        }
+
+        .status-bar-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stats-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-chip {
+            background: var(--card-surface);
+            border: 1px solid var(--border-green);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+        }
+
+        .stat-chip.sold-out-chip {
+            border-color: rgba(232, 80, 37, 0.5);
+            color: #ff9d85;
+        }
+
+        .stat-chip.sold-out-chip strong {
+            color: var(--accent-orange);
+        }
+
+        .save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-lime);
+        }
+
+        .indicator-dot.dirty {
+            background-color: var(--accent-orange);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Banner Messages */
+        .banner {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .banner.show {
+            display: flex;
+        }
+
+        .banner.success {
+            background-color: rgba(123, 179, 58, 0.15);
+            border: 1px solid var(--accent-lime);
+            color: #c9f09e;
+        }
+
+        .banner.error {
+            background-color: rgba(232, 80, 37, 0.15);
+            border: 1px solid var(--accent-orange);
+            color: #ffb5a0;
+        }
+
+        .banner.info {
+            background-color: rgba(29, 60, 44, 0.5);
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+        }
+
+        .banner-close {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
+        /* Instructions Accordion */
+        details.help-accordion {
+            background: rgba(17, 40, 31, 0.45);
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        details.help-accordion summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--accent-lime);
+            outline: none;
+            user-select: none;
+        }
+
+        .help-content {
+            margin-top: 1rem;
+            font-size: 0.92rem;
+            color: var(--text-cream);
+            opacity: 0.9;
+            line-height: 1.6;
+            border-top: 1px solid var(--border-green);
+            padding-top: 0.75rem;
+        }
+
+        .help-content ol {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0;
+        }
+
+        .help-content code {
+            background: #071510;
+            border: 1px solid var(--border-green);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent-lime);
+        }
+
+        /* Filter Controls */
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+            max-width: 450px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 10px 14px 10px 36px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-lime);
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            background: transparent;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        /* Category Card Sections */
+        .admin-category-card {
+            background-color: var(--card-surface);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            margin-bottom: 2.25rem;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-category-header {
+            background-color: #0b1f17;
+            border-bottom: 2px solid var(--border-green);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .admin-category-title {
+            color: var(--accent-lime);
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+        }
+
+        .admin-category-note {
+            color: var(--text-cream);
+            opacity: 0.85;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin: 0.35rem 0 0 0;
+            width: 100%;
+        }
+
+        /* Item Rows / List */
+        .items-table {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-item-row {
+            display: grid;
+            grid-template-columns: 1fr 180px 180px;
+            align-items: center;
+            padding: 1.15rem 1.5rem;
+            border-bottom: 1px solid var(--border-green);
+            gap: 1.25rem;
+            transition: background-color 0.2s ease, border-left-color 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .admin-item-row:last-child {
+            border-bottom: none;
+        }
+
+        .admin-item-row:hover {
+            background-color: var(--card-surface-hover);
+        }
+
+        .admin-item-row.is-sold-out {
+            border-left-color: var(--accent-orange);
+            background-color: rgba(232, 80, 37, 0.04);
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-title-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .item-name-text {
+            font-weight: 700;
+            color: var(--text-cream);
+            font-size: 1.05rem;
+        }
+
+        .badge-sold-out-admin {
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: none;
+        }
+
+        .admin-item-row.is-sold-out .badge-sold-out-admin {
+            display: inline-block;
+        }
+
+        .item-desc-text {
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.75;
+            line-height: 1.35;
+        }
+
+        /* Price Input Field */
+        .price-field-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .field-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-cream);
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        .price-input {
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--accent-lime);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .price-input:focus {
+            border-color: var(--accent-lime);
+            box-shadow: 0 0 0 2px rgba(123, 179, 58, 0.2);
+            color: #ffffff;
+        }
+
+        /* Sold Out Checkbox / Toggle */
+        .soldout-field-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .soldout-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            font-size: 0.92rem;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-green);
+            background: var(--input-bg);
+            transition: all 0.2s;
+        }
+
+        .soldout-toggle-label:hover {
+            border-color: rgba(232, 80, 37, 0.4);
+        }
+
+        .admin-item-row.is-sold-out .soldout-toggle-label {
+            border-color: var(--accent-orange);
+            background: rgba(232, 80, 37, 0.12);
+            color: #ff9980;
+        }
+
+        .soldout-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-green);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            background-color: #0c2018;
+            position: relative;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .soldout-checkbox:checked {
+            background-color: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+
+        .soldout-checkbox:checked::after {
+            content: "✓";
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(12, 32, 24, 0.3);
+            border-top-color: var(--bg-dark-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Bottom Floating Bar on Mobile */
+        .mobile-floating-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #081711;
+            border-top: 1px solid var(--border-green);
+            padding: 12px 16px;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Modal Dialog for Admin Key & Settings */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background-color: #10261D;
+            border: 1.5px solid var(--border-green);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            padding: 1.75rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-title {
+            color: var(--accent-lime);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem;
+        }
+
+        .modal-desc {
+            font-size: 0.9rem;
+            color: var(--text-cream);
+            opacity: 0.85;
+            margin-bottom: 1.25rem;
+            line-height: 1.45;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-cream);
+        }
+
+        .form-group input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-lime);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            header { padding: 1rem; }
+            .admin-item-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .mobile-floating-bar {
+                display: flex;
+            }
+            .header-actions .btn-publish {
+                display: none;
+            }
+            .container {
+                padding-bottom: 6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Header -->
+    <header>
+        <div class="header-inner">
+            <div class="brand-block">
+                <h1 class="brand-title">Taco Mood</h1>
+                <span class="portal-badge">Admin Menu Portal</span>
+            </div>
+
+            <div class="header-actions">
+                <a href="index.html" class="btn-view-site" target="_blank" rel="noopener">👁️ View Public Site</a>
+                <button type="button" id="btn-admin-key" class="btn-key-manage" title="Manage your Admin Key">
+                    🔑 <span id="key-label">Admin Key</span>
+                </button>
+                <button type="button" id="btn-publish-header" class="btn-publish">
+                    <span>Publish Changes</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Status & Stats Bar -->
+    <div class="status-bar">
+        <div class="status-bar-inner">
+            <div class="stats-group">
+                <span class="stat-chip" id="stat-categories">Categories: <strong>0</strong></span>
+                <span class="stat-chip" id="stat-items">Total Items: <strong>0</strong></span>
+                <span class="stat-chip sold-out-chip" id="stat-soldout">Sold Out: <strong id="soldout-count">0</strong></span>
+            </div>
+            <div class="save-indicator">
+                <span class="indicator-dot" id="indicator-dot"></span>
+                <span id="save-status-text">All changes published</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="container">
+        <!-- Notification Banners -->
+        <div id="banner-notification" class="banner">
+            <span id="banner-icon">ℹ️</span>
+            <div id="banner-message" style="flex: 1;">Notification message here.</div>
+            <button type="button" class="banner-close" onclick="closeBanner()">&times;</button>
+        </div>
+
+        <!-- Non-technical Owner Guide -->
+        <details class="help-accordion">
+            <summary>📖 How to update the menu &amp; publish live</summary>
+            <div class="help-content">
+                <p>Welcome to the <strong>Taco Mood</strong> menu editor! Here is how to keep your store up to date:</p>
+                <ol>
+                    <li><strong>Change Prices:</strong> Click directly into any price text box (e.g. <code>£13.00</code>) and enter the new price.</li>
+                    <li><strong>Sold Out:</strong> Check or uncheck <strong>"Mark as Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
+                    <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. You will be prompted for your <strong>Admin Key</strong> (GitHub Fine-Grained Personal Access Token with <code>Contents: Read and write</code> permission). The changes are committed directly to your website in seconds!</li>
+                </ol>
+            </div>
+        </details>
+
+        <!-- Search & Quick Filters -->
+        <div class="controls-row">
+            <div class="search-box">
+                <input type="text" id="filter-input" placeholder="Search dish by name or category...">
+            </div>
+            <div class="quick-actions">
+                <button type="button" class="btn-small" id="btn-expand-all">Expand All</button>
+                <button type="button" class="btn-small" id="btn-collapse-all">Collapse All</button>
+            </div>
+        </div>
+
+        <!-- Menu Edit Form Container -->
+        <div id="form-container">
+            <div style="text-align: center; padding: 3rem; color: var(--text-cream); opacity: 0.8;">
+                <div class="spinner" style="margin-bottom: 1rem; width: 24px; height: 24px;"></div>
+                <p>Loading Taco Mood menu data...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Floating Bottom Bar -->
+    <div class="mobile-floating-bar">
+        <span style="font-size: 0.85rem; font-weight: 600;" id="mobile-status-text">Ready to publish</span>
+        <button type="button" id="btn-publish-mobile" class="btn-publish" style="padding: 8px 16px; font-size: 0.85rem;">
+            Publish Changes
+        </button>
+    </div>
+
+    <!-- Admin Key / Settings Modal -->
+    <div class="modal-overlay" id="admin-key-modal">
+        <div class="modal-card">
+            <h3 class="modal-title">Admin Key Configuration</h3>
+            <p class="modal-desc">
+                Your Admin Key is a GitHub Personal Access Token that authorizes this page to update <code>menu.json</code> on your repository. It stays securely in your browser's current session.
+            </p>
+            <div class="form-group">
+                <label for="token-input">Admin Key (GitHub Token)</label>
+                <input type="password" id="token-input" placeholder="github_pat_... or ghp_..." autocomplete="off">
+            </div>
+            <div style="margin-bottom: 1rem; font-size: 0.82rem; color: var(--text-cream); opacity: 0.8;">
+                Repository: <code>rampant-sloth/tacomood-website</code> (main branch)
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-small" id="btn-modal-clear">Clear Key</button>
+                <button type="button" class="btn-small" id="btn-modal-cancel">Cancel</button>
+                <button type="button" class="btn-publish" id="btn-modal-save" style="padding: 8px 18px; font-size: 0.85rem;">Save Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const GITHUB_OWNER = 'rampant-sloth';
+        const GITHUB_REPO = 'tacomood-website';
+        const GITHUB_PATH = 'menu.json';
+        const GITHUB_BRANCH = 'main';
+
+        // State
+        let menuData = null;
+        let isDirty = false;
+        let isPublishing = false;
+
+        // Elements
+        const formContainer = document.getElementById('form-container');
+        const filterInput = document.getElementById('filter-input');
+        const statCategories = document.getElementById('stat-categories');
+        const statItems = document.getElementById('stat-items');
+        const soldoutCount = document.getElementById('soldout-count');
+        const indicatorDot = document.getElementById('indicator-dot');
+        const saveStatusText = document.getElementById('save-status-text');
+        const mobileStatusText = document.getElementById('mobile-status-text');
+        const btnPublishHeader = document.getElementById('btn-publish-header');
+        const btnPublishMobile = document.getElementById('btn-publish-mobile');
+        const btnAdminKey = document.getElementById('btn-admin-key');
+        const keyLabel = document.getElementById('key-label');
+        const adminKeyModal = document.getElementById('admin-key-modal');
+        const tokenInput = document.getElementById('token-input');
+        const btnModalCancel = document.getElementById('btn-modal-cancel');
+        const btnModalSave = document.getElementById('btn-modal-save');
+        const btnModalClear = document.getElementById('btn-modal-clear');
+        const btnExpandAll = document.getElementById('btn-expand-all');
+        const btnCollapseAll = document.getElementById('btn-collapse-all');
+
+        // Helpers
+        function showBanner(message, type = 'info') {
+            const banner = document.getElementById('banner-notification');
+            const msgEl = document.getElementById('banner-message');
+            const iconEl = document.getElementById('banner-icon');
+            
+            banner.className = `banner ${type} show`;
+            msgEl.innerHTML = message;
+            
+            if (type === 'success') iconEl.textContent = '✅';
+            else if (type === 'error') iconEl.textContent = '❌';
+            else iconEl.textContent = 'ℹ️';
+
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function closeBanner() {
+            const banner = document.getElementById('banner-notification');
+            banner.classList.remove('show');
+        }
+
+        function setDirty(dirty) {
+            isDirty = dirty;
+            if (dirty) {
+                indicatorDot.className = 'indicator-dot dirty';
+                saveStatusText.textContent = 'Unsaved changes';
+                mobileStatusText.textContent = 'Unsaved changes';
+            } else {
+                indicatorDot.className = 'indicator-dot';
+                saveStatusText.textContent = 'All changes published';
+                mobileStatusText.textContent = 'All changes published';
+            }
+        }
+
+        function updateKeyUI() {
+            const token = sessionStorage.getItem('tacomood_admin_token');
+            if (token) {
+                keyLabel.textContent = 'Key: Configured ✓';
+                btnAdminKey.style.borderColor = 'var(--accent-lime)';
+                btnAdminKey.style.color = 'var(--accent-lime)';
+            } else {
+                keyLabel.textContent = 'Admin Key';
+                btnAdminKey.style.borderColor = 'var(--border-green)';
+                btnAdminKey.style.color = 'var(--text-cream)';
+            }
+        }
+
+        // UTF-8 safe Base64 encoder for browser
+        function utf8ToBase64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binString = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binString += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binString);
+        }
+
+        // Fetch initial menu.json
+        async function loadMenuData() {
+            try {
+                // Add timestamp to prevent HTTP caching
+                const response = await fetch(`menu.json?_t=${Date.now()}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load menu.json: HTTP ${response.status}`);
+                }
+                menuData = await response.json();
+                renderForm();
+                setDirty(false);
+            } catch (err) {
+                console.error('Error loading menu:', err);
+                formContainer.innerHTML = `
+                    <div style="background: rgba(232, 80, 37, 0.1); border: 1px solid var(--accent-orange); padding: 2rem; border-radius: 8px; text-align: center;">
+                        <h3 style="color: var(--accent-orange); margin-top: 0;">Error Loading Menu Data</h3>
+                        <p>${err.message}</p>
+                        <button type="button" class="btn-small" onclick="loadMenuData()" style="margin-top: 1rem;">Retry Loading</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render the editable form from menuData
+        function renderForm() {
+            if (!menuData || !menuData.categories) {
+                formContainer.innerHTML = '<p>No categories found in menu data.</p>';
+                return;
+            }
+
+            formContainer.innerHTML = '';
+            let totalItems = 0;
+            let totalSoldOut = 0;
+
+            menuData.categories.forEach((cat, catIdx) => {
+                const categoryCard = document.createElement('section');
+                categoryCard.className = 'admin-category-card';
+                categoryCard.dataset.categoryName = cat.category.toLowerCase();
+
+                // Category Header
+                const catHeader = document.createElement('div');
+                catHeader.className = 'admin-category-header';
+
+                const title = document.createElement('h3');
+                title.className = 'admin-category-title';
+                title.textContent = cat.category;
+                catHeader.appendChild(title);
+
+                const countBadge = document.createElement('span');
+                countBadge.className = 'stat-chip';
+                countBadge.textContent = `${cat.items ? cat.items.length : 0} items`;
+                catHeader.appendChild(countBadge);
+
+                if (cat.note) {
+                    const note = document.createElement('p');
+                    note.className = 'admin-category-note';
+                    note.textContent = cat.note;
+                    catHeader.appendChild(note);
+                }
+
+                categoryCard.appendChild(catHeader);
+
+                // Items Table
+                const itemsList = document.createElement('div');
+                itemsList.className = 'items-table';
+
+                if (cat.items && Array.isArray(cat.items)) {
+                    cat.items.forEach((item, itemIdx) => {
+                        totalItems++;
+                        if (item.soldOut) totalSoldOut++;
+
+                        const row = document.createElement('div');
+                        row.className = 'admin-item-row' + (item.soldOut ? ' is-sold-out' : '');
+                        row.id = `row-${catIdx}-${itemIdx}`;
+                        row.dataset.itemName = item.name.toLowerCase();
+
+                        // Item Info
+                        const itemInfo = document.createElement('div');
+                        itemInfo.className = 'item-info';
+
+                        const titleLine = document.createElement('div');
+                        titleLine.className = 'item-title-line';
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'item-name-text';
+                        nameSpan.textContent = item.name;
+                        titleLine.appendChild(nameSpan);
+
+                        const badge = document.createElement('span');
+                        badge.className = 'badge-sold-out-admin';
+                        badge.textContent = 'SOLD OUT';
+                        titleLine.appendChild(badge);
+
+                        itemInfo.appendChild(titleLine);
+
+                        if (item.description) {
+                            const desc = document.createElement('span');
+                            desc.className = 'item-desc-text';
+                            desc.textContent = item.description;
+                            itemInfo.appendChild(desc);
+                        }
+
+                        row.appendChild(itemInfo);
+
+                        // Price Input Field
+                        const priceWrapper = document.createElement('div');
+                        priceWrapper.className = 'price-field-wrapper';
+
+                        const priceLabel = document.createElement('label');
+                        priceLabel.className = 'field-label';
+                        priceLabel.htmlFor = `price-${catIdx}-${itemIdx}`;
+                        priceLabel.textContent = 'Price';
+                        priceWrapper.appendChild(priceLabel);
+
+                        const priceInput = document.createElement('input');
+                        priceInput.type = 'text';
+                        priceInput.className = 'price-input';
+                        priceInput.id = `price-${catIdx}-${itemIdx}`;
+                        priceInput.value = item.price || '';
+                        priceInput.placeholder = 'e.g. £12.00';
+                        priceInput.addEventListener('input', () => {
+                            setDirty(true);
+                        });
+                        priceWrapper.appendChild(priceInput);
+
+                        row.appendChild(priceWrapper);
+
+                        // Sold Out Checkbox Field
+                        const soldOutWrapper = document.createElement('div');
+                        soldOutWrapper.className = 'soldout-field-wrapper';
+
+                        const soldOutLabel = document.createElement('label');
+                        soldOutLabel.className = 'field-label';
+                        soldOutLabel.textContent = 'Availability';
+                        soldOutWrapper.appendChild(soldOutLabel);
+
+                        const toggleLabel = document.createElement('label');
+                        toggleLabel.className = 'soldout-toggle-label';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'soldout-checkbox';
+                        checkbox.id = `soldout-${catIdx}-${itemIdx}`;
+                        checkbox.checked = Boolean(item.soldOut);
+
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                row.classList.add('is-sold-out');
+                            } else {
+                                row.classList.remove('is-sold-out');
+                            }
+                            updateCounts();
+                            setDirty(true);
+                        });
+
+                        const toggleText = document.createElement('span');
+                        toggleText.textContent = 'Mark Sold Out';
+
+                        toggleLabel.appendChild(checkbox);
+                        toggleLabel.appendChild(toggleText);
+                        soldOutWrapper.appendChild(toggleLabel);
+
+                        row.appendChild(soldOutWrapper);
+                        itemsList.appendChild(row);
+                    });
+                }
+
+                categoryCard.appendChild(itemsList);
+                formContainer.appendChild(categoryCard);
+            });
+
+            // Update stats
+            statCategories.innerHTML = `Categories: <strong>${menuData.categories.length}</strong>`;
+            statItems.innerHTML = `Total Items: <strong>${totalItems}</strong>`;
+            soldoutCount.textContent = totalSoldOut;
+        }
+
+        // Recount sold out items from form
+        function updateCounts() {
+            const allSoldOutCheckboxes = document.querySelectorAll('.soldout-checkbox');
+            let count = 0;
+            allSoldOutCheckboxes.forEach(cb => {
+                if (cb.checked) count++;
+            });
+            soldoutCount.textContent = count;
+        }
+
+        // Live search/filtering
+        filterInput.addEventListener('input', () => {
+            const query = filterInput.value.toLowerCase().trim();
+            const categoryCards = document.querySelectorAll('.admin-category-card');
+
+            categoryCards.forEach(card => {
+                const catMatches = card.dataset.categoryName.includes(query);
+                const rows = card.querySelectorAll('.admin-item-row');
+                let anyVisibleInCat = false;
+
+                rows.forEach(row => {
+                    const itemMatches = row.dataset.itemName.includes(query);
+                    if (!query || catMatches || itemMatches) {
+                        row.style.display = 'grid';
+                        anyVisibleInCat = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                if (!query || catMatches || anyVisibleInCat) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Expand / Collapse
+        btnExpandAll.addEventListener('click', () => {
+            document.querySelectorAll('.items-table').forEach(tbl => tbl.style.display = 'flex');
+        });
+        btnCollapseAll.addEventListener('click', () => {
+            document.querySelectorAll('.items-table').forEach(tbl => tbl.style.display = 'none');
+        });
+
+        // Prompt or retrieve Admin Key
+        async function obtainAdminKey() {
+            let token = sessionStorage.getItem('tacomood_admin_token');
+            if (token && token.trim()) {
+                return token.trim();
+            }
+
+            // Prompt user directly as required
+            token = window.prompt("Enter your Admin Key (GitHub Fine-Grained Personal Access Token):");
+            if (token && token.trim()) {
+                token = token.trim();
+                sessionStorage.setItem('tacomood_admin_token', token);
+                updateKeyUI();
+                return token;
+            }
+            return null;
+        }
+
+        // Reconstruct updated JSON object from form
+        function buildUpdatedJson() {
+            if (!menuData || !menuData.categories) return null;
+
+            // Deep clone original menu structure
+            const updated = JSON.parse(JSON.stringify(menuData));
+
+            updated.categories.forEach((cat, catIdx) => {
+                if (cat.items && Array.isArray(cat.items)) {
+                    cat.items.forEach((item, itemIdx) => {
+                        const priceInput = document.getElementById(`price-${catIdx}-${itemIdx}`);
+                        const soldOutCheckbox = document.getElementById(`soldout-${catIdx}-${itemIdx}`);
+
+                        if (priceInput) {
+                            item.price = priceInput.value.trim();
+                        }
+                        if (soldOutCheckbox) {
+                            item.soldOut = soldOutCheckbox.checked;
+                        }
+                    });
+                }
+            });
+
+            return updated;
+        }
+
+        // Publish Changes using GitHub REST API
+        async function publishChanges() {
+            if (isPublishing) return;
+
+            // 1. Get Admin Key (prompts user if not already provided)
+            const adminKey = await obtainAdminKey();
+            if (!adminKey) {
+                showBanner("Publishing was cancelled: Admin Key is required to save changes to the live site.", "error");
+                return;
+            }
+
+            // 2. Reconstruct JSON
+            const updatedJsonObj = buildUpdatedJson();
+            if (!updatedJsonObj) {
+                showBanner("Error: No menu data available to publish.", "error");
+                return;
+            }
+
+            const jsonString = JSON.stringify(updatedJsonObj, null, 2) + '\n';
+            const base64Content = utf8ToBase64(jsonString);
+
+            // 3. UI Publishing state
+            isPublishing = true;
+            btnPublishHeader.disabled = true;
+            btnPublishMobile.disabled = true;
+            btnPublishHeader.innerHTML = '<span class="spinner"></span> <span>Publishing...</span>';
+            btnPublishMobile.innerHTML = '<span class="spinner"></span> <span>Publishing...</span>';
+            showBanner('Step 1 of 2: Connecting to GitHub and fetching latest repository sha...', 'info');
+
+            try {
+                // Step A: Fetch current file SHA
+                const getUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`;
+                
+                const getResponse = await fetch(getUrl, {
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Bearer ${adminKey}`,
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    }
+                });
+
+                if (getResponse.status === 401) {
+                    sessionStorage.removeItem('tacomood_admin_token');
+                    updateKeyUI();
+                    throw new Error("Invalid Admin Key (401 Unauthorized). Please verify your GitHub Personal Access Token.");
+                }
+
+                if (getResponse.status === 403) {
+                    throw new Error("Access forbidden (403). Ensure your GitHub token has 'Contents: Read and write' permissions for rampant-sloth/tacomood-website.");
+                }
+
+                if (getResponse.status === 404) {
+                    throw new Error(`File '${GITHUB_PATH}' or repository '${GITHUB_OWNER}/${GITHUB_REPO}' was not found on GitHub.`);
+                }
+
+                if (!getResponse.ok) {
+                    throw new Error(`GitHub GET error: ${getResponse.status} ${getResponse.statusText}`);
+                }
+
+                const fileInfo = await getResponse.json();
+                const currentSha = fileInfo.sha;
+
+                // Step B: PUT updated file to main branch
+                showBanner('Step 2 of 2: Committing updated menu.json to GitHub main branch...', 'info');
+
+                const putUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
+                const commitMessage = `Update menu.json via Admin Portal [${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
+
+                const putResponse = await fetch(putUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Bearer ${adminKey}`,
+                        'Content-Type': 'application/json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: base64Content,
+                        sha: currentSha,
+                        branch: GITHUB_BRANCH
+                    })
+                });
+
+                if (!putResponse.ok) {
+                    const errData = await putResponse.json().catch(() => ({}));
+                    throw new Error(`GitHub PUT error: ${errData.message || putResponse.statusText} (${putResponse.status})`);
+                }
+
+                const putResult = await putResponse.json();
+
+                // 4. Success handling
+                menuData = updatedJsonObj; // sync local state
+                setDirty(false);
+
+                const commitUrl = putResult.commit ? putResult.commit.html_url : '#';
+                showBanner(`
+                    <strong>Menu Successfully Published! 🎉</strong><br>
+                    Your updates have been committed to the <code>main</code> branch.
+                    <a href="${commitUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; margin-left: 8px;">View Commit &rarr;</a>
+                `, 'success');
+
+            } catch (err) {
+                console.error('Publish error:', err);
+                showBanner(`<strong>Publishing Failed:</strong> ${err.message}`, 'error');
+            } finally {
+                isPublishing = false;
+                btnPublishHeader.disabled = false;
+                btnPublishMobile.disabled = false;
+                btnPublishHeader.innerHTML = '<span>Publish Changes</span>';
+                btnPublishMobile.innerHTML = '<span>Publish Changes</span>';
+            }
+        }
+
+        // Attach Publish Event Handlers
+        btnPublishHeader.addEventListener('click', publishChanges);
+        btnPublishMobile.addEventListener('click', publishChanges);
+
+        // Key management modal interactions
+        btnAdminKey.addEventListener('click', () => {
+            const currentToken = sessionStorage.getItem('tacomood_admin_token') || '';
+            tokenInput.value = currentToken;
+            adminKeyModal.classList.add('open');
+            tokenInput.focus();
+        });
+
+        btnModalCancel.addEventListener('click', () => {
+            adminKeyModal.classList.remove('open');
+        });
+
+        btnModalSave.addEventListener('click', () => {
+            const val = tokenInput.value.trim();
+            if (val) {
+                sessionStorage.setItem('tacomood_admin_token', val);
+            } else {
+                sessionStorage.removeItem('tacomood_admin_token');
+            }
+            updateKeyUI();
+            adminKeyModal.classList.remove('open');
+            showBanner('Admin Key configuration updated.', 'info');
+        });
+
+        btnModalClear.addEventListener('click', () => {
+            sessionStorage.removeItem('tacomood_admin_token');
+            tokenInput.value = '';
+            updateKeyUI();
+            adminKeyModal.classList.remove('open');
+            showBanner('Admin Key cleared from this browser session.', 'info');
+        });
+
+        // Warn on unsaved changes when closing tab
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Initialize
+        updateKeyUI();
+        loadMenuData();
+    </script>
+</body>
+</html>

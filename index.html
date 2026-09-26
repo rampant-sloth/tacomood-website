@@ -3,113 +3,503 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taco Mood | Belfast</title>
+    <title>Taco Mood | Authentic Mexican Street Food | Belfast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-:root {
-    --bg-dark-green: #0C2018;   /* Deep Forest Green Background */
-    --accent-lime: #7BB33A;     /* Bright Lime Green Headers */
-    --accent-orange: #E85025;   /* Rust Orange Badges & Highlights */
-    --text-cream: #F5E5C9;      /* Off-White / Cream Body Text */
-    --border-green: #1D3C2C;    /* Subtle Container Borders */
-}
+        :root {
+            --bg-dark-green: #0C2018;   /* Main Background */
+            --accent-lime: #7BB33A;     /* Headers and Primary Buttons */
+            --accent-orange: #E85025;   /* 'Sold Out' Badges and Secondary Highlights */
+            --text-cream: #F5E5C9;      /* Body Text */
+            --border-green: #1D3C2C;    /* Dividing Lines and Card Borders */
+            --card-bg: #11281F;         /* Subtle Dark Card Surface */
+            --card-bg-hover: #153428;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--brand-light);
-            color: var(--brand-dark);
-            text-align: center;
+            background-color: var(--bg-dark-green);
+            color: var(--text-cream);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
         header {
-            background-color: var(--brand-dark);
-            color: white;
-            padding: 4rem 1rem;
+            background-color: #081711;
+            border-bottom: 2px solid var(--border-green);
+            padding: 3.5rem 1.5rem 3rem;
+            text-align: center;
+            position: relative;
         }
-        h1 { margin: 0; font-size: 3rem; text-transform: uppercase; }
-        .tagline { font-size: 1.2rem; font-style: italic; margin-top: 10px; color: var(--brand-accent); }
-        .container {
+
+        .header-content {
             max-width: 800px;
-            margin: 2rem auto;
-            padding: 1rem;
+            margin: 0 auto;
         }
+
+        h1 {
+            margin: 0;
+            font-size: 3.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-lime);
+            line-height: 1.1;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            font-style: italic;
+            margin-top: 0.6rem;
+            color: var(--accent-orange);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 1rem;
+            background-color: rgba(29, 60, 44, 0.45);
+            border: 1px solid var(--border-green);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            color: var(--text-cream);
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: var(--accent-lime);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-desc {
+            color: var(--text-cream);
+            opacity: 0.9;
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Order / Action Buttons */
+        .order-section {
+            background-color: rgba(17, 40, 31, 0.6);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
         .btn {
             display: inline-block;
-            padding: 15px 30px;
-            margin: 10px;
+            padding: 14px 28px;
+            margin: 8px;
             text-decoration: none;
             color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: opacity 0.3s;
+            font-weight: 700;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            border: none;
+            cursor: pointer;
         }
-        .btn:hover { opacity: 0.8; }
-        .btn-collection { background-color: var(--brand-accent); font-size: 1.2rem; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+            opacity: 0.95;
+        }
+
+        .btn-collection {
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+            font-size: 1.25rem;
+            padding: 16px 36px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(123, 179, 58, 0.35);
+        }
+
+        .btn-collection:hover {
+            background-color: #8cc443;
+            box-shadow: 0 6px 20px rgba(123, 179, 58, 0.5);
+        }
+
+        .partner-group {
+            margin-top: 1.8rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-green);
+        }
+
+        .partner-group h3 {
+            color: var(--accent-lime);
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .btn-justeat { background-color: #ff8000; }
-        .btn-ubereats { background-color: #06C167; }
+        .btn-ubereats { background-color: #06C167; color: #000; }
         .btn-deliveroo { background-color: #00CCBC; }
+
+        /* Menu Rendering Styles */
+        .menu-wrapper {
+            margin-top: 2rem;
+        }
+
+        .menu-category-section {
+            margin-bottom: 3rem;
+        }
+
+        .category-header {
+            margin-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border-green);
+            padding-bottom: 0.6rem;
+            text-align: left;
+        }
+
+        .category-title {
+            color: var(--accent-lime);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+        }
+
+        .category-note {
+            color: var(--text-cream);
+            opacity: 0.9;
+            font-size: 0.95rem;
+            font-style: italic;
+            margin: 0.4rem 0 0;
+            line-height: 1.45;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .menu-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .menu-card:hover {
+            border-color: rgba(123, 179, 58, 0.6);
+            background-color: var(--card-bg-hover);
+        }
+
+        .menu-card.is-sold-out {
+            border-color: rgba(232, 80, 37, 0.4);
+            background-color: rgba(20, 35, 27, 0.85);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .title-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.35rem;
+        }
+
+        .item-name {
+            color: var(--text-cream);
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .item-price {
+            color: var(--accent-lime);
+            font-weight: 800;
+            font-size: 1.15rem;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+
+        .badge-sold-out {
+            display: inline-block;
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            box-shadow: 0 2px 6px rgba(232, 80, 37, 0.4);
+            white-space: nowrap;
+        }
+
+        .item-desc {
+            color: var(--text-cream);
+            opacity: 0.85;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            margin: 0.35rem 0 0;
+        }
+
+        /* Loading & Error Notice */
+        .loading-notice, .error-notice {
+            text-align: center;
+            padding: 2.5rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            color: var(--text-cream);
+            font-size: 1.1rem;
+        }
+
+        .error-notice {
+            color: #ff9980;
+            border-color: var(--accent-orange);
+        }
+
+        /* Footer */
         footer {
-            margin-top: 3rem;
-            padding: 2rem;
-            background-color: #ddd;
-            font-size: 0.9rem;
+            margin-top: auto;
+            padding: 2.5rem 1.5rem;
+            background-color: #081711;
+            border-top: 1px solid var(--border-green);
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        footer p {
+            margin: 0.4rem 0;
+            color: var(--text-cream);
+            opacity: 0.85;
+        }
+
+        .footer-nav {
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(29, 60, 44, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .footer-nav a {
+            color: var(--accent-lime);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-nav a:hover {
+            color: var(--accent-orange);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 2.4rem; }
+            h2 { font-size: 1.8rem; }
+            .btn-collection { width: 100%; }
+            .btn { display: block; margin: 8px 0; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Taco Mood</h1>
-        <div class="tagline">Good Food. Good Mood.</div>
-        <p>Stranmillis Road, Belfast</p>
+        <div class="header-content">
+            <h1>Taco Mood</h1>
+            <div class="tagline">Good Food. Good Mood.</div>
+            <div class="location-badge">📍 Stranmillis Road, Belfast</div>
+        </div>
     </header>
 
-    <div class="container">
-        <h2>Order Now</h2>
-        <p>Click below to pre-order for collection at our Stranmillis store, or choose a delivery partner.</p>
-        
-        <!-- Collection Link (Direct / No Commission) -->
-        <div>
-            <a href="#" class="btn btn-collection">Order for Collection</a>
-        </div>
-
-        <div class="container">
-            <h2>Menu Highlights</h2>
-            <div id="menu-container" style="display: grid; gap: 1rem; text-align: left;">
-                <!-- Menu items will load here automatically -->
+    <main class="container">
+        <!-- Order Callout -->
+        <section class="order-section">
+            <h2>Order Now</h2>
+            <p class="section-desc">Click below to pre-order for collection at our Stranmillis store, or choose your favourite delivery partner.</p>
+            
+            <div style="margin-top: 1.5rem;">
+                <a href="#" class="btn btn-collection">Order for Collection</a>
             </div>
-        </div>
 
-        <!-- Third Party Aggregators -->
-        <div style="margin-top: 2rem;">
-            <h3>Delivery Partners</h3>
-            <a href="#" class="btn btn-justeat">Just-Eat</a>
-            <a href="#" class="btn btn-ubereats">Uber Eats</a>
-            <a href="#" class="btn btn-deliveroo">Deliveroo</a>
-        </div>
-    </div>
+            <!-- Third Party Aggregators -->
+            <div class="partner-group">
+                <h3>Delivery Partners</h3>
+                <a href="#" class="btn btn-justeat">Just-Eat</a>
+                <a href="#" class="btn btn-ubereats">Uber Eats</a>
+                <a href="#" class="btn btn-deliveroo">Deliveroo</a>
+            </div>
+        </section>
+
+        <!-- Menu Section -->
+        <section class="menu-wrapper">
+            <div class="section-header">
+                <h2>Our Street Food Menu</h2>
+                <p class="section-desc">Freshly prepared, slow-cooked authentic Mexican flavours.</p>
+            </div>
+            
+            <div id="menu-container">
+                <div class="loading-notice">Loading today's fresh menu...</div>
+            </div>
+        </section>
+    </main>
 
     <footer>
+        <p><strong>Taco Mood</strong> — Belfast</p>
         <p>📍 Stranmillis Road, Belfast, BT9</p>
-        <p>Follow us on our social channels for updates and specials.</p>
+        <p>Follow us on our social channels for daily specials, catering & updates.</p>
+        <div class="footer-nav">
+            <a href="admin.html">Owner Portal &amp; Menu Editor &rarr;</a>
+        </div>
     </footer>
 
     <script>
-    fetch('menu.json')
-        .then(response => response.json())
-        .then(menu => {
-            const container = document.getElementById('menu-container');
-            menu.forEach(item => {
-                const status = item.soldOut ? '<span style="color: red; font-weight: bold;">(SOLD OUT)</span>' : '';
-                const card = `
-                    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 8px; background: white;">
-                        <h3 style="margin: 0 0 0.5rem 0;">${item.name} <span style="float: right;">${item.price}</span></h3>
-                        <p style="margin: 0; color: #555;">${item.description} ${status}</p>
-                    </div>
-                `;
-                container.innerHTML += card;
+        fetch('menu.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(menu => {
+                const container = document.getElementById('menu-container');
+                container.innerHTML = '';
+
+                if (!menu || !menu.categories || !Array.isArray(menu.categories)) {
+                    container.innerHTML = '<div class="error-notice">Unable to load menu categories. Please check back later.</div>';
+                    return;
+                }
+
+                menu.categories.forEach(category => {
+                    // Category Section Wrapper
+                    const section = document.createElement('section');
+                    section.className = 'menu-category-section';
+
+                    // Category Header
+                    const categoryHeader = document.createElement('div');
+                    categoryHeader.className = 'category-header';
+
+                    const title = document.createElement('h3');
+                    title.className = 'category-title';
+                    title.textContent = category.category;
+                    categoryHeader.appendChild(title);
+
+                    // Category Note in italics (if it exists)
+                    if (category.note) {
+                        const note = document.createElement('p');
+                        note.className = 'category-note';
+                        const em = document.createElement('em');
+                        em.textContent = category.note;
+                        note.appendChild(em);
+                        categoryHeader.appendChild(note);
+                    }
+
+                    section.appendChild(categoryHeader);
+
+                    // Items Grid
+                    const grid = document.createElement('div');
+                    grid.className = 'menu-grid';
+
+                    if (category.items && Array.isArray(category.items)) {
+                        category.items.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'menu-card' + (item.soldOut ? ' is-sold-out' : '');
+
+                            const cardHeader = document.createElement('div');
+                            cardHeader.className = 'card-header';
+
+                            const titleWrapper = document.createElement('div');
+                            titleWrapper.className = 'title-wrapper';
+
+                            const itemName = document.createElement('h4');
+                            itemName.className = 'item-name';
+                            itemName.textContent = item.name;
+                            titleWrapper.appendChild(itemName);
+
+                            // Orange SOLD OUT badge if item is sold out
+                            if (item.soldOut) {
+                                const badge = document.createElement('span');
+                                badge.className = 'badge-sold-out';
+                                badge.textContent = 'SOLD OUT';
+                                titleWrapper.appendChild(badge);
+                            }
+
+                            const itemPrice = document.createElement('span');
+                            itemPrice.className = 'item-price';
+                            itemPrice.textContent = item.price || '';
+
+                            cardHeader.appendChild(titleWrapper);
+                            cardHeader.appendChild(itemPrice);
+                            card.appendChild(cardHeader);
+
+                            // Description if it exists
+                            if (item.description) {
+                                const desc = document.createElement('p');
+                                desc.className = 'item-desc';
+                                desc.textContent = item.description;
+                                card.appendChild(desc);
+                            }
+
+                            grid.appendChild(card);
+                        });
+                    }
+
+                    section.appendChild(grid);
+                    container.appendChild(section);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading menu:', error);
+                const container = document.getElementById('menu-container');
+                container.innerHTML = '<div class="error-notice">Sorry, our menu is temporarily unavailable. Please visit us in store!</div>';
             });
-        });
-</script>
+    </script>
 
 </body>
 </html>
