@@ -744,6 +744,26 @@
             gap: 8px;
         }
 
+        .address-badge:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+            transform: translateY(-1px);
+        }
+
+        .footer-address-link {
+            color: var(--text-cream);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .footer-address-link:hover {
+            color: var(--accent-lime);
+            text-decoration: underline;
+        }
+
         .map-title {
             color: var(--accent-lime);
             font-size: 0.95rem;
@@ -804,7 +824,9 @@
 
             <!-- Real Store Details: Address, Hours, Social, Basket -->
             <div class="header-badges">
-                <span class="info-badge">📍 137 Stranmillis Rd, Belfast BT9 5AJ</span>
+                <a href="https://maps.google.com/?q=137+Stranmillis+Rd,+Belfast+BT9+5AJ" target="_blank" rel="noopener noreferrer" class="info-badge address-badge" title="Open Taco Mood location in Google Maps (opens in new tab)">
+                    <span>📍 137 Stranmillis Rd, Belfast BT9 5AJ</span>
+                </a>
                 <span class="info-badge">🕒 Fri – Sun: 12:00 PM – 9:00 PM</span>
                 <a href="https://www.instagram.com/tacoo.mood/" target="_blank" rel="noopener noreferrer" class="info-badge instagram-badge" title="Follow Taco Mood on Instagram">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -917,7 +939,11 @@
                 <div class="footer-info">
                     <h3>Taco Mood</h3>
                     <p>Authentic Mexican Street Food &amp; Birria</p>
-                    <p class="footer-address">📍 137 Stranmillis Rd, Belfast BT9 5AJ</p>
+                    <p class="footer-address">
+                        <a href="https://maps.google.com/?q=137+Stranmillis+Rd,+Belfast+BT9+5AJ" target="_blank" rel="noopener noreferrer" class="footer-address-link" title="Open Taco Mood in Google Maps (opens in new tab)">
+                            📍 137 Stranmillis Rd, Belfast BT9 5AJ ↗
+                        </a>
+                    </p>
                     
                     <div class="footer-hours-box">
                         <p><strong>Opening Hours:</strong></p>
