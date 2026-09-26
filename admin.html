@@ -35,6 +35,172 @@
             flex-direction: column;
         }
 
+        /* -----------------------------------------------------------------
+           Password Lockscreen / Authentication Gate
+           ----------------------------------------------------------------- */
+        #auth-lockscreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background-color: var(--bg-dark-green);
+        }
+
+        .auth-card {
+            background-color: var(--card-surface);
+            border: 1.5px solid var(--border-green);
+            border-radius: 14px;
+            max-width: 460px;
+            width: 100%;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .auth-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(123, 179, 58, 0.15);
+            border: 1px solid var(--accent-lime);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-title {
+            color: var(--accent-lime);
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .auth-subtitle {
+            color: var(--accent-orange);
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0.35rem 0 1rem;
+        }
+
+        .auth-instruction {
+            color: var(--text-cream);
+            opacity: 0.85;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            margin: 0 0 1.75rem;
+        }
+
+        .auth-input-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .auth-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-cream);
+        }
+
+        .auth-input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 12px 42px 12px 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-lime);
+            box-shadow: 0 0 0 3px rgba(123, 179, 58, 0.2);
+        }
+
+        .pwd-toggle-btn {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            background: transparent;
+            border: none;
+            color: var(--text-cream);
+            opacity: 0.7;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+        }
+
+        .pwd-toggle-btn:hover {
+            opacity: 1;
+        }
+
+        .auth-error {
+            background-color: rgba(232, 80, 37, 0.15);
+            border: 1px solid var(--accent-orange);
+            color: #ffb5a0;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .btn-unlock {
+            width: 100%;
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+            border: none;
+            padding: 13px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(123, 179, 58, 0.35);
+            font-family: inherit;
+        }
+
+        .btn-unlock:hover:not(:disabled) {
+            background-color: #8cc443;
+            transform: translateY(-1px);
+        }
+
+        .btn-unlock:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* -----------------------------------------------------------------
+           Main Portal Content (Hidden until unlocked)
+           ----------------------------------------------------------------- */
+        #portal-wrapper {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
         /* Top Navigation Header */
         header {
             background-color: #081711;
@@ -106,10 +272,10 @@
             color: var(--accent-lime);
         }
 
-        .btn-key-manage {
-            color: var(--text-cream);
-            background: transparent;
-            border: 1px solid var(--border-green);
+        .btn-lock-portal {
+            color: #ffb5a0;
+            background: rgba(232, 80, 37, 0.1);
+            border: 1px solid rgba(232, 80, 37, 0.4);
             padding: 8px 14px;
             border-radius: 6px;
             font-size: 0.88rem;
@@ -119,10 +285,13 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            font-family: inherit;
         }
 
-        .btn-key-manage:hover {
-            border-color: var(--text-cream);
+        .btn-lock-portal:hover {
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            border-color: var(--accent-orange);
         }
 
         .btn-publish {
@@ -141,6 +310,7 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 4px 12px rgba(123, 179, 58, 0.35);
+            font-family: inherit;
         }
 
         .btn-publish:hover:not(:disabled) {
@@ -321,7 +491,7 @@
             color: var(--accent-lime);
         }
 
-        /* Filter Controls */
+        /* Search & Filter Controls */
         .controls-row {
             display: flex;
             align-items: center;
@@ -335,7 +505,7 @@
             position: relative;
             flex: 1;
             min-width: 260px;
-            max-width: 450px;
+            max-width: 480px;
         }
 
         .search-box input {
@@ -348,6 +518,7 @@
             font-size: 0.95rem;
             outline: none;
             transition: border-color 0.2s;
+            font-family: inherit;
         }
 
         .search-box input:focus {
@@ -378,6 +549,7 @@
             font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
+            font-family: inherit;
         }
 
         .btn-small:hover {
@@ -424,80 +596,51 @@
             width: 100%;
         }
 
-        /* Item Rows / List */
-        .items-table {
+        /* Items Container */
+        .items-list-container {
+            padding: 1.25rem;
             display: flex;
             flex-direction: column;
+            gap: 1.25rem;
         }
 
-        .admin-item-row {
-            display: grid;
-            grid-template-columns: 1fr 180px 180px;
-            align-items: center;
-            padding: 1.15rem 1.5rem;
-            border-bottom: 1px solid var(--border-green);
-            gap: 1.25rem;
-            transition: background-color 0.2s ease, border-left-color 0.2s ease;
+        /* Individual Food Item Editor Card */
+        .admin-item-card {
+            background-color: #0c2018;
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 1.15rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transition: all 0.2s ease;
             border-left: 4px solid transparent;
         }
 
-        .admin-item-row:last-child {
-            border-bottom: none;
+        .admin-item-card:hover {
+            background-color: #0f271e;
+            border-color: rgba(123, 179, 58, 0.4);
         }
 
-        .admin-item-row:hover {
-            background-color: var(--card-surface-hover);
-        }
-
-        .admin-item-row.is-sold-out {
+        .admin-item-card.is-sold-out {
             border-left-color: var(--accent-orange);
             background-color: rgba(232, 80, 37, 0.04);
         }
 
-        .item-info {
+        .item-top-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.2fr;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .item-bottom-row {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
 
-        .item-title-line {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .item-name-text {
-            font-weight: 700;
-            color: var(--text-cream);
-            font-size: 1.05rem;
-        }
-
-        .badge-sold-out-admin {
-            background-color: var(--accent-orange);
-            color: #ffffff;
-            font-size: 0.68rem;
-            font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: none;
-        }
-
-        .admin-item-row.is-sold-out .badge-sold-out-admin {
-            display: inline-block;
-        }
-
-        .item-desc-text {
-            font-size: 0.88rem;
-            color: var(--text-cream);
-            opacity: 0.75;
-            line-height: 1.35;
-        }
-
-        /* Price Input Field */
-        .price-field-wrapper {
+        .field-group {
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -508,8 +651,28 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-cream);
-            opacity: 0.7;
+            opacity: 0.8;
             font-weight: 600;
+        }
+
+        /* Input Controls */
+        .item-name-input {
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--text-cream);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .item-name-input:focus {
+            border-color: var(--accent-lime);
+            color: #ffffff;
         }
 
         .price-input {
@@ -523,21 +686,36 @@
             width: 100%;
             outline: none;
             transition: all 0.2s ease;
+            font-family: inherit;
         }
 
         .price-input:focus {
             border-color: var(--accent-lime);
-            box-shadow: 0 0 0 2px rgba(123, 179, 58, 0.2);
+            color: #ffffff;
+        }
+
+        .item-desc-input {
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--text-cream);
+            font-size: 0.92rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 48px;
+            line-height: 1.4;
+        }
+
+        .item-desc-input:focus {
+            border-color: var(--accent-lime);
             color: #ffffff;
         }
 
         /* Sold Out Checkbox / Toggle */
-        .soldout-field-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
         .soldout-toggle-label {
             display: flex;
             align-items: center;
@@ -545,19 +723,20 @@
             cursor: pointer;
             user-select: none;
             font-weight: 600;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             padding: 8px 10px;
             border-radius: 6px;
             border: 1px solid var(--border-green);
             background: var(--input-bg);
             transition: all 0.2s;
+            height: 42px;
         }
 
         .soldout-toggle-label:hover {
             border-color: rgba(232, 80, 37, 0.4);
         }
 
-        .admin-item-row.is-sold-out .soldout-toggle-label {
+        .admin-item-card.is-sold-out .soldout-toggle-label {
             border-color: var(--accent-orange);
             background: rgba(232, 80, 37, 0.12);
             color: #ff9980;
@@ -593,6 +772,18 @@
             line-height: 1;
         }
 
+        .badge-sold-out-admin {
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
         /* Loading Spinner */
         .spinner {
             width: 16px;
@@ -608,7 +799,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Bottom Floating Bar on Mobile */
+        /* Mobile Floating Bottom Bar */
         .mobile-floating-bar {
             display: none;
             position: fixed;
@@ -624,93 +815,11 @@
             justify-content: space-between;
         }
 
-        /* Modal Dialog for Admin Key & Settings */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
-        .modal-card {
-            background-color: #10261D;
-            border: 1.5px solid var(--border-green);
-            border-radius: 12px;
-            max-width: 500px;
-            width: 100%;
-            padding: 1.75rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        }
-
-        .modal-title {
-            color: var(--accent-lime);
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 0 0 0.5rem;
-        }
-
-        .modal-desc {
-            font-size: 0.9rem;
-            color: var(--text-cream);
-            opacity: 0.85;
-            margin-bottom: 1.25rem;
-            line-height: 1.45;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            color: var(--text-cream);
-        }
-
-        .form-group input {
-            width: 100%;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-green);
-            color: var(--text-cream);
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: var(--accent-lime);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-        }
-
-        /* Responsive Layout */
         @media (max-width: 768px) {
             header { padding: 1rem; }
-            .admin-item-row {
+            .item-top-row {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 0.75rem;
             }
             .mobile-floating-bar {
                 display: flex;
@@ -726,110 +835,127 @@
 </head>
 <body>
 
-    <!-- Top Navigation Header -->
-    <header>
-        <div class="header-inner">
-            <div class="brand-block">
-                <h1 class="brand-title">Taco Mood</h1>
-                <span class="portal-badge">Admin Menu Portal</span>
-            </div>
-
-            <div class="header-actions">
-                <a href="index.html" class="btn-view-site" target="_blank" rel="noopener">👁️ View Public Site</a>
-                <button type="button" id="btn-admin-key" class="btn-key-manage" title="Manage your Admin Key">
-                    🔑 <span id="key-label">Admin Key</span>
-                </button>
-                <button type="button" id="btn-publish-header" class="btn-publish">
-                    <span>Publish Changes</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Status & Stats Bar -->
-    <div class="status-bar">
-        <div class="status-bar-inner">
-            <div class="stats-group">
-                <span class="stat-chip" id="stat-categories">Categories: <strong>0</strong></span>
-                <span class="stat-chip" id="stat-items">Total Items: <strong>0</strong></span>
-                <span class="stat-chip sold-out-chip" id="stat-soldout">Sold Out: <strong id="soldout-count">0</strong></span>
-            </div>
-            <div class="save-indicator">
-                <span class="indicator-dot" id="indicator-dot"></span>
-                <span id="save-status-text">All changes published</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content Area -->
-    <main class="container">
-        <!-- Notification Banners -->
-        <div id="banner-notification" class="banner">
-            <span id="banner-icon">ℹ️</span>
-            <div id="banner-message" style="flex: 1;">Notification message here.</div>
-            <button type="button" class="banner-close" onclick="closeBanner()">&times;</button>
-        </div>
-
-        <!-- Non-technical Owner Guide -->
-        <details class="help-accordion">
-            <summary>📖 How to update the menu &amp; publish live</summary>
-            <div class="help-content">
-                <p>Welcome to the <strong>Taco Mood</strong> menu editor! Here is how to keep your store up to date:</p>
-                <ol>
-                    <li><strong>Change Prices:</strong> Click directly into any price text box (e.g. <code>£13.00</code>) and enter the new price.</li>
-                    <li><strong>Sold Out:</strong> Check or uncheck <strong>"Mark as Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
-                    <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. You will be prompted for your <strong>Admin Key</strong> (GitHub Fine-Grained Personal Access Token with <code>Contents: Read and write</code> permission). The changes are committed directly to your website in seconds!</li>
-                </ol>
-            </div>
-        </details>
-
-        <!-- Search & Quick Filters -->
-        <div class="controls-row">
-            <div class="search-box">
-                <input type="text" id="filter-input" placeholder="Search dish by name or category...">
-            </div>
-            <div class="quick-actions">
-                <button type="button" class="btn-small" id="btn-expand-all">Expand All</button>
-                <button type="button" class="btn-small" id="btn-collapse-all">Collapse All</button>
-            </div>
-        </div>
-
-        <!-- Menu Edit Form Container -->
-        <div id="form-container">
-            <div style="text-align: center; padding: 3rem; color: var(--text-cream); opacity: 0.8;">
-                <div class="spinner" style="margin-bottom: 1rem; width: 24px; height: 24px;"></div>
-                <p>Loading Taco Mood menu data...</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- Mobile Floating Bottom Bar -->
-    <div class="mobile-floating-bar">
-        <span style="font-size: 0.85rem; font-weight: 600;" id="mobile-status-text">Ready to publish</span>
-        <button type="button" id="btn-publish-mobile" class="btn-publish" style="padding: 8px 16px; font-size: 0.85rem;">
-            Publish Changes
-        </button>
-    </div>
-
-    <!-- Admin Key / Settings Modal -->
-    <div class="modal-overlay" id="admin-key-modal">
-        <div class="modal-card">
-            <h3 class="modal-title">Admin Key Configuration</h3>
-            <p class="modal-desc">
-                Your Admin Key is a GitHub Personal Access Token that authorizes this page to update <code>menu.json</code> on your repository. It stays securely in your browser's current session.
+    <!-- -------------------------------------------------------------
+         1. Password / Admin Key Lockscreen Gate
+         Protected: The portal is completely inaccessible without the key
+         ------------------------------------------------------------- -->
+    <div id="auth-lockscreen">
+        <div class="auth-card">
+            <div class="auth-badge-icon">🔒</div>
+            <h2 class="auth-title">Taco Mood</h2>
+            <div class="auth-subtitle">Owner Portal Locked</div>
+            <p class="auth-instruction">
+                This portal is password-protected. Please enter your <strong>Admin Key</strong> (GitHub Personal Access Token) to unlock the menu editor.
             </p>
-            <div class="form-group">
-                <label for="token-input">Admin Key (GitHub Token)</label>
-                <input type="password" id="token-input" placeholder="github_pat_... or ghp_..." autocomplete="off">
+
+            <form id="auth-form" onsubmit="event.preventDefault(); handleUnlock();">
+                <div class="auth-input-wrapper">
+                    <label for="auth-key-input" class="auth-label">Admin Key / Password</label>
+                    <input type="password" id="auth-key-input" class="auth-input" placeholder="github_pat_... or ghp_..." required autocomplete="current-password">
+                    <button type="button" id="btn-toggle-auth-pwd" class="pwd-toggle-btn" title="Show or hide password">👁️</button>
+                    <div id="auth-error-msg" class="auth-error" style="display: none;"></div>
+                </div>
+
+                <button type="submit" id="btn-unlock-submit" class="btn-unlock">
+                    Unlock Admin Portal &rarr;
+                </button>
+            </form>
+
+            <div style="margin-top: 1.5rem; font-size: 0.88rem;">
+                <a href="index.html" style="color: var(--text-cream); opacity: 0.75; text-decoration: none;">&larr; Back to Public Website</a>
             </div>
-            <div style="margin-bottom: 1rem; font-size: 0.82rem; color: var(--text-cream); opacity: 0.8;">
-                Repository: <code>rampant-sloth/tacomood-website</code> (main branch)
+        </div>
+    </div>
+
+    <!-- -------------------------------------------------------------
+         2. Main Admin Portal Content (Rendered only when authenticated)
+         ------------------------------------------------------------- -->
+    <div id="portal-wrapper">
+        <!-- Top Navigation Header -->
+        <header>
+            <div class="header-inner">
+                <div class="brand-block">
+                    <h1 class="brand-title">Taco Mood</h1>
+                    <span class="portal-badge">Admin Menu Portal</span>
+                </div>
+
+                <div class="header-actions">
+                    <a href="index.html" class="btn-view-site" target="_blank" rel="noopener">👁️ View Public Site</a>
+                    <button type="button" id="btn-lock-portal" class="btn-lock-portal" title="Lock the Admin Portal and logout">
+                        🔒 Lock Portal
+                    </button>
+                    <button type="button" id="btn-publish-header" class="btn-publish">
+                        <span>Publish Changes</span>
+                    </button>
+                </div>
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-small" id="btn-modal-clear">Clear Key</button>
-                <button type="button" class="btn-small" id="btn-modal-cancel">Cancel</button>
-                <button type="button" class="btn-publish" id="btn-modal-save" style="padding: 8px 18px; font-size: 0.85rem;">Save Key</button>
+        </header>
+
+        <!-- Status & Stats Bar -->
+        <div class="status-bar">
+            <div class="status-bar-inner">
+                <div class="stats-group">
+                    <span class="stat-chip" id="stat-categories">Categories: <strong>0</strong></span>
+                    <span class="stat-chip" id="stat-items">Total Items: <strong>0</strong></span>
+                    <span class="stat-chip sold-out-chip" id="stat-soldout">Sold Out: <strong id="soldout-count">0</strong></span>
+                </div>
+                <div class="save-indicator">
+                    <span class="indicator-dot" id="indicator-dot"></span>
+                    <span id="save-status-text">All changes published</span>
+                </div>
             </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="container">
+            <!-- Notification Banners -->
+            <div id="banner-notification" class="banner">
+                <span id="banner-icon">ℹ️</span>
+                <div id="banner-message" style="flex: 1;">Notification message here.</div>
+                <button type="button" class="banner-close" onclick="closeBanner()">&times;</button>
+            </div>
+
+            <!-- Non-technical Owner Guide -->
+            <details class="help-accordion">
+                <summary>📖 How to update dish names, descriptions, prices &amp; publish live</summary>
+                <div class="help-content">
+                    <p>Welcome to the <strong>Taco Mood</strong> menu editor! Here is how to keep your store up to date:</p>
+                    <ol>
+                        <li><strong>Edit Dish Names:</strong> Click into the <strong>Dish Name</strong> field to rename any item.</li>
+                        <li><strong>Edit Descriptions:</strong> Update ingredients, notes, dips, or preparation details in the <strong>Description</strong> field. Leave empty if no description is needed.</li>
+                        <li><strong>Change Prices:</strong> Click directly into the <strong>Price</strong> field (e.g. <code>£13.00</code>) and enter the new price.</li>
+                        <li><strong>Mark Sold Out:</strong> Check or uncheck <strong>"Mark Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
+                        <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. The updates are committed directly to your website repository in seconds!</li>
+                    </ol>
+                </div>
+            </details>
+
+            <!-- Search & Quick Filters -->
+            <div class="controls-row">
+                <div class="search-box">
+                    <input type="text" id="filter-input" placeholder="Search dish by name, description, or category...">
+                </div>
+                <div class="quick-actions">
+                    <button type="button" class="btn-small" id="btn-expand-all">Expand All</button>
+                    <button type="button" class="btn-small" id="btn-collapse-all">Collapse All</button>
+                </div>
+            </div>
+
+            <!-- Menu Edit Form Container -->
+            <div id="form-container">
+                <div style="text-align: center; padding: 3rem; color: var(--text-cream); opacity: 0.8;">
+                    <div class="spinner" style="margin-bottom: 1rem; width: 24px; height: 24px;"></div>
+                    <p>Loading Taco Mood menu data...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Mobile Floating Bottom Bar -->
+        <div class="mobile-floating-bar">
+            <span style="font-size: 0.85rem; font-weight: 600;" id="mobile-status-text">Ready to publish</span>
+            <button type="button" id="btn-publish-mobile" class="btn-publish" style="padding: 8px 16px; font-size: 0.85rem;">
+                Publish Changes
+            </button>
         </div>
     </div>
 
@@ -846,6 +972,14 @@
         let isPublishing = false;
 
         // Elements
+        const authLockscreen = document.getElementById('auth-lockscreen');
+        const portalWrapper = document.getElementById('portal-wrapper');
+        const authKeyInput = document.getElementById('auth-key-input');
+        const authErrorMsg = document.getElementById('auth-error-msg');
+        const btnUnlockSubmit = document.getElementById('btn-unlock-submit');
+        const btnToggleAuthPwd = document.getElementById('btn-toggle-auth-pwd');
+        const btnLockPortal = document.getElementById('btn-lock-portal');
+
         const formContainer = document.getElementById('form-container');
         const filterInput = document.getElementById('filter-input');
         const statCategories = document.getElementById('stat-categories');
@@ -856,13 +990,6 @@
         const mobileStatusText = document.getElementById('mobile-status-text');
         const btnPublishHeader = document.getElementById('btn-publish-header');
         const btnPublishMobile = document.getElementById('btn-publish-mobile');
-        const btnAdminKey = document.getElementById('btn-admin-key');
-        const keyLabel = document.getElementById('key-label');
-        const adminKeyModal = document.getElementById('admin-key-modal');
-        const tokenInput = document.getElementById('token-input');
-        const btnModalCancel = document.getElementById('btn-modal-cancel');
-        const btnModalSave = document.getElementById('btn-modal-save');
-        const btnModalClear = document.getElementById('btn-modal-clear');
         const btnExpandAll = document.getElementById('btn-expand-all');
         const btnCollapseAll = document.getElementById('btn-collapse-all');
 
@@ -900,19 +1027,6 @@
             }
         }
 
-        function updateKeyUI() {
-            const token = sessionStorage.getItem('tacomood_admin_token');
-            if (token) {
-                keyLabel.textContent = 'Key: Configured ✓';
-                btnAdminKey.style.borderColor = 'var(--accent-lime)';
-                btnAdminKey.style.color = 'var(--accent-lime)';
-            } else {
-                keyLabel.textContent = 'Admin Key';
-                btnAdminKey.style.borderColor = 'var(--border-green)';
-                btnAdminKey.style.color = 'var(--text-cream)';
-            }
-        }
-
         // UTF-8 safe Base64 encoder for browser
         function utf8ToBase64(str) {
             const bytes = new TextEncoder().encode(str);
@@ -923,10 +1037,114 @@
             return btoa(binString);
         }
 
-        // Fetch initial menu.json
+        // Toggle password visibility
+        btnToggleAuthPwd.addEventListener('click', () => {
+            if (authKeyInput.type === 'password') {
+                authKeyInput.type = 'text';
+                btnToggleAuthPwd.textContent = '🔒';
+            } else {
+                authKeyInput.type = 'password';
+                btnToggleAuthPwd.textContent = '👁️';
+            }
+        });
+
+        // -------------------------------------------------------------
+        // Authentication & Lock Screen Verification Logic
+        // -------------------------------------------------------------
+        async function handleUnlock() {
+            const key = authKeyInput.value.trim();
+
+            if (!key) {
+                showAuthError("Please enter your Admin Key / Password.");
+                return;
+            }
+
+            btnUnlockSubmit.disabled = true;
+            btnUnlockSubmit.innerHTML = '<span class="spinner"></span> <span>Verifying with GitHub...</span>';
+            authErrorMsg.style.display = 'none';
+
+            try {
+                // Test key authenticity directly with GitHub REST API
+                const testUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`;
+                const res = await fetch(testUrl, {
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Bearer ${key}`,
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    }
+                });
+
+                if (res.status === 401) {
+                    throw new Error("Access Denied: Invalid Admin Key. Please check your token.");
+                }
+                if (res.status === 403) {
+                    throw new Error("Access Forbidden: Your token lacks 'Contents: Read and write' permissions for this repository.");
+                }
+                if (res.status === 404) {
+                    throw new Error(`Repository '${GITHUB_OWNER}/${GITHUB_REPO}' or '${GITHUB_PATH}' was not found.`);
+                }
+                if (!res.ok) {
+                    throw new Error(`Authentication error: HTTP ${res.status} ${res.statusText}`);
+                }
+
+                // Authentication passed!
+                sessionStorage.setItem('tacomood_admin_token', key);
+
+                // Reveal portal, hide lock screen
+                authLockscreen.style.display = 'none';
+                portalWrapper.style.display = 'flex';
+
+                // Load menu data and render
+                loadMenuData();
+                showBanner("Welcome! Admin Portal unlocked. You can now edit dish names, descriptions, prices, and availability.", "success");
+
+            } catch (err) {
+                showAuthError(err.message);
+            } finally {
+                btnUnlockSubmit.disabled = false;
+                btnUnlockSubmit.innerHTML = 'Unlock Admin Portal &rarr;';
+            }
+        }
+
+        function showAuthError(msg) {
+            authErrorMsg.textContent = msg;
+            authErrorMsg.style.display = 'block';
+        }
+
+        // Lock / Logout portal
+        btnLockPortal.addEventListener('click', () => {
+            if (isDirty) {
+                if (!confirm("You have unsaved changes. Locking the portal will discard them. Are you sure you want to lock?")) {
+                    return;
+                }
+            }
+            sessionStorage.removeItem('tacomood_admin_token');
+            authKeyInput.value = '';
+            authErrorMsg.style.display = 'none';
+            portalWrapper.style.display = 'none';
+            authLockscreen.style.display = 'flex';
+            menuData = null;
+            setDirty(false);
+            formContainer.innerHTML = '';
+        });
+
+        // Check authentication on initial page load
+        function initAuth() {
+            const savedToken = sessionStorage.getItem('tacomood_admin_token');
+            if (savedToken && savedToken.trim()) {
+                authKeyInput.value = savedToken.trim();
+                handleUnlock();
+            } else {
+                authLockscreen.style.display = 'flex';
+                portalWrapper.style.display = 'none';
+            }
+        }
+
+        // -------------------------------------------------------------
+        // Fetch & Render Menu Data with Name and Description Editing
+        // -------------------------------------------------------------
         async function loadMenuData() {
             try {
-                // Add timestamp to prevent HTTP caching
                 const response = await fetch(`menu.json?_t=${Date.now()}`);
                 if (!response.ok) {
                     throw new Error(`Failed to load menu.json: HTTP ${response.status}`);
@@ -985,79 +1203,73 @@
 
                 categoryCard.appendChild(catHeader);
 
-                // Items Table
+                // Items List
                 const itemsList = document.createElement('div');
-                itemsList.className = 'items-table';
+                itemsList.className = 'items-list-container';
 
                 if (cat.items && Array.isArray(cat.items)) {
                     cat.items.forEach((item, itemIdx) => {
                         totalItems++;
                         if (item.soldOut) totalSoldOut++;
 
-                        const row = document.createElement('div');
-                        row.className = 'admin-item-row' + (item.soldOut ? ' is-sold-out' : '');
-                        row.id = `row-${catIdx}-${itemIdx}`;
-                        row.dataset.itemName = item.name.toLowerCase();
+                        const itemCard = document.createElement('div');
+                        itemCard.className = 'admin-item-card' + (item.soldOut ? ' is-sold-out' : '');
+                        itemCard.id = `card-${catIdx}-${itemIdx}`;
 
-                        // Item Info
-                        const itemInfo = document.createElement('div');
-                        itemInfo.className = 'item-info';
+                        // TOP ROW: Dish Name, Price, Sold Out Toggle
+                        const topRow = document.createElement('div');
+                        topRow.className = 'item-top-row';
 
-                        const titleLine = document.createElement('div');
-                        titleLine.className = 'item-title-line';
+                        // 1. Dish Name Field
+                        const nameGroup = document.createElement('div');
+                        nameGroup.className = 'field-group';
 
-                        const nameSpan = document.createElement('span');
-                        nameSpan.className = 'item-name-text';
-                        nameSpan.textContent = item.name;
-                        titleLine.appendChild(nameSpan);
+                        const nameLabel = document.createElement('label');
+                        nameLabel.className = 'field-label';
+                        nameLabel.htmlFor = `name-${catIdx}-${itemIdx}`;
+                        nameLabel.textContent = 'Dish Name';
+                        nameGroup.appendChild(nameLabel);
 
-                        const badge = document.createElement('span');
-                        badge.className = 'badge-sold-out-admin';
-                        badge.textContent = 'SOLD OUT';
-                        titleLine.appendChild(badge);
+                        const nameInput = document.createElement('input');
+                        nameInput.type = 'text';
+                        nameInput.className = 'item-name-input';
+                        nameInput.id = `name-${catIdx}-${itemIdx}`;
+                        nameInput.value = item.name || '';
+                        nameInput.placeholder = 'e.g. Beef Birria Tacos';
+                        nameInput.addEventListener('input', () => setDirty(true));
+                        nameGroup.appendChild(nameInput);
 
-                        itemInfo.appendChild(titleLine);
+                        topRow.appendChild(nameGroup);
 
-                        if (item.description) {
-                            const desc = document.createElement('span');
-                            desc.className = 'item-desc-text';
-                            desc.textContent = item.description;
-                            itemInfo.appendChild(desc);
-                        }
-
-                        row.appendChild(itemInfo);
-
-                        // Price Input Field
-                        const priceWrapper = document.createElement('div');
-                        priceWrapper.className = 'price-field-wrapper';
+                        // 2. Price Field
+                        const priceGroup = document.createElement('div');
+                        priceGroup.className = 'field-group';
 
                         const priceLabel = document.createElement('label');
                         priceLabel.className = 'field-label';
                         priceLabel.htmlFor = `price-${catIdx}-${itemIdx}`;
                         priceLabel.textContent = 'Price';
-                        priceWrapper.appendChild(priceLabel);
+                        priceGroup.appendChild(priceLabel);
 
                         const priceInput = document.createElement('input');
                         priceInput.type = 'text';
                         priceInput.className = 'price-input';
                         priceInput.id = `price-${catIdx}-${itemIdx}`;
                         priceInput.value = item.price || '';
-                        priceInput.placeholder = 'e.g. £12.00';
-                        priceInput.addEventListener('input', () => {
-                            setDirty(true);
-                        });
-                        priceWrapper.appendChild(priceInput);
+                        priceInput.placeholder = 'e.g. £13.00';
+                        priceInput.addEventListener('input', () => setDirty(true));
+                        priceGroup.appendChild(priceInput);
 
-                        row.appendChild(priceWrapper);
+                        topRow.appendChild(priceGroup);
 
-                        // Sold Out Checkbox Field
-                        const soldOutWrapper = document.createElement('div');
-                        soldOutWrapper.className = 'soldout-field-wrapper';
+                        // 3. Sold Out Toggle
+                        const soldOutGroup = document.createElement('div');
+                        soldOutGroup.className = 'field-group';
 
                         const soldOutLabel = document.createElement('label');
                         soldOutLabel.className = 'field-label';
                         soldOutLabel.textContent = 'Availability';
-                        soldOutWrapper.appendChild(soldOutLabel);
+                        soldOutGroup.appendChild(soldOutLabel);
 
                         const toggleLabel = document.createElement('label');
                         toggleLabel.className = 'soldout-toggle-label';
@@ -1070,9 +1282,9 @@
 
                         checkbox.addEventListener('change', () => {
                             if (checkbox.checked) {
-                                row.classList.add('is-sold-out');
+                                itemCard.classList.add('is-sold-out');
                             } else {
-                                row.classList.remove('is-sold-out');
+                                itemCard.classList.remove('is-sold-out');
                             }
                             updateCounts();
                             setDirty(true);
@@ -1083,10 +1295,32 @@
 
                         toggleLabel.appendChild(checkbox);
                         toggleLabel.appendChild(toggleText);
-                        soldOutWrapper.appendChild(toggleLabel);
+                        soldOutGroup.appendChild(toggleLabel);
 
-                        row.appendChild(soldOutWrapper);
-                        itemsList.appendChild(row);
+                        topRow.appendChild(soldOutGroup);
+                        itemCard.appendChild(topRow);
+
+                        // BOTTOM ROW: Description Textarea
+                        const bottomRow = document.createElement('div');
+                        bottomRow.className = 'item-bottom-row';
+
+                        const descLabel = document.createElement('label');
+                        descLabel.className = 'field-label';
+                        descLabel.htmlFor = `desc-${catIdx}-${itemIdx}`;
+                        descLabel.textContent = 'Description (Ingredients, details, dips - optional)';
+                        bottomRow.appendChild(descLabel);
+
+                        const descTextarea = document.createElement('textarea');
+                        descTextarea.className = 'item-desc-input';
+                        descTextarea.id = `desc-${catIdx}-${itemIdx}`;
+                        descTextarea.rows = 2;
+                        descTextarea.value = item.description || '';
+                        descTextarea.placeholder = 'Add or modify ingredients, dipping sauce, allergen notes... (optional)';
+                        descTextarea.addEventListener('input', () => setDirty(true));
+                        bottomRow.appendChild(descTextarea);
+
+                        itemCard.appendChild(bottomRow);
+                        itemsList.appendChild(itemCard);
                     });
                 }
 
@@ -1110,23 +1344,26 @@
             soldoutCount.textContent = count;
         }
 
-        // Live search/filtering
+        // Live search/filtering across Name, Description, and Category
         filterInput.addEventListener('input', () => {
             const query = filterInput.value.toLowerCase().trim();
             const categoryCards = document.querySelectorAll('.admin-category-card');
 
             categoryCards.forEach(card => {
                 const catMatches = card.dataset.categoryName.includes(query);
-                const rows = card.querySelectorAll('.admin-item-row');
+                const itemCards = card.querySelectorAll('.admin-item-card');
                 let anyVisibleInCat = false;
 
-                rows.forEach(row => {
-                    const itemMatches = row.dataset.itemName.includes(query);
+                itemCards.forEach(itemCard => {
+                    const nameVal = (itemCard.querySelector('.item-name-input')?.value || '').toLowerCase();
+                    const descVal = (itemCard.querySelector('.item-desc-input')?.value || '').toLowerCase();
+                    const itemMatches = nameVal.includes(query) || descVal.includes(query);
+
                     if (!query || catMatches || itemMatches) {
-                        row.style.display = 'grid';
+                        itemCard.style.display = 'flex';
                         anyVisibleInCat = true;
                     } else {
-                        row.style.display = 'none';
+                        itemCard.style.display = 'none';
                     }
                 });
 
@@ -1140,31 +1377,13 @@
 
         // Expand / Collapse
         btnExpandAll.addEventListener('click', () => {
-            document.querySelectorAll('.items-table').forEach(tbl => tbl.style.display = 'flex');
+            document.querySelectorAll('.items-list-container').forEach(tbl => tbl.style.display = 'flex');
         });
         btnCollapseAll.addEventListener('click', () => {
-            document.querySelectorAll('.items-table').forEach(tbl => tbl.style.display = 'none');
+            document.querySelectorAll('.items-list-container').forEach(tbl => tbl.style.display = 'none');
         });
 
-        // Prompt or retrieve Admin Key
-        async function obtainAdminKey() {
-            let token = sessionStorage.getItem('tacomood_admin_token');
-            if (token && token.trim()) {
-                return token.trim();
-            }
-
-            // Prompt user directly as required
-            token = window.prompt("Enter your Admin Key (GitHub Fine-Grained Personal Access Token):");
-            if (token && token.trim()) {
-                token = token.trim();
-                sessionStorage.setItem('tacomood_admin_token', token);
-                updateKeyUI();
-                return token;
-            }
-            return null;
-        }
-
-        // Reconstruct updated JSON object from form
+        // Reconstruct updated JSON object from form (including Name, Description, Price, SoldOut)
         function buildUpdatedJson() {
             if (!menuData || !menuData.categories) return null;
 
@@ -1174,12 +1393,32 @@
             updated.categories.forEach((cat, catIdx) => {
                 if (cat.items && Array.isArray(cat.items)) {
                     cat.items.forEach((item, itemIdx) => {
+                        const nameInput = document.getElementById(`name-${catIdx}-${itemIdx}`);
+                        const descInput = document.getElementById(`desc-${catIdx}-${itemIdx}`);
                         const priceInput = document.getElementById(`price-${catIdx}-${itemIdx}`);
                         const soldOutCheckbox = document.getElementById(`soldout-${catIdx}-${itemIdx}`);
 
+                        // 1. Update Name
+                        if (nameInput) {
+                            item.name = nameInput.value.trim();
+                        }
+
+                        // 2. Update Description (delete if blank to match structure)
+                        if (descInput) {
+                            const descVal = descInput.value.trim();
+                            if (descVal) {
+                                item.description = descVal;
+                            } else {
+                                delete item.description;
+                            }
+                        }
+
+                        // 3. Update Price
                         if (priceInput) {
                             item.price = priceInput.value.trim();
                         }
+
+                        // 4. Update Availability
                         if (soldOutCheckbox) {
                             item.soldOut = soldOutCheckbox.checked;
                         }
@@ -1190,18 +1429,19 @@
             return updated;
         }
 
+        // -------------------------------------------------------------
         // Publish Changes using GitHub REST API
+        // -------------------------------------------------------------
         async function publishChanges() {
             if (isPublishing) return;
 
-            // 1. Get Admin Key (prompts user if not already provided)
-            const adminKey = await obtainAdminKey();
+            const adminKey = sessionStorage.getItem('tacomood_admin_token');
             if (!adminKey) {
-                showBanner("Publishing was cancelled: Admin Key is required to save changes to the live site.", "error");
+                showBanner("Session expired or missing Admin Key. Please lock and re-authenticate.", "error");
                 return;
             }
 
-            // 2. Reconstruct JSON
+            // 1. Reconstruct JSON
             const updatedJsonObj = buildUpdatedJson();
             if (!updatedJsonObj) {
                 showBanner("Error: No menu data available to publish.", "error");
@@ -1211,13 +1451,13 @@
             const jsonString = JSON.stringify(updatedJsonObj, null, 2) + '\n';
             const base64Content = utf8ToBase64(jsonString);
 
-            // 3. UI Publishing state
+            // 2. UI Publishing state
             isPublishing = true;
             btnPublishHeader.disabled = true;
             btnPublishMobile.disabled = true;
             btnPublishHeader.innerHTML = '<span class="spinner"></span> <span>Publishing...</span>';
             btnPublishMobile.innerHTML = '<span class="spinner"></span> <span>Publishing...</span>';
-            showBanner('Step 1 of 2: Connecting to GitHub and fetching latest repository sha...', 'info');
+            showBanner('Connecting to GitHub and fetching latest repository sha...', 'info');
 
             try {
                 // Step A: Fetch current file SHA
@@ -1233,16 +1473,11 @@
 
                 if (getResponse.status === 401) {
                     sessionStorage.removeItem('tacomood_admin_token');
-                    updateKeyUI();
-                    throw new Error("Invalid Admin Key (401 Unauthorized). Please verify your GitHub Personal Access Token.");
+                    throw new Error("Invalid Admin Key (401 Unauthorized). Please lock and log in again.");
                 }
 
                 if (getResponse.status === 403) {
-                    throw new Error("Access forbidden (403). Ensure your GitHub token has 'Contents: Read and write' permissions for rampant-sloth/tacomood-website.");
-                }
-
-                if (getResponse.status === 404) {
-                    throw new Error(`File '${GITHUB_PATH}' or repository '${GITHUB_OWNER}/${GITHUB_REPO}' was not found on GitHub.`);
+                    throw new Error("Access forbidden (403). Ensure your GitHub token has 'Contents: Read and write' permissions.");
                 }
 
                 if (!getResponse.ok) {
@@ -1253,7 +1488,7 @@
                 const currentSha = fileInfo.sha;
 
                 // Step B: PUT updated file to main branch
-                showBanner('Step 2 of 2: Committing updated menu.json to GitHub main branch...', 'info');
+                showBanner('Committing updated menu.json (names, descriptions, prices, availability) to main branch...', 'info');
 
                 const putUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
                 const commitMessage = `Update menu.json via Admin Portal [${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
@@ -1281,14 +1516,14 @@
 
                 const putResult = await putResponse.json();
 
-                // 4. Success handling
+                // 3. Success handling
                 menuData = updatedJsonObj; // sync local state
                 setDirty(false);
 
                 const commitUrl = putResult.commit ? putResult.commit.html_url : '#';
                 showBanner(`
                     <strong>Menu Successfully Published! 🎉</strong><br>
-                    Your updates have been committed to the <code>main</code> branch.
+                    Your updates to dish names, descriptions, prices, and availability are live on GitHub.
                     <a href="${commitUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; margin-left: 8px;">View Commit &rarr;</a>
                 `, 'success');
 
@@ -1308,38 +1543,6 @@
         btnPublishHeader.addEventListener('click', publishChanges);
         btnPublishMobile.addEventListener('click', publishChanges);
 
-        // Key management modal interactions
-        btnAdminKey.addEventListener('click', () => {
-            const currentToken = sessionStorage.getItem('tacomood_admin_token') || '';
-            tokenInput.value = currentToken;
-            adminKeyModal.classList.add('open');
-            tokenInput.focus();
-        });
-
-        btnModalCancel.addEventListener('click', () => {
-            adminKeyModal.classList.remove('open');
-        });
-
-        btnModalSave.addEventListener('click', () => {
-            const val = tokenInput.value.trim();
-            if (val) {
-                sessionStorage.setItem('tacomood_admin_token', val);
-            } else {
-                sessionStorage.removeItem('tacomood_admin_token');
-            }
-            updateKeyUI();
-            adminKeyModal.classList.remove('open');
-            showBanner('Admin Key configuration updated.', 'info');
-        });
-
-        btnModalClear.addEventListener('click', () => {
-            sessionStorage.removeItem('tacomood_admin_token');
-            tokenInput.value = '';
-            updateKeyUI();
-            adminKeyModal.classList.remove('open');
-            showBanner('Admin Key cleared from this browser session.', 'info');
-        });
-
         // Warn on unsaved changes when closing tab
         window.addEventListener('beforeunload', (e) => {
             if (isDirty) {
@@ -1348,9 +1551,8 @@
             }
         });
 
-        // Initialize
-        updateKeyUI();
-        loadMenuData();
+        // Start Authentication Gate on Load
+        initAuth();
     </script>
 </body>
 </html>
