@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taco Mood | Belfast</title>
+    <style>
+        :root {
+            --brand-dark: #222;
+            --brand-accent: #e63946;
+            --brand-light: #f8f9fa;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--brand-light);
+            color: var(--brand-dark);
+            text-align: center;
+        }
+        header {
+            background-color: var(--brand-dark);
+            color: white;
+            padding: 4rem 1rem;
+        }
+        h1 { margin: 0; font-size: 3rem; text-transform: uppercase; }
+        .tagline { font-size: 1.2rem; font-style: italic; margin-top: 10px; color: var(--brand-accent); }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: opacity 0.3s;
+        }
+        .btn:hover { opacity: 0.8; }
+        .btn-collection { background-color: var(--brand-accent); font-size: 1.2rem; }
+        .btn-justeat { background-color: #ff8000; }
+        .btn-ubereats { background-color: #06C167; }
+        .btn-deliveroo { background-color: #00CCBC; }
+        footer {
+            margin-top: 3rem;
+            padding: 2rem;
+            background-color: #ddd;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Taco Mood</h1>
+        <div class="tagline">Good Food. Good Mood.</div>
+        <p>Stranmillis Road, Belfast</p>
+    </header>
+
+    <div class="container">
+        <h2>Order Now</h2>
+        <p>Click below to pre-order for collection at our Stranmillis store, or choose a delivery partner.</p>
+        
+        <!-- Collection Link (Direct / No Commission) -->
+        <div>
+            <a href="#" class="btn btn-collection">Order for Collection</a>
+        </div>
+
+        <!-- Third Party Aggregators -->
+        <div style="margin-top: 2rem;">
+            <h3>Delivery Partners</h3>
+            <a href="#" class="btn btn-justeat">Just-Eat</a>
+            <a href="#" class="btn btn-ubereats">Uber Eats</a>
+            <a href="#" class="btn btn-deliveroo">Deliveroo</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>📍 Stranmillis Road, Belfast, BT9</p>
+        <p>Follow us on our social channels for updates and specials.</p>
+    </footer>
+
+</body>
+</html>
