@@ -16,6 +16,7 @@
             --border-green: #1D3C2C;    /* Dividing Lines and Card Borders */
             --card-bg: #11281F;         /* Subtle Dark Card Surface */
             --card-bg-hover: #153428;
+            --input-bg: #071510;
         }
 
         * {
@@ -37,13 +38,13 @@
         header {
             background-color: #081711;
             border-bottom: 2px solid var(--border-green);
-            padding: 3.5rem 1.5rem 3rem;
+            padding: 3rem 1.5rem 2.5rem;
             text-align: center;
             position: relative;
         }
 
         .header-content {
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto;
         }
 
@@ -66,17 +67,40 @@
             letter-spacing: 0.5px;
         }
 
-        .location-badge {
+        .header-badges {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1.25rem;
+        }
+
+        .info-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 1rem;
+            gap: 8px;
             background-color: rgba(29, 60, 44, 0.45);
             border: 1px solid var(--border-green);
             padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--text-cream);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .instagram-badge {
+            background-color: rgba(232, 80, 37, 0.15);
+            border-color: rgba(232, 80, 37, 0.4);
+            color: #ffb5a0;
+        }
+
+        .instagram-badge:hover {
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            border-color: var(--accent-orange);
+            transform: translateY(-1px);
         }
 
         .container {
@@ -105,7 +129,7 @@
             color: var(--text-cream);
             opacity: 0.9;
             font-size: 1.05rem;
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
         }
 
@@ -117,6 +141,33 @@
             padding: 2rem 1.5rem;
             text-align: center;
             margin-bottom: 3.5rem;
+        }
+
+        /* Prominent Alert Banner when Closed or Past 8:30 PM */
+        .closed-banner {
+            display: none;
+            background-color: rgba(232, 80, 37, 0.15);
+            border: 1.5px solid var(--accent-orange);
+            color: #ffb5a0;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 0 auto 1.5rem auto;
+            max-width: 680px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            line-height: 1.45;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(232, 80, 37, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .closed-banner.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .btn {
@@ -132,9 +183,10 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
             border: none;
             cursor: pointer;
+            font-family: inherit;
         }
 
-        .btn:hover {
+        .btn:hover:not(:disabled):not(.is-closed) {
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(0,0,0,0.35);
             opacity: 0.95;
@@ -151,9 +203,21 @@
             box-shadow: 0 4px 15px rgba(123, 179, 58, 0.35);
         }
 
-        .btn-collection:hover {
+        .btn-collection:hover:not(:disabled):not(.is-closed) {
             background-color: #8cc443;
             box-shadow: 0 6px 20px rgba(123, 179, 58, 0.5);
+        }
+
+        /* Disabled / Grayed out state when store is closed */
+        .btn-collection.is-closed,
+        .btn-collection:disabled {
+            background-color: #21352a !important;
+            color: #6d887a !important;
+            border: 1px solid #2d4a3b !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+            opacity: 0.75;
         }
 
         .partner-group {
@@ -306,45 +370,441 @@
             border-color: var(--accent-orange);
         }
 
-        /* Footer */
-        footer {
-            margin-top: auto;
-            padding: 2.5rem 1.5rem;
-            background-color: #081711;
-            border-top: 1px solid var(--border-green);
-            text-align: center;
-            font-size: 0.95rem;
+        /* Order Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
         }
 
-        footer p {
-            margin: 0.4rem 0;
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background-color: #0e241b;
+            border: 1.5px solid var(--border-green);
+            border-radius: 12px;
+            max-width: 620px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            animation: modalScale 0.25s ease;
+        }
+
+        @keyframes modalScale {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            background-color: #081711;
+            border-bottom: 1px solid var(--border-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--accent-lime);
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-subtitle {
+            margin: 4px 0 0;
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.8;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-cream);
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            opacity: 1;
+            color: var(--accent-orange);
+        }
+
+        .modal-body {
+            padding: 1.25rem 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            color: var(--accent-lime);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-field label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             color: var(--text-cream);
             opacity: 0.85;
         }
 
-        .footer-nav {
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(29, 60, 44, 0.5);
-            font-size: 0.85rem;
+        .form-field input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            font-family: inherit;
         }
 
-        .footer-nav a {
+        .form-field input:focus {
+            border-color: var(--accent-lime);
+        }
+
+        /* Modal Menu Items List */
+        .modal-menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .modal-menu-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-menu-list::-webkit-scrollbar-thumb {
+            background: var(--border-green);
+            border-radius: 3px;
+        }
+
+        .modal-category-heading {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            color: var(--accent-lime);
+            margin: 0.6rem 0 0.3rem;
+            padding-bottom: 2px;
+            border-bottom: 1px solid rgba(29, 60, 44, 0.6);
+        }
+
+        .modal-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 40, 31, 0.5);
+            border: 1px solid var(--border-green);
+            border-radius: 6px;
+            padding: 8px 12px;
+            gap: 0.75rem;
+        }
+
+        .modal-item-row.is-sold-out {
+            opacity: 0.5;
+            background: rgba(12, 32, 24, 0.6);
+        }
+
+        .modal-item-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .modal-item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-cream);
+        }
+
+        .modal-item-price {
+            font-weight: 700;
+            color: var(--accent-lime);
+            font-size: 0.95rem;
+        }
+
+        .item-stepper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-step {
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            transition: all 0.15s;
+        }
+
+        .btn-step:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .qty-display {
+            font-weight: 700;
+            min-width: 22px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-cream);
+        }
+
+        .modal-footer {
+            padding: 1.25rem 1.5rem;
+            background-color: #081711;
+            border-top: 1px solid var(--border-green);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .order-total-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-cream);
+        }
+
+        .order-total-amount {
+            color: var(--accent-lime);
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--text-cream);
+        }
+
+        .btn-submit-order {
+            background-color: var(--accent-lime);
+            color: var(--bg-dark-green);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(123, 179, 58, 0.3);
+            font-family: inherit;
+        }
+
+        .btn-submit-order:hover {
+            background-color: #8cc443;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            background-color: #081711;
+            border-top: 2px solid var(--border-green);
+            padding: 3rem 1.5rem 2rem;
+            font-size: 0.95rem;
+        }
+
+        .footer-inner {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+            margin-bottom: 2.5rem;
+        }
+
+        .footer-info h3 {
+            color: var(--accent-lime);
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-info p {
+            margin: 0.35rem 0;
+            color: var(--text-cream);
+            opacity: 0.9;
+        }
+
+        .footer-hours-box {
+            background: rgba(17, 40, 31, 0.6);
+            border: 1px solid var(--border-green);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .footer-hours-box strong {
+            color: var(--accent-lime);
+        }
+
+        .footer-social {
+            margin-top: 1.25rem;
+        }
+
+        .social-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(232, 80, 37, 0.15);
+            border: 1px solid var(--accent-orange);
+            color: #ffb5a0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
+        }
+
+        .social-link-btn:hover {
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .map-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-title {
+            color: var(--accent-lime);
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .map-frame-container {
+            border: 1.5px solid var(--border-green);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(29, 60, 44, 0.6);
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom a {
             color: var(--accent-lime);
             text-decoration: none;
-            transition: color 0.2s;
+            font-weight: 600;
         }
 
-        .footer-nav a:hover {
+        .footer-bottom a:hover {
             color: var(--accent-orange);
             text-decoration: underline;
         }
 
-        @media (max-width: 640px) {
-            h1 { font-size: 2.4rem; }
-            h2 { font-size: 1.8rem; }
+        @media (max-width: 768px) {
+            h1 { font-size: 2.3rem; }
+            h2 { font-size: 1.7rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .form-grid { grid-template-columns: 1fr; }
             .btn-collection { width: 100%; }
             .btn { display: block; margin: 8px 0; }
+            .footer-bottom { justify-content: center; }
         }
     </style>
 </head>
@@ -354,18 +814,39 @@
         <div class="header-content">
             <h1>Taco Mood</h1>
             <div class="tagline">Good Food. Good Mood.</div>
-            <div class="location-badge">📍 Stranmillis Road, Belfast</div>
+
+            <!-- Real Store Details: Address, Hours, Social -->
+            <div class="header-badges">
+                <span class="info-badge">📍 137 Stranmillis Rd, Belfast BT9 5AJ</span>
+                <span class="info-badge">🕒 Fri – Sun: 12:00 PM – 9:00 PM</span>
+                <a href="https://www.instagram.com/tacoo.mood/" target="_blank" rel="noopener noreferrer" class="info-badge instagram-badge" title="Follow Taco Mood on Instagram">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                    <span>@tacoo.mood</span>
+                </a>
+            </div>
         </div>
     </header>
 
     <main class="container">
-        <!-- Order Callout -->
+        <!-- Order Callout with Time Window Logic -->
         <section class="order-section">
             <h2>Order Now</h2>
-            <p class="section-desc">Click below to pre-order for collection at our Stranmillis store, or choose your favourite delivery partner.</p>
+            <p class="section-desc">Pre-order authentic Mexican street food for pickup at 137 Stranmillis Rd, or choose your favourite delivery partner.</p>
             
+            <!-- Prominent Alert Banner when Closed or Past 8:30 PM -->
+            <div id="ordering-closed-banner" class="closed-banner">
+                Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).
+            </div>
+
+            <!-- Collection Button -->
             <div style="margin-top: 1.5rem;">
-                <a href="#" class="btn btn-collection">Order for Collection</a>
+                <button type="button" id="btn-collection-order" class="btn btn-collection">
+                    Order for Collection
+                </button>
             </div>
 
             <!-- Third Party Aggregators -->
@@ -390,16 +871,184 @@
         </section>
     </main>
 
+    <!-- Collection Ordering Modal -->
+    <div id="order-modal" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div>
+                    <h3>🌮 Order for Collection</h3>
+                    <p class="modal-subtitle">Pick up at 137 Stranmillis Rd, Belfast BT9 5AJ</p>
+                </div>
+                <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Close modal">&times;</button>
+            </div>
+
+            <form id="order-form" class="modal-body">
+                <!-- Customer Information -->
+                <div class="form-section">
+                    <div class="form-section-title">1. Your Contact Info</div>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="customer-name">Full Name *</label>
+                            <input type="text" id="customer-name" required placeholder="e.g. Alex Morgan" autocomplete="name">
+                        </div>
+                        <div class="form-field">
+                            <label for="customer-phone">Phone Number *</label>
+                            <input type="tel" id="customer-phone" required placeholder="e.g. 07123 456789" autocomplete="tel">
+                        </div>
+                    </div>
+                    <div class="form-field" style="margin-top: 0.6rem;">
+                        <label for="customer-notes">Special Instructions (Optional)</label>
+                        <input type="text" id="customer-notes" placeholder="e.g. Extra lime, ready for 6:15 PM, allergies">
+                    </div>
+                </div>
+
+                <!-- Menu Item Selection -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span>2. Select Food Items</span>
+                        <span id="selected-items-badge" style="font-size: 0.8rem; color: var(--text-cream); opacity: 0.8; text-transform: none;">0 items</span>
+                    </div>
+                    <div id="modal-items-container" class="modal-menu-list">
+                        <p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Loading menu options...</p>
+                    </div>
+                </div>
+
+                <!-- Total & Submit -->
+                <div class="modal-footer">
+                    <div class="order-total-bar">
+                        <span>Estimated Total:</span>
+                        <strong id="order-total-display" class="order-total-amount">£0.00</strong>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" id="btn-cancel-modal">Cancel</button>
+                        <button type="submit" class="btn-submit-order" id="btn-submit-modal">
+                            Send via WhatsApp &rarr;
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer with Store Details, Hours, Instagram, and Google Maps -->
     <footer>
-        <p><strong>Taco Mood</strong> — Belfast</p>
-        <p>📍 Stranmillis Road, Belfast, BT9</p>
-        <p>Follow us on our social channels for daily specials, catering & updates.</p>
-        <div class="footer-nav">
-            <a href="admin.html">Owner Portal &amp; Menu Editor &rarr;</a>
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <!-- Store Details & Hours -->
+                <div class="footer-info">
+                    <h3>Taco Mood</h3>
+                    <p>Authentic Mexican Street Food &amp; Birria</p>
+                    <p class="footer-address">📍 137 Stranmillis Rd, Belfast BT9 5AJ</p>
+                    
+                    <div class="footer-hours-box">
+                        <p><strong>Opening Hours:</strong></p>
+                        <p>Friday to Sunday: 12:00 PM – 9:00 PM</p>
+                        <p style="opacity: 0.75; font-size: 0.88rem;">(Closed Monday–Thursday)</p>
+                        <p style="margin-top: 6px; font-size: 0.85rem; color: var(--accent-lime);">
+                            Online collection cutoff: 8:30 PM
+                        </p>
+                    </div>
+
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/tacoo.mood/" target="_blank" rel="noopener noreferrer" class="social-link-btn" title="Visit Taco Mood on Instagram">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                            <span>Follow @tacoo.mood</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Google Maps Location Embed -->
+                <div class="map-wrapper">
+                    <p class="map-title">Find Us on Stranmillis Road</p>
+                    <div class="map-frame-container">
+                        <iframe 
+                            title="Taco Mood Location Map - 137 Stranmillis Rd, Belfast"
+                            src="https://maps.google.com/maps?q=137+Stranmillis+Rd,+Belfast+BT9+5AJ&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                            width="100%" 
+                            height="240" 
+                            style="border:0; display: block;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>&copy; 2026 Taco Mood. All rights reserved. 137 Stranmillis Rd, Belfast BT9 5AJ.</div>
+                <div>
+                    <a href="admin.html">Owner Portal &rarr;</a>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script>
+        // State
+        let cachedMenu = null;
+        const itemQuantities = {}; // key: "catIdx-itemIdx", val: number
+
+        // -------------------------------------------------------------
+        // 1. Time Window Logic for Collection Ordering
+        // Open Window: Friday, Saturday, Sunday between 12:00 PM and 8:30 PM.
+        // -------------------------------------------------------------
+        function checkOrderingAvailability() {
+            // Evaluates current time in Belfast / Europe/London timezone
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/London',
+                hour12: false,
+                weekday: 'short',
+                hour: 'numeric',
+                minute: 'numeric'
+            });
+
+            const parts = formatter.formatToParts(now);
+            const timeObj = {};
+            parts.forEach(p => timeObj[p.type] = p.value);
+
+            const dayName = timeObj.weekday; // 'Fri', 'Sat', 'Sun', etc.
+            const hour = parseInt(timeObj.hour, 10);
+            const minute = parseInt(timeObj.minute, 10);
+            const currentMinutes = hour * 60 + minute;
+
+            const isOpenDay = (dayName === 'Fri' || dayName === 'Sat' || dayName === 'Sun');
+            const startMinutes = 12 * 60; // 12:00 PM (720)
+            const cutoffMinutes = 20 * 60 + 30; // 8:30 PM (1230)
+
+            const isOpen = isOpenDay && (currentMinutes >= startMinutes && currentMinutes < cutoffMinutes);
+
+            applyOrderingAvailability(isOpen);
+            return isOpen;
+        }
+
+        function applyOrderingAvailability(isOpen) {
+            const btnOrder = document.getElementById('btn-collection-order');
+            const closedBanner = document.getElementById('ordering-closed-banner');
+
+            if (isOpen) {
+                // Store is OPEN for collection
+                closedBanner.classList.remove('show');
+                btnOrder.disabled = false;
+                btnOrder.classList.remove('is-closed');
+                btnOrder.title = 'Order for Collection';
+            } else {
+                // Store is CLOSED for collection or past 8:30 PM
+                closedBanner.classList.add('show');
+                btnOrder.disabled = true;
+                btnOrder.classList.add('is-closed');
+                btnOrder.title = 'Online collection ordering is currently closed';
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 2. Fetch and Render Public Menu
+        // -------------------------------------------------------------
         fetch('menu.json')
             .then(response => {
                 if (!response.ok) {
@@ -408,6 +1057,7 @@
                 return response.json();
             })
             .then(menu => {
+                cachedMenu = menu;
                 const container = document.getElementById('menu-container');
                 container.innerHTML = '';
 
@@ -493,12 +1143,269 @@
                     section.appendChild(grid);
                     container.appendChild(section);
                 });
+
+                // Also populate the modal selector
+                populateModalMenu(menu);
             })
             .catch(error => {
                 console.error('Error loading menu:', error);
                 const container = document.getElementById('menu-container');
                 container.innerHTML = '<div class="error-notice">Sorry, our menu is temporarily unavailable. Please visit us in store!</div>';
             });
+
+        // -------------------------------------------------------------
+        // 3. Collection Ordering Modal Logic & WhatsApp Fallback
+        // -------------------------------------------------------------
+        const orderModal = document.getElementById('order-modal');
+        const btnCollectionOrder = document.getElementById('btn-collection-order');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const btnCancelModal = document.getElementById('btn-cancel-modal');
+        const orderForm = document.getElementById('order-form');
+        const modalItemsContainer = document.getElementById('modal-items-container');
+        const orderTotalDisplay = document.getElementById('order-total-display');
+        const selectedItemsBadge = document.getElementById('selected-items-badge');
+
+        function openModal() {
+            // Guard: ensure store is currently open
+            if (!checkOrderingAvailability()) {
+                alert("Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).");
+                return;
+            }
+            orderModal.classList.add('open');
+            orderModal.setAttribute('aria-hidden', 'false');
+            document.getElementById('customer-name').focus();
+        }
+
+        function closeModal() {
+            orderModal.classList.remove('open');
+            orderModal.setAttribute('aria-hidden', 'true');
+        }
+
+        btnCollectionOrder.addEventListener('click', () => {
+            if (!btnCollectionOrder.disabled && !btnCollectionOrder.classList.contains('is-closed')) {
+                openModal();
+            }
+        });
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        btnCancelModal.addEventListener('click', closeModal);
+
+        // Close on clicking outside modal
+        orderModal.addEventListener('click', (e) => {
+            if (e.target === orderModal) closeModal();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && orderModal.classList.contains('open')) {
+                closeModal();
+            }
+        });
+
+        // Populate items in modal
+        function populateModalMenu(menu) {
+            if (!menu || !menu.categories) return;
+
+            modalItemsContainer.innerHTML = '';
+
+            menu.categories.forEach((cat, catIdx) => {
+                const catHeading = document.createElement('div');
+                catHeading.className = 'modal-category-heading';
+                catHeading.textContent = cat.category;
+                modalItemsContainer.appendChild(catHeading);
+
+                if (cat.items && Array.isArray(cat.items)) {
+                    cat.items.forEach((item, itemIdx) => {
+                        const itemKey = `${catIdx}-${itemIdx}`;
+                        itemQuantities[itemKey] = 0;
+
+                        const row = document.createElement('div');
+                        row.className = 'modal-item-row' + (item.soldOut ? ' is-sold-out' : '');
+
+                        const info = document.createElement('div');
+                        info.className = 'modal-item-info';
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'modal-item-name';
+                        nameSpan.textContent = item.name;
+                        info.appendChild(nameSpan);
+
+                        const priceSpan = document.createElement('span');
+                        priceSpan.className = 'modal-item-price';
+                        priceSpan.textContent = item.price || '';
+                        info.appendChild(priceSpan);
+
+                        if (item.soldOut) {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge-sold-out';
+                            badge.style.fontSize = '0.65rem';
+                            badge.style.padding = '2px 6px';
+                            badge.textContent = 'SOLD OUT';
+                            info.appendChild(badge);
+                        }
+
+                        row.appendChild(info);
+
+                        // Stepper controls
+                        const stepper = document.createElement('div');
+                        stepper.className = 'item-stepper';
+
+                        if (item.soldOut) {
+                            const unavailable = document.createElement('span');
+                            unavailable.style.fontSize = '0.8rem';
+                            unavailable.style.color = '#ff9980';
+                            unavailable.style.fontStyle = 'italic';
+                            unavailable.textContent = 'Unavailable';
+                            stepper.appendChild(unavailable);
+                        } else {
+                            const btnMinus = document.createElement('button');
+                            btnMinus.type = 'button';
+                            btnMinus.className = 'btn-step';
+                            btnMinus.textContent = '−';
+                            btnMinus.title = 'Decrease quantity';
+                            btnMinus.addEventListener('click', () => updateItemQty(itemKey, -1));
+
+                            const qtyText = document.createElement('span');
+                            qtyText.className = 'qty-display';
+                            qtyText.id = `qty-${itemKey}`;
+                            qtyText.textContent = '0';
+
+                            const btnPlus = document.createElement('button');
+                            btnPlus.type = 'button';
+                            btnPlus.className = 'btn-step';
+                            btnPlus.textContent = '+';
+                            btnPlus.title = 'Increase quantity';
+                            btnPlus.addEventListener('click', () => updateItemQty(itemKey, 1));
+
+                            stepper.appendChild(btnMinus);
+                            stepper.appendChild(qtyText);
+                            stepper.appendChild(btnPlus);
+                        }
+
+                        row.appendChild(stepper);
+                        modalItemsContainer.appendChild(row);
+                    });
+                }
+            });
+        }
+
+        function updateItemQty(itemKey, delta) {
+            const current = itemQuantities[itemKey] || 0;
+            const updated = Math.max(0, Math.min(25, current + delta));
+            itemQuantities[itemKey] = updated;
+
+            const displayEl = document.getElementById(`qty-${itemKey}`);
+            if (displayEl) displayEl.textContent = updated;
+
+            calculateOrderTotal();
+        }
+
+        function calculateOrderTotal() {
+            if (!cachedMenu) return;
+
+            let total = 0;
+            let totalCount = 0;
+
+            cachedMenu.categories.forEach((cat, catIdx) => {
+                if (cat.items) {
+                    cat.items.forEach((item, itemIdx) => {
+                        const key = `${catIdx}-${itemIdx}`;
+                        const qty = itemQuantities[key] || 0;
+                        if (qty > 0) {
+                            totalCount += qty;
+                            const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
+                            total += priceNum * qty;
+                        }
+                    });
+                }
+            });
+
+            orderTotalDisplay.textContent = `£${total.toFixed(2)}`;
+            selectedItemsBadge.textContent = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
+        }
+
+        // Handle Order Form Submission -> WhatsApp Fallback
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Check availability again
+            if (!checkOrderingAvailability()) {
+                alert("Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).");
+                closeModal();
+                return;
+            }
+
+            const customerName = document.getElementById('customer-name').value.trim();
+            const customerPhone = document.getElementById('customer-phone').value.trim();
+            const customerNotes = document.getElementById('customer-notes').value.trim();
+
+            if (!customerName || !customerPhone) {
+                alert("Please enter your name and phone number.");
+                return;
+            }
+
+            // Gather items
+            const orderList = [];
+            let total = 0;
+
+            if (cachedMenu && cachedMenu.categories) {
+                cachedMenu.categories.forEach((cat, catIdx) => {
+                    if (cat.items) {
+                        cat.items.forEach((item, itemIdx) => {
+                            const key = `${catIdx}-${itemIdx}`;
+                            const qty = itemQuantities[key] || 0;
+                            if (qty > 0 && !item.soldOut) {
+                                const priceNum = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
+                                const itemTotal = priceNum * qty;
+                                total += itemTotal;
+                                orderList.push({
+                                    name: item.name,
+                                    qty: qty,
+                                    unitPrice: item.price,
+                                    itemTotal: `£${itemTotal.toFixed(2)}`
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            if (orderList.length === 0) {
+                alert("Please select at least one available food item from the menu.");
+                return;
+            }
+
+            // Construct formatted WhatsApp message
+            let msg = `🌮 *TACO MOOD - COLLECTION ORDER*\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `👤 *Customer:* ${customerName}\n`;
+            msg += `📞 *Phone:* ${customerPhone}\n`;
+            if (customerNotes) {
+                msg += `📝 *Notes:* ${customerNotes}\n`;
+            }
+            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `📦 *Order Items:*\n`;
+            orderList.forEach(item => {
+                msg += `• ${item.qty}x ${item.name} (${item.itemTotal})\n`;
+            });
+            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `💰 *Estimated Total:* £${total.toFixed(2)}\n`;
+            msg += `📍 *Collection:* 137 Stranmillis Rd, Belfast BT9 5AJ\n`;
+            msg += `🕒 *Store Hours:* Fri–Sun 12:00 PM – 9:00 PM`;
+
+            const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+            // Dispatch fallback to WhatsApp
+            window.open(waUrl, '_blank');
+
+            // Reset and close
+            closeModal();
+            alert("🎉 Thank you! Your order has been formatted and opened in WhatsApp to send to Taco Mood.");
+        });
+
+        // Initialize availability check on load and check periodically
+        checkOrderingAvailability();
+        setInterval(checkOrderingAvailability, 60000); // Re-check every minute
     </script>
 
 </body>
