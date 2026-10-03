@@ -115,6 +115,131 @@
             color: var(--bg-dark-green);
         }
 
+        /* Header opening-hours badge + this-week panel (hover or click) */
+        .hours-badge-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .hours-badge {
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .hours-badge.is-open {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+            background-color: rgba(123, 179, 58, 0.18);
+        }
+
+        .hours-badge.is-closed {
+            border-color: rgba(232, 80, 37, 0.5);
+            color: #ffb5a0;
+            background-color: rgba(232, 80, 37, 0.12);
+        }
+
+        .hours-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            z-index: 60;
+            width: 268px;
+            max-width: calc(100vw - 24px);
+            padding: 14px 16px 12px;
+            background-color: #0c2018;
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+            text-align: left;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(-50%) translateY(6px);
+            /* visibility flips after the fade-out, and immediately on open */
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+        }
+
+        /* Invisible bridge so the panel stays open while the pointer moves down */
+        .hours-panel::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
+
+        .hours-badge-wrap:hover .hours-panel,
+        .hours-badge-wrap:focus-within .hours-panel,
+        .hours-badge-wrap.open .hours-panel {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0s;
+        }
+
+        .hours-panel-title {
+            margin: 0 0 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-lime);
+        }
+
+        .hours-week {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hours-week li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 4px 0;
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.85;
+        }
+
+        .hours-week li.is-today {
+            opacity: 1;
+            font-weight: 700;
+            color: var(--accent-lime);
+        }
+
+        .hours-week li.is-closed .day-time {
+            opacity: 0.75;
+        }
+
+        .hours-week .day-name,
+        .hours-week .day-time {
+            white-space: nowrap;
+        }
+
+        .hours-week .day-time {
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 640px) {
+            .hours-panel {
+                left: auto;
+                right: 0;
+                transform: translateY(6px);
+            }
+
+            .hours-badge-wrap:hover .hours-panel,
+            .hours-badge-wrap:focus-within .hours-panel,
+            .hours-badge-wrap.open .hours-panel {
+                transform: translateY(0);
+            }
+        }
+
         .container {
             max-width: 960px;
             margin: 0 auto;
@@ -838,7 +963,13 @@
                 <a href="https://maps.google.com/?q=137+Stranmillis+Rd,+Belfast+BT9+5AJ" target="_blank" rel="noopener noreferrer" class="info-badge address-badge" title="Open Taco Mood location in Google Maps (opens in new tab)">
                     <span>📍 137 Stranmillis Rd, Belfast BT9 5AJ</span>
                 </a>
-                <span class="info-badge" id="header-hours-badge">🕒 Fri – Sun: 12:00 PM – 9:00 PM</span>
+                <span class="hours-badge-wrap" id="hours-badge-wrap">
+                    <button type="button" class="info-badge hours-badge" id="header-hours-badge" aria-expanded="false" aria-controls="hours-panel" title="Show this week's opening hours">🕒 Opening hours</button>
+                    <div class="hours-panel" id="hours-panel" role="dialog" aria-label="Opening hours this week">
+                        <p class="hours-panel-title">This week's hours</p>
+                        <ul class="hours-week" id="hours-week-list"></ul>
+                    </div>
+                </span>
                 <a href="https://www.instagram.com/tacoo.mood/" target="_blank" rel="noopener noreferrer" class="info-badge instagram-badge" title="Follow Taco Mood on Instagram">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -1099,6 +1230,8 @@
 
         // Opening Hours display elements (populated from menu.json → storeInfo)
         const headerHoursBadge = document.getElementById('header-hours-badge');
+        const hoursBadgeWrap = document.getElementById('hours-badge-wrap');
+        const hoursWeekList = document.getElementById('hours-week-list');
         const footerHoursSummary = document.getElementById('footer-hours-summary');
         const footerHoursClosed = document.getElementById('footer-hours-closed');
 
@@ -1107,6 +1240,10 @@
         // -------------------------------------------------------------
         const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const DAY_SHORT = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun' };
+
+        // Sunday-first index of the week is not used here: DAY_ORDER starts on
+        // Monday, and every index below is relative to it.
+        let hoursByDay = [];
 
         function formatTime12h(timeStr) {
             if (!timeStr || typeof timeStr !== 'string') return '';
@@ -1180,12 +1317,165 @@
                 }
             }
 
-            // Header badge: compact summary using short day names
-            if (headerHoursBadge) {
-                headerHoursBadge.textContent = openRuns.length
-                    ? `🕒 ${describeOpenRun(openRuns[0], true)}`
-                    : '🕒 Currently closed';
+            // Header badge + weekly panel: today's hours, or the next opening
+            hoursByDay = DAY_ORDER.map(day => {
+                const entry = storeInfo.openingHours.find(h => h && h.day === day);
+                return {
+                    day: day,
+                    closed: !entry || Boolean(entry.closed),
+                    open: (entry && entry.open) || '',
+                    close: (entry && entry.close) || ''
+                };
+            });
+            refreshOpeningHoursDisplay();
+        }
+
+        // -------------------------------------------------------------
+        // 0b. Header "Open now / Next open" Badge & This-Week Panel
+        //     Both read the same menu.json → storeInfo data as the footer
+        // -------------------------------------------------------------
+        function minutesFromTime(timeStr) {
+            const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(timeStr || '');
+            if (!match) return null;
+            return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+        }
+
+        function getLondonNow() {
+            // Store hours are Belfast time, so "now" must be too — otherwise the
+            // badge is wrong for visitors in other time zones (and around DST).
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/London',
+                hour12: false,
+                weekday: 'short',
+                hour: 'numeric',
+                minute: 'numeric'
+            }).formatToParts(new Date());
+
+            const timeObj = {};
+            parts.forEach(p => { timeObj[p.type] = p.value; });
+
+            const longDay = {
+                Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday',
+                Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday'
+            }[timeObj.weekday];
+
+            const dayIdx = DAY_ORDER.indexOf(longDay);
+            const hour = parseInt(timeObj.hour, 10) % 24; // some engines report midnight as 24
+
+            return {
+                dayIdx: dayIdx === -1 ? 0 : dayIdx,
+                minutes: hour * 60 + parseInt(timeObj.minute, 10)
+            };
+        }
+
+        function findNextOpening(dayIdx) {
+            // The next day (within a week) that has opening hours
+            for (let offset = 1; offset <= DAY_ORDER.length; offset++) {
+                const idx = (dayIdx + offset) % DAY_ORDER.length;
+                const entry = hoursByDay[idx];
+                if (entry && !entry.closed && minutesFromTime(entry.open) !== null) {
+                    return { dayIdx: idx, offset: offset, open: entry.open };
+                }
             }
+            return null;
+        }
+
+        function describeHeaderHours() {
+            const now = getLondonNow();
+            const today = hoursByDay[now.dayIdx] || { closed: true };
+            const openMin = today.closed ? null : minutesFromTime(today.open);
+            const closeMin = today.closed ? null : minutesFromTime(today.close);
+
+            if (openMin !== null && closeMin !== null && now.minutes >= openMin && now.minutes < closeMin) {
+                return {
+                    isOpenNow: true,
+                    label: `Open now · ${formatTime12h(today.open)} – ${formatTime12h(today.close)}`
+                };
+            }
+
+            if (openMin !== null && now.minutes < openMin) {
+                return { isOpenNow: false, label: `Closed · Opens today ${formatTime12h(today.open)}` };
+            }
+
+            const next = findNextOpening(now.dayIdx);
+            if (!next) {
+                return { isOpenNow: false, label: 'Closed' };
+            }
+
+            const nextDayName = next.offset === 1 ? 'tomorrow' : DAY_SHORT[DAY_ORDER[next.dayIdx]];
+            return { isOpenNow: false, label: `Closed · Opens ${nextDayName} ${formatTime12h(next.open)}` };
+        }
+
+        function renderHeaderHoursBadge() {
+            if (!headerHoursBadge || !hoursByDay.length) return;
+
+            const status = describeHeaderHours();
+            headerHoursBadge.innerHTML = `🕒 ${status.label}`;
+            headerHoursBadge.classList.toggle('is-open', status.isOpenNow);
+            headerHoursBadge.classList.toggle('is-closed', !status.isOpenNow);
+            headerHoursBadge.title = status.isOpenNow
+                ? `Open now — hover or tap for this week's opening hours`
+                : `Closed — hover or tap for this week's opening hours`;
+        }
+
+        function renderHoursWeekPanel() {
+            if (!hoursWeekList || !hoursByDay.length) return;
+
+            const now = getLondonNow();
+            hoursWeekList.innerHTML = '';
+
+            hoursByDay.forEach((entry, idx) => {
+                const isToday = idx === now.dayIdx;
+
+                const li = document.createElement('li');
+                if (entry.closed) li.classList.add('is-closed');
+                if (isToday) {
+                    li.classList.add('is-today');
+                    li.setAttribute('aria-current', 'date');
+                }
+
+                const name = document.createElement('span');
+                name.className = 'day-name';
+                name.textContent = isToday ? `${DAY_SHORT[DAY_ORDER[idx]]} (today)` : DAY_SHORT[DAY_ORDER[idx]];
+
+                const time = document.createElement('span');
+                time.className = 'day-time';
+                time.textContent = entry.closed
+                    ? 'Closed'
+                    : `${formatTime12h(entry.open)} – ${formatTime12h(entry.close)}`;
+
+                li.appendChild(name);
+                li.appendChild(time);
+                hoursWeekList.appendChild(li);
+            });
+        }
+
+        function refreshOpeningHoursDisplay() {
+            renderHeaderHoursBadge();
+            renderHoursWeekPanel();
+        }
+
+        // Hover opens the panel on desktop (handled in CSS); click/tap toggles
+        // it so touch and keyboard users can open the full week too
+        if (headerHoursBadge && hoursBadgeWrap) {
+            headerHoursBadge.addEventListener('click', () => {
+                const isOpen = hoursBadgeWrap.classList.toggle('open');
+                headerHoursBadge.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!hoursBadgeWrap.contains(event.target)) {
+                    hoursBadgeWrap.classList.remove('open');
+                    headerHoursBadge.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    hoursBadgeWrap.classList.remove('open');
+                    headerHoursBadge.setAttribute('aria-expanded', 'false');
+                }
+            });
         }
 
         // -------------------------------------------------------------
@@ -1580,6 +1870,9 @@
             loadBasket();
             setInterval(checkOrderingAvailability, 60000);
         }
+
+        // Keep the header "open now / next open" badge accurate as time passes
+        setInterval(refreshOpeningHoursDisplay, 60000);
     </script>
 </body>
 </html>
