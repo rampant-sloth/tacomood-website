@@ -12,6 +12,9 @@
   "main": "worker/index.js",
   "assets": {
     "directory": ".",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // Serve files at the exact path they live at (index.html, admin.html, ...)
+    // instead of Cloudflare's default redirects to extensionless URLs.
+    "html_handling": "none"
   }
 }
