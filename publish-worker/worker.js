@@ -218,7 +218,10 @@ export async function handleAdminRequest(request, env) {
     }
 
     if (!env.ADMIN_PASSWORD) {
-        return jsonResponse({ ok: false, error: 'Publish service is not configured.' }, 500);
+        return jsonResponse({
+            ok: false,
+            error: 'Publish service is not configured — this Worker has no ADMIN_PASSWORD. Add it under Workers & Pages → this Worker → Settings → Variables and Secrets, then save/deploy.'
+        }, 500);
     }
 
     let body;

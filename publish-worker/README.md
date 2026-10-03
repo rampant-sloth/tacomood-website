@@ -102,7 +102,7 @@ export default {
 | "…answered HTTP 404 but not with JSON…" | `PUBLISH_ENDPOINT` points at something that is not the publish Worker — usually the Worker that serves the website | Point it at the publish Worker URL (step 4) |
 | "Could not reach the publish service at …" | Wrong address, offline, or the `workers.dev` address is disabled | Check the URL and enable `workers.dev` on the Worker |
 | "Incorrect admin password." | `ADMIN_PASSWORD` on that Worker is different from what was typed | Re-enter it, or edit the variable in **Settings → Variables and Secrets** and Deploy |
-| "Publish service is not configured." | No `ADMIN_PASSWORD` on the Worker being called | Add it to *that* Worker (a variable on a different Worker has no effect) |
+| "Publish service is not configured — this Worker has no ADMIN_PASSWORD…" | The Worker answering `/verify` has no `ADMIN_PASSWORD` (a variable saved on a *different* Worker has no effect) | Workers & Pages → **that** Worker → Settings → Variables and Secrets → add `ADMIN_PASSWORD` → save/deploy. Re-run the build if it does not apply immediately |
 | "Publish service is missing GITHUB_TOKEN." | No `GITHUB_TOKEN` secret | Add the secret |
 | "Could not publish menu.json (401)…" | Token invalid or revoked | Recreate the token, update the secret |
 | "Could not publish menu.json (403)…" | Token lacks **Contents: Read and write** | Recreate the token with that permission |
