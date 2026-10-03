@@ -161,6 +161,27 @@
             line-height: 1.4;
         }
 
+        .auth-remember {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 1.1rem;
+            font-size: 0.88rem;
+            color: var(--text-cream);
+            opacity: 0.9;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auth-remember input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-lime);
+            cursor: pointer;
+            margin: 0;
+        }
+
         .btn-unlock {
             width: 100%;
             background-color: var(--accent-lime);
@@ -963,8 +984,9 @@
 <body>
 
     <!-- -------------------------------------------------------------
-         1. Password / Admin Key Lockscreen Gate
-         Protected: The portal is completely inaccessible without the key
+         1. Admin Password Lockscreen Gate
+         The password is verified server-side by the publish Worker
+         (see publish-worker/); publishing is impossible without it
          ------------------------------------------------------------- -->
     <div id="auth-lockscreen">
         <div class="auth-card">
@@ -972,16 +994,21 @@
             <h2 class="auth-title">Taco Mood</h2>
             <div class="auth-subtitle">Owner Portal Locked</div>
             <p class="auth-instruction">
-                This portal is password-protected. Please enter your <strong>Admin Key</strong> (GitHub Personal Access Token) to unlock the menu editor.
+                This portal is password-protected. Please enter the <strong>Admin Password</strong> to unlock the menu editor.
             </p>
 
             <form id="auth-form" onsubmit="event.preventDefault(); handleUnlock();">
                 <div class="auth-input-wrapper">
-                    <label for="auth-key-input" class="auth-label">Admin Key / Password</label>
-                    <input type="password" id="auth-key-input" class="auth-input" placeholder="github_pat_... or ghp_..." required autocomplete="current-password">
+                    <label for="auth-key-input" class="auth-label">Admin Password</label>
+                    <input type="password" id="auth-key-input" class="auth-input" placeholder="Enter admin password" required autocomplete="current-password">
                     <button type="button" id="btn-toggle-auth-pwd" class="pwd-toggle-btn" title="Show or hide password">👁️</button>
                     <div id="auth-error-msg" class="auth-error" style="display: none;"></div>
                 </div>
+
+                <label class="auth-remember" for="remember-device">
+                    <input type="checkbox" id="remember-device">
+                    <span>Remember this device</span>
+                </label>
 
                 <button type="submit" id="btn-unlock-submit" class="btn-unlock">
                     Unlock Admin Portal &rarr;
@@ -1053,7 +1080,7 @@
                         <li><strong>Change Prices:</strong> Click directly into the <strong>Price</strong> field (e.g. <code>£13.00</code>) and enter the new price.</li>
                         <li><strong>Mark Sold Out:</strong> Check or uncheck <strong>"Mark Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
                         <li><strong>Update Opening Hours:</strong> In the <strong>Store Opening Hours</strong> card, tick <strong>"Closed"</strong> for shut days and set opening/closing times for open days. The website header and footer update automatically.</li>
-                        <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. The updates are committed directly to your website repository in seconds!</li>
+                        <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. Your updates go straight to the live website — it usually refreshes within a minute.</li>
                     </ol>
                 </div>
             </details>
@@ -1092,10 +1119,10 @@
 
     <script>
         // Configuration
-        const GITHUB_OWNER = 'rampant-sloth';
-        const GITHUB_REPO = 'tacomood-website';
-        const GITHUB_PATH = 'menu.json';
-        const GITHUB_BRANCH = 'main';
+        // URL of the Cloudflare Worker that publishes menu.json to GitHub.
+        // The Worker holds the GitHub token and admin password server-side —
+        // this page never sees either secret. See publish-worker/README.md.
+        const PUBLISH_ENDPOINT = 'https://tacomood-publish.YOUR-SUBDOMAIN.workers.dev';
 
         // State
         let menuData = null;
@@ -1109,6 +1136,7 @@
         const authErrorMsg = document.getElementById('auth-error-msg');
         const btnUnlockSubmit = document.getElementById('btn-unlock-submit');
         const btnToggleAuthPwd = document.getElementById('btn-toggle-auth-pwd');
+        const rememberDeviceCheckbox = document.getElementById('remember-device');
         const btnLockPortal = document.getElementById('btn-lock-portal');
 
         const formContainer = document.getElementById('form-container');
@@ -1159,16 +1187,6 @@
             }
         }
 
-        // UTF-8 safe Base64 encoder for browser
-        function utf8ToBase64(str) {
-            const bytes = new TextEncoder().encode(str);
-            let binString = '';
-            for (let i = 0; i < bytes.length; i++) {
-                binString += String.fromCharCode(bytes[i]);
-            }
-            return btoa(binString);
-        }
-
         // Toggle password visibility
         btnToggleAuthPwd.addEventListener('click', () => {
             if (authKeyInput.type === 'password') {
@@ -1180,56 +1198,79 @@
             }
         });
 
-        // -------------------------------------------------------------
+        // ------------------------------------------------------------
         // Authentication & Lock Screen Verification Logic
-        // -------------------------------------------------------------
-        async function handleUnlock() {
-            const key = authKeyInput.value.trim();
+        // The password is checked by the publish Worker. It is kept in
+        // sessionStorage for this tab, or localStorage when "Remember
+        // this device" is ticked. It is never a GitHub token.
+        // ------------------------------------------------------------
+        const PASSWORD_STORAGE_KEY = 'tacomood_admin_password';
 
-            if (!key) {
-                showAuthError("Please enter your Admin Key / Password.");
+        function publishEndpoint(path) {
+            return `${PUBLISH_ENDPOINT.replace(/\/+$/, '')}/${path}`;
+        }
+
+        function savedPassword() {
+            return sessionStorage.getItem(PASSWORD_STORAGE_KEY)
+                || localStorage.getItem(PASSWORD_STORAGE_KEY)
+                || '';
+        }
+
+        function storePassword(password, remember) {
+            sessionStorage.setItem(PASSWORD_STORAGE_KEY, password);
+            if (remember) {
+                localStorage.setItem(PASSWORD_STORAGE_KEY, password);
+            } else {
+                localStorage.removeItem(PASSWORD_STORAGE_KEY);
+            }
+        }
+
+        function clearSavedPassword() {
+            sessionStorage.removeItem(PASSWORD_STORAGE_KEY);
+            localStorage.removeItem(PASSWORD_STORAGE_KEY);
+        }
+
+        async function verifyPassword(password) {
+            let response;
+            try {
+                response = await fetch(publishEndpoint('verify'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+            } catch (err) {
+                throw new Error('Could not reach the publish service. Check PUBLISH_ENDPOINT in admin.html and that the Worker is deployed.');
+            }
+
+            const data = await response.json().catch(() => ({}));
+            if (response.status === 401) {
+                throw new Error('Incorrect admin password.');
+            }
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || `Could not verify the password (HTTP ${response.status}).`);
+            }
+        }
+
+        async function handleUnlock() {
+            const password = authKeyInput.value.trim();
+
+            if (!password) {
+                showAuthError('Please enter the admin password.');
                 return;
             }
 
             btnUnlockSubmit.disabled = true;
-            btnUnlockSubmit.innerHTML = '<span class="spinner"></span> <span>Verifying with GitHub...</span>';
+            btnUnlockSubmit.innerHTML = '<span class="spinner"></span> <span>Checking password...</span>';
             authErrorMsg.style.display = 'none';
 
             try {
-                // Test key authenticity directly with GitHub REST API
-                const testUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`;
-                const res = await fetch(testUrl, {
-                    headers: {
-                        'Accept': 'application/vnd.github+json',
-                        'Authorization': `Bearer ${key}`,
-                        'X-GitHub-Api-Version': '2022-11-28'
-                    }
-                });
+                await verifyPassword(password);
+                storePassword(password, rememberDeviceCheckbox.checked);
 
-                if (res.status === 401) {
-                    throw new Error("Access Denied: Invalid Admin Key. Please check your token.");
-                }
-                if (res.status === 403) {
-                    throw new Error("Access Forbidden: Your token lacks 'Contents: Read and write' permissions for this repository.");
-                }
-                if (res.status === 404) {
-                    throw new Error(`Repository '${GITHUB_OWNER}/${GITHUB_REPO}' or '${GITHUB_PATH}' was not found.`);
-                }
-                if (!res.ok) {
-                    throw new Error(`Authentication error: HTTP ${res.status} ${res.statusText}`);
-                }
-
-                // Authentication passed!
-                sessionStorage.setItem('tacomood_admin_token', key);
-
-                // Reveal portal, hide lock screen
                 authLockscreen.style.display = 'none';
                 portalWrapper.style.display = 'flex';
-
-                // Load menu data and render
                 loadMenuData();
-                showBanner("Welcome! Admin Portal unlocked. You can now edit dish names, descriptions, prices, availability, and store opening hours.", "success");
-
+                showBanner('Welcome! Admin Portal unlocked. You can now edit dish names, descriptions, prices, availability, and store opening hours.', 'success');
             } catch (err) {
                 showAuthError(err.message);
             } finally {
@@ -1250,8 +1291,9 @@
                     return;
                 }
             }
-            sessionStorage.removeItem('tacomood_admin_token');
+            clearSavedPassword();
             authKeyInput.value = '';
+            rememberDeviceCheckbox.checked = false;
             authErrorMsg.style.display = 'none';
             portalWrapper.style.display = 'none';
             authLockscreen.style.display = 'flex';
@@ -1263,9 +1305,10 @@
 
         // Check authentication on initial page load
         function initAuth() {
-            const savedToken = sessionStorage.getItem('tacomood_admin_token');
-            if (savedToken && savedToken.trim()) {
-                authKeyInput.value = savedToken.trim();
+            const password = savedPassword();
+            if (password) {
+                authKeyInput.value = password;
+                rememberDeviceCheckbox.checked = !!localStorage.getItem(PASSWORD_STORAGE_KEY);
                 handleUnlock();
             } else {
                 authLockscreen.style.display = 'flex';
@@ -1778,9 +1821,9 @@
             return null;
         }
 
-        // -------------------------------------------------------------
-        // Publish Changes using GitHub REST API
-        // -------------------------------------------------------------
+        // ------------------------------------------------------------
+        // Publish Changes through the Cloudflare Worker
+        // ------------------------------------------------------------
         async function publishChanges() {
             if (isPublishing) return;
 
@@ -1791,21 +1834,21 @@
                 return;
             }
 
-            const adminKey = sessionStorage.getItem('tacomood_admin_token');
-            if (!adminKey) {
-                showBanner("Session expired or missing Admin Key. Please lock and re-authenticate.", "error");
+            const password = savedPassword();
+            if (!password) {
+                showBanner('Session expired. Please lock the portal and enter the admin password again.', 'error');
                 return;
             }
 
             // 1. Reconstruct JSON
             const updatedJsonObj = buildUpdatedJson();
             if (!updatedJsonObj) {
-                showBanner("Error: No menu data available to publish.", "error");
+                showBanner('Error: No menu data available to publish.', 'error');
                 return;
             }
 
             const jsonString = JSON.stringify(updatedJsonObj, null, 2) + '\n';
-            const base64Content = utf8ToBase64(jsonString);
+            const commitMessage = `Update menu.json (menu & opening hours) via Admin Portal [${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
 
             // 2. UI Publishing state
             isPublishing = true;
@@ -1813,74 +1856,44 @@
             btnPublishMobile.disabled = true;
             btnPublishHeader.innerHTML = '<span class="spinner"></span> <span>Publishing...</span>';
             btnPublishMobile.innerHTML = '<span class="spinner"></span> <span>Publishing...</span>';
-            showBanner('Connecting to GitHub and fetching latest repository sha...', 'info');
+            showBanner('Publishing menu.json...', 'info');
 
             try {
-                // Step A: Fetch current file SHA
-                const getUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`;
-                
-                const getResponse = await fetch(getUrl, {
-                    headers: {
-                        'Accept': 'application/vnd.github+json',
-                        'Authorization': `Bearer ${adminKey}`,
-                        'X-GitHub-Api-Version': '2022-11-28'
-                    }
-                });
-
-                if (getResponse.status === 401) {
-                    sessionStorage.removeItem('tacomood_admin_token');
-                    throw new Error("Invalid Admin Key (401 Unauthorized). Please lock and log in again.");
+                let response;
+                try {
+                    response = await fetch(publishEndpoint('publish'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            password: password,
+                            content: jsonString,
+                            message: commitMessage
+                        })
+                    });
+                } catch (err) {
+                    throw new Error('Could not reach the publish service. Check that the Worker is deployed and PUBLISH_ENDPOINT is set in admin.html.');
                 }
 
-                if (getResponse.status === 403) {
-                    throw new Error("Access forbidden (403). Ensure your GitHub token has 'Contents: Read and write' permissions.");
+                const data = await response.json().catch(() => ({}));
+                if (response.status === 401) {
+                    clearSavedPassword();
+                    throw new Error('Admin password was rejected. Lock the portal and enter it again.');
                 }
-
-                if (!getResponse.ok) {
-                    throw new Error(`GitHub GET error: ${getResponse.status} ${getResponse.statusText}`);
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.error || `Publish failed (HTTP ${response.status}).`);
                 }
-
-                const fileInfo = await getResponse.json();
-                const currentSha = fileInfo.sha;
-
-                // Step B: PUT updated file to main branch
-                showBanner('Committing updated menu.json (names, descriptions, prices, availability, opening hours) to main branch...', 'info');
-
-                const putUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-                const commitMessage = `Update menu.json (menu & opening hours) via Admin Portal [${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
-
-                const putResponse = await fetch(putUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Accept': 'application/vnd.github+json',
-                        'Authorization': `Bearer ${adminKey}`,
-                        'Content-Type': 'application/json',
-                        'X-GitHub-Api-Version': '2022-11-28'
-                    },
-                    body: JSON.stringify({
-                        message: commitMessage,
-                        content: base64Content,
-                        sha: currentSha,
-                        branch: GITHUB_BRANCH
-                    })
-                });
-
-                if (!putResponse.ok) {
-                    const errData = await putResponse.json().catch(() => ({}));
-                    throw new Error(`GitHub PUT error: ${errData.message || putResponse.statusText} (${putResponse.status})`);
-                }
-
-                const putResult = await putResponse.json();
 
                 // 3. Success handling
                 menuData = updatedJsonObj; // sync local state
                 setDirty(false);
 
-                const commitUrl = putResult.commit ? putResult.commit.html_url : '#';
+                const commitLink = data.commitUrl
+                    ? `<a href="${data.commitUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; margin-left: 8px;">View Commit &rarr;</a>`
+                    : '';
                 showBanner(`
                     <strong>Menu Successfully Published! 🎉</strong><br>
-                    Your updates to dish names, descriptions, prices, and availability are live on GitHub.
-                    <a href="${commitUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; margin-left: 8px;">View Commit &rarr;</a>
+                    Dish names, descriptions, prices, availability and opening hours are committed to the website.
+                    ${commitLink}
                 `, 'success');
 
             } catch (err) {
