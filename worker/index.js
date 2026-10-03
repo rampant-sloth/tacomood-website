@@ -25,9 +25,21 @@ export default {
             return adminResponse;
         }
 
+        const assets = env.ASSETS && typeof env.ASSETS.fetch === 'function' ? env.ASSETS : null;
+
+        // Directory requests (like "/") must resolve to their index.html:
+        // wrangler.jsonc sets html_handling: "none" so that every .html URL keeps
+        // working at its own path, which also turns off Cloudflare's own index
+        // resolution.
+        const url = new URL(request.url);
+        if (assets && url.pathname.endsWith('/')) {
+            const indexPath = url.pathname + 'index.html';
+            return assets.fetch(new Request(new URL(indexPath, url), request));
+        }
+
         // Not a publish route — serve the website as usual
-        if (env.ASSETS && typeof env.ASSETS.fetch === 'function') {
-            return env.ASSETS.fetch(request);
+        if (assets) {
+            return assets.fetch(request);
         }
 
         return new Response('Not found', { status: 404 });
