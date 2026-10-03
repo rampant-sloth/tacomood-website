@@ -1236,24 +1236,52 @@
             localStorage.removeItem(PASSWORD_STORAGE_KEY);
         }
 
+        // Reads a reply as JSON without throwing when the service answers with
+        // HTML or an empty body (which is what an unmapped URL looks like)
+        async function readPublishResponse(response) {
+            const text = await response.text().catch(() => '');
+            if (!text) {
+                return { data: {}, isJson: false, preview: '(empty body)' };
+            }
+            try {
+                return { data: JSON.parse(text), isJson: true, preview: text.slice(0, 120) };
+            } catch (err) {
+                return { data: {}, isJson: false, preview: text.slice(0, 120) };
+            }
+        }
+
+        // Turns a failed response into something actionable. A non-JSON answer
+        // almost always means PUBLISH_ENDPOINT points at the wrong Worker.
+        function describePublishFailure(response, parsed, url, fallback) {
+            if (parsed.isJson && parsed.data && parsed.data.error) {
+                return parsed.data.error;
+            }
+            if (!parsed.isJson) {
+                console.error(`Publish service replied without JSON (HTTP ${response.status}) from ${url}:`, parsed.preview);
+                return `${fallback}: ${url} answered HTTP ${response.status} but not with JSON, so the publish Worker is probably not deployed at that address. Check PUBLISH_ENDPOINT in admin.html against the Worker URL in Cloudflare.`;
+            }
+            return `${fallback} (HTTP ${response.status}).`;
+        }
+
         async function verifyPassword(password) {
+            const url = publishEndpoint('verify');
             let response;
             try {
-                response = await fetch(publishEndpoint('verify'), {
+                response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
                 });
             } catch (err) {
-                throw new Error('Could not reach the publish service. Check PUBLISH_ENDPOINT in admin.html and that the Worker is deployed.');
+                throw new Error(`Could not reach the publish service at ${url}. Check your internet connection and that the Worker is deployed.`);
             }
 
-            const data = await response.json().catch(() => ({}));
+            const parsed = await readPublishResponse(response);
             if (response.status === 401) {
                 throw new Error('Incorrect admin password.');
             }
-            if (!response.ok || !data.ok) {
-                throw new Error(data.error || `Could not verify the password (HTTP ${response.status}).`);
+            if (!response.ok || !parsed.data.ok) {
+                throw new Error(describePublishFailure(response, parsed, url, 'Could not verify the password'));
             }
         }
 
@@ -1865,9 +1893,10 @@
             showBanner('Publishing menu.json...', 'info');
 
             try {
+                const publishUrl = publishEndpoint('publish');
                 let response;
                 try {
-                    response = await fetch(publishEndpoint('publish'), {
+                    response = await fetch(publishUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1877,16 +1906,17 @@
                         })
                     });
                 } catch (err) {
-                    throw new Error('Could not reach the publish service. Check that the Worker is deployed and PUBLISH_ENDPOINT is set in admin.html.');
+                    throw new Error(`Could not reach the publish service at ${publishUrl}. Check your internet connection and that the Worker is deployed.`);
                 }
 
-                const data = await response.json().catch(() => ({}));
+                const parsed = await readPublishResponse(response);
+                const data = parsed.data;
                 if (response.status === 401) {
                     clearSavedPassword();
                     throw new Error('Admin password was rejected. Lock the portal and enter it again.');
                 }
                 if (!response.ok || !data.ok) {
-                    throw new Error(data.error || `Publish failed (HTTP ${response.status}).`);
+                    throw new Error(describePublishFailure(response, parsed, publishUrl, 'Publish failed'));
                 }
 
                 // 3. Success handling

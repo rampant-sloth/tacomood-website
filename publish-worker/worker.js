@@ -189,52 +189,71 @@ async function publishMenu(env, content, message) {
     };
 }
 
+// Handles the admin publish bridge. Returns null when the request is not for
+// /verify or /publish, which lets this be mounted in front of another Worker
+// (for example a static-assets Worker that serves the website):
+//
+//   import { handleAdminRequest } from './admin-publish.js';
+//
+//   export default {
+//       async fetch(request, env) {
+//           const admin = await handleAdminRequest(request, env);
+//           return admin || env.ASSETS.fetch(request);
+//       }
+//   };
+export async function handleAdminRequest(request, env) {
+    const path = new URL(request.url).pathname.replace(/\/+$/, '') || '/';
+
+    // Not one of our routes — leave it for the host Worker
+    if (path !== '/verify' && path !== '/publish') {
+        return null;
+    }
+
+    if (request.method === 'OPTIONS') {
+        return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    if (request.method !== 'POST') {
+        return jsonResponse({ ok: false, error: 'Use POST.' }, 405);
+    }
+
+    if (!env.ADMIN_PASSWORD) {
+        return jsonResponse({ ok: false, error: 'Publish service is not configured.' }, 500);
+    }
+
+    let body;
+    try {
+        body = await request.json();
+    } catch (err) {
+        return jsonResponse({ ok: false, error: 'Request body must be JSON.' }, 400);
+    }
+
+    if (!passwordIsValid(body && body.password, env.ADMIN_PASSWORD)) {
+        // Small delay to slow down brute-force attempts
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return jsonResponse({ ok: false, error: 'Incorrect admin password.' }, 401);
+    }
+
+    if (path === '/verify') {
+        return jsonResponse({ ok: true });
+    }
+
+    const validationError = validateMenuContent(body.content);
+    if (validationError) {
+        return jsonResponse({ ok: false, error: validationError }, 400);
+    }
+
+    try {
+        const published = await publishMenu(env, body.content, body.message);
+        return jsonResponse({ ok: true, commitSha: published.commitSha, commitUrl: published.commitUrl });
+    } catch (err) {
+        return jsonResponse({ ok: false, error: err.message || 'Publish failed.' }, 502);
+    }
+}
+
 export default {
     async fetch(request, env) {
-        if (request.method === 'OPTIONS') {
-            return new Response(null, { status: 204, headers: CORS_HEADERS });
-        }
-
-        if (request.method !== 'POST') {
-            return jsonResponse({ ok: false, error: 'Use POST.' }, 405);
-        }
-
-        const path = new URL(request.url).pathname.replace(/\/+$/, '') || '/';
-        if (path !== '/verify' && path !== '/publish') {
-            return jsonResponse({ ok: false, error: 'Unknown endpoint.' }, 404);
-        }
-
-        if (!env.ADMIN_PASSWORD) {
-            return jsonResponse({ ok: false, error: 'Publish service is not configured.' }, 500);
-        }
-
-        let body;
-        try {
-            body = await request.json();
-        } catch (err) {
-            return jsonResponse({ ok: false, error: 'Request body must be JSON.' }, 400);
-        }
-
-        if (!passwordIsValid(body && body.password, env.ADMIN_PASSWORD)) {
-            // Small delay to slow down brute-force attempts
-            await new Promise(resolve => setTimeout(resolve, 500));
-            return jsonResponse({ ok: false, error: 'Incorrect admin password.' }, 401);
-        }
-
-        if (path === '/verify') {
-            return jsonResponse({ ok: true });
-        }
-
-        const validationError = validateMenuContent(body.content);
-        if (validationError) {
-            return jsonResponse({ ok: false, error: validationError }, 400);
-        }
-
-        try {
-            const published = await publishMenu(env, body.content, body.message);
-            return jsonResponse({ ok: true, commitSha: published.commitSha, commitUrl: published.commitUrl });
-        } catch (err) {
-            return jsonResponse({ ok: false, error: err.message || 'Publish failed.' }, 502);
-        }
+        const adminResponse = await handleAdminRequest(request, env);
+        return adminResponse || jsonResponse({ ok: false, error: 'Unknown endpoint.' }, 404);
     }
 };
