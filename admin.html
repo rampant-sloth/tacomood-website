@@ -1119,10 +1119,17 @@
 
     <script>
         // Configuration
-        // URL of the Cloudflare Worker that publishes menu.json to GitHub.
-        // The Worker holds the GitHub token and admin password server-side —
-        // this page never sees either secret. See publish-worker/README.md.
-        const PUBLISH_ENDPOINT = 'https://tacomood-website.rampantsloth.workers.dev/publish';
+        // Cloudflare Worker(s) that publish menu.json to GitHub. The Worker holds
+        // the GitHub token and admin password server-side — this page never sees
+        // either secret. See publish-worker/README.md.
+        //
+        // Both URL forms work (with or without a trailing /publish or /verify), and
+        // the portal uses the first entry that is deployed *and* configured, so
+        // adding the dedicated bridge Worker later needs no change here.
+        const PUBLISH_ENDPOINTS = [
+            'https://tacomood-website.rampantsloth.workers.dev',   // bridge mounted on the site Worker
+            'https://tacomood-publish.rampantsloth.workers.dev'    // dedicated bridge Worker (optional)
+        ];
 
         // State
         let menuData = null;
@@ -1206,14 +1213,34 @@
         // ------------------------------------------------------------
         const PASSWORD_STORAGE_KEY = 'tacomood_admin_password';
 
-        function publishEndpoint(path) {
+        let activePublishEndpoint = null;   // the endpoint that last answered us
+
+        function normalizeEndpoint(value) {
             // Accepts the Worker base URL with or without a trailing /publish or
             // /verify, so both `https://<worker>.workers.dev` and
             // `https://<worker>.workers.dev/publish` work.
-            const base = PUBLISH_ENDPOINT.trim()
+            return String(value || '').trim()
                 .replace(/\/+$/, '')
                 .replace(/\/(publish|verify)$/, '');
+        }
+
+        function publishCandidates() {
+            const bases = [];
+            PUBLISH_ENDPOINTS.forEach(value => {
+                const base = normalizeEndpoint(value);
+                if (base && bases.indexOf(base) === -1) {
+                    bases.push(base);
+                }
+            });
+            return bases;
+        }
+
+        function endpointUrl(base, path) {
             return `${base}/${path}`;
+        }
+
+        function activeEndpointBase() {
+            return activePublishEndpoint || publishCandidates()[0] || '';
         }
 
         function savedPassword() {
@@ -1251,38 +1278,56 @@
         }
 
         // Turns a failed response into something actionable. A non-JSON answer
-        // almost always means PUBLISH_ENDPOINT points at the wrong Worker.
+        // almost always means that address is not serving the bridge at all.
         function describePublishFailure(response, parsed, url, fallback) {
             if (parsed.isJson && parsed.data && parsed.data.error) {
                 return parsed.data.error;
             }
             if (!parsed.isJson) {
                 console.error(`Publish service replied without JSON (HTTP ${response.status}) from ${url}:`, parsed.preview);
-                return `${fallback}: ${url} answered HTTP ${response.status} but not with JSON, so the publish Worker is probably not deployed at that address. Check PUBLISH_ENDPOINT in admin.html against the Worker URL in Cloudflare.`;
+                return `${fallback}: ${url} answered HTTP ${response.status} but not with JSON, so the publish Worker is probably not deployed at that address. Check the PUBLISH_ENDPOINTS list in admin.html against your Worker URLs.`;
             }
             return `${fallback} (HTTP ${response.status}).`;
         }
 
         async function verifyPassword(password) {
-            const url = publishEndpoint('verify');
-            let response;
-            try {
-                response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: password })
-                });
-            } catch (err) {
-                throw new Error(`Could not reach the publish service at ${url}. Check your internet connection and that the Worker is deployed.`);
+            const problems = [];
+
+            for (const base of publishCandidates()) {
+                const url = endpointUrl(base, 'verify');
+                let response;
+                try {
+                    response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: password })
+                    });
+                } catch (err) {
+                    problems.push(`${base} could not be reached`);
+                    continue;
+                }
+
+                const parsed = await readPublishResponse(response);
+
+                // 401 means the bridge is deployed and configured here, so the
+                // password itself is wrong — do not fall through to other Workers
+                if (response.status === 401) {
+                    activePublishEndpoint = base;
+                    throw new Error('Incorrect admin password.');
+                }
+
+                if (response.ok && parsed.data.ok) {
+                    activePublishEndpoint = base;
+                    return;
+                }
+
+                problems.push(describePublishFailure(response, parsed, url, 'not ready'));
             }
 
-            const parsed = await readPublishResponse(response);
-            if (response.status === 401) {
-                throw new Error('Incorrect admin password.');
+            if (!problems.length) {
+                throw new Error('No publish service is configured. See publish-worker/README.md.');
             }
-            if (!response.ok || !parsed.data.ok) {
-                throw new Error(describePublishFailure(response, parsed, url, 'Could not verify the password'));
-            }
+            throw new Error(`No working publish service found. ${problems.join(' | ')}`);
         }
 
         async function handleUnlock() {
@@ -1874,6 +1919,12 @@
                 return;
             }
 
+            const base = activeEndpointBase();
+            if (!base) {
+                showBanner('No publish service is configured. See publish-worker/README.md.', 'error');
+                return;
+            }
+
             // 1. Reconstruct JSON
             const updatedJsonObj = buildUpdatedJson();
             if (!updatedJsonObj) {
@@ -1893,7 +1944,7 @@
             showBanner('Publishing menu.json...', 'info');
 
             try {
-                const publishUrl = publishEndpoint('publish');
+                const publishUrl = endpointUrl(base, 'publish');
                 let response;
                 try {
                     response = await fetch(publishUrl, {
@@ -1916,6 +1967,9 @@
                     throw new Error('Admin password was rejected. Lock the portal and enter it again.');
                 }
                 if (!response.ok || !data.ok) {
+                    if (!parsed.isJson) {
+                        activePublishEndpoint = null;   // re-probe the endpoints on next login
+                    }
                     throw new Error(describePublishFailure(response, parsed, publishUrl, 'Publish failed'));
                 }
 

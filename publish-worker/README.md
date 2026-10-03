@@ -45,8 +45,8 @@ step 5), create the bridge as its own Worker instead:
 2. Choose this repository
 3. Set the **deploy command** to `npx wrangler deploy --config publish-worker/wrangler.jsonc`
    (`publish-worker/wrangler.jsonc` names the Worker `tacomood-publish`)
-4. Deploy, then point `PUBLISH_ENDPOINT` in `admin.html` at
-   `https://tacomood-publish.<your-subdomain>.workers.dev`
+4. Deploy. The address is already in the `PUBLISH_ENDPOINTS` list in `admin.html`, so
+   nothing else needs changing — the portal will start using it automatically.
 
 ### 3. Add the settings on the Worker
 Worker → **Settings → Variables and Secrets → Add** (this is configuration, not code):
@@ -79,13 +79,20 @@ export default {
 ```
 
 ### 4. Point the admin portal at the Worker
-1. Copy the **publish** Worker's URL — looks like `https://tacomood-publish.<your-subdomain>.workers.dev`.
-   Use the publish Worker's own address, **not** the address of the Worker that serves the website.
-2. In `admin.html`, update the one line: `const PUBLISH_ENDPOINT = '...'`.
-   With or without a trailing `/publish` both work; the page appends `/verify` and `/publish` itself.
-3. If the Worker's `workers.dev` address is switched off, enable it under
-   **Workers & Pages → the publish Worker → Settings → Domains & Routes → workers.dev**.
-4. Commit and push.
+`admin.html` already lists both addresses and uses whichever one is deployed **and**
+configured, so there is normally nothing to change:
+
+```js
+const PUBLISH_ENDPOINTS = [
+    'https://tacomood-website.rampantsloth.workers.dev',   // bridge mounted on the site Worker
+    'https://tacomood-publish.rampantsloth.workers.dev'    // dedicated bridge Worker (optional)
+];
+```
+
+Add or edit an entry only if a Worker lives at a different address. Both forms work —
+with or without a trailing `/publish`; the page appends `/verify` and `/publish` itself.
+If the Worker's `workers.dev` address is switched off, enable it under
+**Workers & Pages → the Worker → Settings → Domains & Routes → workers.dev**.
 
 ### 5. Smoke test
 
@@ -99,7 +106,7 @@ export default {
 
 | Message in the admin portal | What it means | Fix |
 |---|---|---|
-| "…answered HTTP 404 but not with JSON…" | `PUBLISH_ENDPOINT` points at something that is not the publish Worker — usually the Worker that serves the website | Point it at the publish Worker URL (step 4) |
+| "…answered HTTP 404 but not with JSON…" | That address is not serving the bridge — usually the Worker that serves the website, before the bridge was added | Check the `PUBLISH_ENDPOINTS` list in `admin.html` against your Worker URLs |
 | "Could not reach the publish service at …" | Wrong address, offline, or the `workers.dev` address is disabled | Check the URL and enable `workers.dev` on the Worker |
 | "Incorrect admin password." | `ADMIN_PASSWORD` on that Worker is different from what was typed | Re-enter it, or edit the variable in **Settings → Variables and Secrets** and Deploy |
 | "Publish service is not configured — this Worker has no ADMIN_PASSWORD…" | The Worker answering `/verify` has no `ADMIN_PASSWORD` (a variable saved on a *different* Worker has no effect) | Workers & Pages → **that** Worker → Settings → Variables and Secrets → add `ADMIN_PASSWORD` → save/deploy. Re-run the build if it does not apply immediately |
