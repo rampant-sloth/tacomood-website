@@ -254,6 +254,18 @@ export async function handleAdminRequest(request, env) {
 export default {
     async fetch(request, env) {
         const adminResponse = await handleAdminRequest(request, env);
-        return adminResponse || jsonResponse({ ok: false, error: 'Unknown endpoint.' }, 404);
+        if (adminResponse) {
+            return adminResponse;
+        }
+
+        // When this file is pasted into the Worker that serves the website, hand
+        // every other request to the static assets instead of swallowing it.
+        // Standalone (no assets binding) it stays a self-contained bridge.
+        const assets = env.ASSETS || env.assets;
+        if (assets && typeof assets.fetch === 'function') {
+            return assets.fetch(request);
+        }
+
+        return jsonResponse({ ok: false, error: 'Unknown endpoint.' }, 404);
     }
 };

@@ -28,18 +28,41 @@ POST /publish  { password, content }   ──▶ GET menu.json (sha)            
 3. Name it `tacomood-publish` → **Deploy**
 4. Click **Edit code**, replace everything with the contents of `worker.js`, then **Deploy**
 
-**Important:** this must be its own Worker. Do not paste `worker.js` into the Worker
-that serves the website — the two have different jobs, and the website Worker
-(`tacomood-website.…workers.dev`) answers `POST /verify` with a plain `404` because
-the publish routes do not exist there. That is exactly the "HTTP 404 … but not with
-JSON" error the admin page shows when `PUBLISH_ENDPOINT` points at the site Worker.
+**It can live on its own, or inside the Worker that already serves the site.**
+Right now `tacomood-website.…workers.dev` answers `POST /verify` with a plain `404`
+and no body, because that Worker only serves static assets — the publish routes do
+not exist there. That is exactly the "HTTP 404 … but not with JSON" error the admin
+page shows. Pick one of the two setups below.
 
-Its URL will look like `https://tacomood-publish.<your-subdomain>.workers.dev`.
+Its URL will look like `https://tacomood-publish.<your-subdomain>.workers.dev` if you
+give it its own Worker.
 
-### Mounting it inside an existing Worker (optional)
+### Fastest option: paste it into the site Worker instead
+If the site is served by a Cloudflare Worker (yours is — `…rampantsloth.workers.dev`
+returns the page HTML), you can skip creating a second Worker. `worker.js` is written
+to work in both places: it answers `/verify` and `/publish` itself and hands every
+other request to `env.ASSETS`, so the website keeps working.
+
+1. **Workers & Pages → the Worker that serves the site → Edit code**
+2. Replace the code with the contents of `worker.js`, then **Deploy**
+   *(if that Worker already has extra logic, keep it and add this at the top of its
+   `fetch` handler instead: `const admin = await handleAdminRequest(request, env);`
+   `if (admin) return admin;`)*
+3. On **that same Worker**, add `ADMIN_PASSWORD` and `GITHUB_TOKEN`
+4. Leave `PUBLISH_ENDPOINT` as `https://tacomood-website.<subdomain>.workers.dev` —
+   no new URL to wire up
+
+Confirm it took with a `GET` (JSON means the bridge is live; an empty 404 means it is not):
+```powershell
+Invoke-WebRequest -Uri "https://<site-worker>.<subdomain>.workers.dev/verify" -Method GET -UseBasicParsing |
+    Select-Object -ExpandProperty Content
+# expect: {"ok":false,"error":"Use POST."}
+```
+
+### Mounting it inside an existing Worker (manual)
 `worker.js` also exports a composable `handleAdminRequest(request, env)` that returns
-`null` for any request that is not `/verify` or `/publish`. If you would rather not
-run a second Worker, copy the file next to your site Worker and add the routes to it:
+`null` for any request that is not `/verify` or `/publish`. Copy the file next to your
+site Worker and add the routes to it:
 
 ```js
 import { handleAdminRequest } from './admin-publish.js';
