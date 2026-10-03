@@ -308,6 +308,16 @@
             cursor: pointer;
         }
 
+        /* Collection ordering hidden (basic version): dish cards are not clickable */
+        body.ordering-disabled .menu-card:not(.is-sold-out) {
+            cursor: default;
+        }
+
+        body.ordering-disabled .menu-card:not(.is-sold-out):hover {
+            border-color: var(--border-green);
+            background-color: var(--card-bg);
+        }
+
         .menu-card:not(.is-sold-out):hover {
             border-color: rgba(123, 179, 58, 0.7);
             background-color: var(--card-bg-hover);
@@ -828,7 +838,7 @@
                 <a href="https://maps.google.com/?q=137+Stranmillis+Rd,+Belfast+BT9+5AJ" target="_blank" rel="noopener noreferrer" class="info-badge address-badge" title="Open Taco Mood location in Google Maps (opens in new tab)">
                     <span>📍 137 Stranmillis Rd, Belfast BT9 5AJ</span>
                 </a>
-                <span class="info-badge">🕒 Fri – Sun: 12:00 PM – 9:00 PM</span>
+                <span class="info-badge" id="header-hours-badge">🕒 Fri – Sun: 12:00 PM – 9:00 PM</span>
                 <a href="https://www.instagram.com/tacoo.mood/" target="_blank" rel="noopener noreferrer" class="info-badge instagram-badge" title="Follow Taco Mood on Instagram">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -837,9 +847,16 @@
                     </svg>
                     <span>@tacoo.mood</span>
                 </a>
+                <!-- ============================================================
+                     COLLECTION ORDERING — TEMPORARILY HIDDEN (basic version)
+                     Basket header entry point. To re-enable: remove this
+                     comment wrapper and set COLLECTION_ORDERING_ENABLED = true
+                     in the script at the bottom of this page.
+                     ============================================================
                 <a href="basket.html" class="info-badge cart-header-badge" id="header-cart-badge">
                     🛒 Basket (<span id="header-cart-count">0</span>)
                 </a>
+                ==================== COLLECTION ORDERING — HIDDEN END ==================== -->
             </div>
         </div>
     </header>
@@ -848,19 +865,24 @@
         <!-- Order Callout with Time Window Logic -->
         <section class="order-section">
             <h2>Order Now</h2>
-            <p class="section-desc">Pre-order authentic Mexican street food for pickup at 137 Stranmillis Rd, or choose your favourite delivery partner.</p>
+            <p class="section-desc">Get your favourite authentic Mexican street food delivered straight to your door, or visit us in store at 137 Stranmillis Rd.</p>
             
-            <!-- Prominent Alert Banner when Closed or Past 8:30 PM -->
+            <!-- ============================================================
+                 COLLECTION ORDERING — TEMPORARILY HIDDEN (basic version)
+                 Closed-order alert banner + "Order for Collection" button.
+                 To re-enable: remove this comment wrapper and set
+                 COLLECTION_ORDERING_ENABLED = true in the script below.
+                 ============================================================
             <div id="ordering-closed-banner" class="closed-banner">
                 Online collection ordering is currently closed. We are open Friday–Sunday from 12:00 PM to 9:00 PM (Orders stop at 8:30 PM).
             </div>
 
-            <!-- Collection Button -->
             <div style="margin-top: 1.5rem;">
                 <a href="basket.html" id="btn-collection-order" class="btn btn-collection">
                     Order for Collection
                 </a>
             </div>
+            ==================== COLLECTION ORDERING — HIDDEN END ==================== -->
 
             <!-- Third Party Aggregators -->
             <div class="partner-group">
@@ -875,7 +897,7 @@
         <section class="menu-wrapper" id="menu-section">
             <div class="section-header">
                 <h2>Our Street Food Menu</h2>
-                <p class="section-desc">Click any dish to customize quantity and add directly to your collection basket.</p>
+                <p class="section-desc">Freshly prepared Mexican street food, made to order. Visit us in store or order for delivery.</p>
             </div>
             
             <div id="menu-container">
@@ -886,7 +908,11 @@
         </section>
     </main>
 
-    <!-- Floating Basket Bar (Visible when basket has items) -->
+    <!-- ============================================================
+         COLLECTION ORDERING — TEMPORARILY HIDDEN (basic version)
+         Floating basket bar. To re-enable: remove this comment wrapper
+         and set COLLECTION_ORDERING_ENABLED = true in the script below.
+         ============================================================
     <div id="floating-basket-bar" class="floating-basket-bar">
         <div class="basket-bar-info">
             <span class="basket-bar-icon">🌮</span>
@@ -899,8 +925,14 @@
             <span>View Basket &amp; Checkout</span> &rarr;
         </a>
     </div>
+    ==================== COLLECTION ORDERING — HIDDEN END ==================== -->
 
-    <!-- Quick Item Detail & Quantity Modal -->
+    <!-- ============================================================
+         COLLECTION ORDERING — TEMPORARILY HIDDEN (basic version)
+         Quick item detail / quantity / add-to-basket modal.
+         To re-enable: remove this comment wrapper and set
+         COLLECTION_ORDERING_ENABLED = true in the script below.
+         ============================================================
     <div id="quick-item-modal" class="modal-backdrop" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-header">
@@ -931,6 +963,7 @@
             </div>
         </div>
     </div>
+    ==================== COLLECTION ORDERING — HIDDEN END ==================== -->
 
     <!-- Footer with Store Details, Hours, Instagram, and Google Maps -->
     <footer>
@@ -948,11 +981,16 @@
                     
                     <div class="footer-hours-box">
                         <p><strong>Opening Hours:</strong></p>
-                        <p>Friday to Sunday: 12:00 PM – 9:00 PM</p>
-                        <p style="opacity: 0.75; font-size: 0.88rem;">(Closed Monday–Thursday)</p>
+                        <p id="footer-hours-summary">Friday to Sunday: 12:00 PM – 9:00 PM</p>
+                        <p id="footer-hours-closed" style="opacity: 0.75; font-size: 0.88rem;">(Closed Monday–Thursday)</p>
+                        <!-- ============================================================
+                             COLLECTION ORDERING — TEMPORARILY HIDDEN (basic version)
+                             Online collection cutoff notice.
+                             ============================================================
                         <p style="margin-top: 6px; font-size: 0.85rem; color: var(--accent-lime);">
                             Online collection cutoff: 8:30 PM
                         </p>
+                        ==================== COLLECTION ORDERING — HIDDEN END ==================== -->
                     </div>
 
                     <div class="footer-social">
@@ -988,7 +1026,8 @@
             <div class="footer-bottom">
                 <div>&copy; 2026 Taco Mood. All rights reserved. 137 Stranmillis Rd, Belfast BT9 5AJ.</div>
                 <div>
-                    <a href="basket.html" style="margin-right: 12px;">Your Basket</a>
+                    <!-- COLLECTION ORDERING — TEMPORARILY HIDDEN (basic version): Your Basket link -->
+                    <!-- <a href="basket.html" style="margin-right: 12px;">Your Basket</a> -->
                     <a href="admin.html">Owner Portal &rarr;</a>
                 </div>
             </div>
@@ -996,6 +1035,26 @@
     </footer>
 
     <script>
+        // =================================================================
+        //  ONLINE COLLECTION ORDERING & BASKET — FEATURE FLAG
+        //  The collection ordering + basket functionality is temporarily
+        //  hidden from the public site (basic version). All of the code
+        //  for it is still present below and in basket.html.
+        //  To re-enable:
+        //    1. Set COLLECTION_ORDERING_ENABLED = true here (and in
+        //       basket.html).
+        //    2. Remove the "COLLECTION ORDERING — HIDDEN" comment wrappers
+        //       in the HTML of this page and basket.html, then restore the
+        //       basket links in the header and footer.
+        // =================================================================
+        const COLLECTION_ORDERING_ENABLED = false;
+
+        // When collection ordering is hidden the dish cards are not clickable,
+        // so remove the pointer cursor / hover affordance on the menu cards.
+        if (!COLLECTION_ORDERING_ENABLED) {
+            document.body.classList.add('ordering-disabled');
+        }
+
         // State
         let cachedMenu = null;
         let basket = [];
@@ -1022,10 +1081,104 @@
         const modalSubtotalDisplay = document.getElementById('modal-subtotal-display');
         const modalItemClose = document.getElementById('modal-item-close');
 
+        // Opening Hours display elements (populated from menu.json → storeInfo)
+        const headerHoursBadge = document.getElementById('header-hours-badge');
+        const footerHoursSummary = document.getElementById('footer-hours-summary');
+        const footerHoursClosed = document.getElementById('footer-hours-closed');
+
+        // -------------------------------------------------------------
+        // 0. Opening Hours Display (sourced from menu.json → storeInfo)
+        // -------------------------------------------------------------
+        const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const DAY_SHORT = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun' };
+
+        function formatTime12h(timeStr) {
+            if (!timeStr || typeof timeStr !== 'string') return '';
+            const parts = timeStr.split(':');
+            const hour24 = parseInt(parts[0], 10);
+            if (isNaN(hour24)) return '';
+            const mins = (parts[1] || '00').padStart(2, '0');
+            const suffix = hour24 >= 12 ? 'PM' : 'AM';
+            const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+            return `${hour12}:${mins} ${suffix}`;
+        }
+
+        function describeDayRange(run, useShortNames) {
+            const startDay = useShortNames ? DAY_SHORT[DAY_ORDER[run.startIdx]] : DAY_ORDER[run.startIdx];
+            const endDay = useShortNames ? DAY_SHORT[DAY_ORDER[run.endIdx]] : DAY_ORDER[run.endIdx];
+            return run.startIdx === run.endIdx ? startDay : `${startDay} – ${endDay}`;
+        }
+
+        function buildHoursRuns(openingHours) {
+            // Groups consecutive days that share the same schedule
+            const runs = [];
+            let current = null;
+
+            DAY_ORDER.forEach((day, idx) => {
+                const entry = openingHours.find(h => h && h.day === day) || { day: day, closed: true };
+                const key = entry.closed ? 'closed' : `${entry.open}-${entry.close}`;
+
+                if (current && current.key === key) {
+                    current.endIdx = idx;
+                } else {
+                    current = {
+                        key: key,
+                        startIdx: idx,
+                        endIdx: idx,
+                        closed: Boolean(entry.closed),
+                        open: entry.open,
+                        close: entry.close
+                    };
+                    runs.push(current);
+                }
+            });
+
+            return runs;
+        }
+
+        function applyStoreInfo(storeInfo) {
+            // Falls back to the hardcoded hours already in the HTML when
+            // storeInfo is missing from menu.json
+            if (!storeInfo || !Array.isArray(storeInfo.openingHours)) return;
+
+            const runs = buildHoursRuns(storeInfo.openingHours);
+            const openRuns = runs.filter(r => !r.closed);
+            const closedRuns = runs.filter(r => r.closed);
+
+            const describeOpenRun = (run, useShortNames) =>
+                `${describeDayRange(run, useShortNames)}: ${formatTime12h(run.open)} – ${formatTime12h(run.close)}`;
+
+            // Footer: full readable summary
+            if (footerHoursSummary) {
+                footerHoursSummary.textContent = openRuns.length
+                    ? openRuns.map(r => describeOpenRun(r, false)).join(' · ')
+                    : 'Currently closed';
+            }
+
+            if (footerHoursClosed) {
+                if (closedRuns.length) {
+                    footerHoursClosed.textContent = `(Closed ${closedRuns.map(r => describeDayRange(r, false)).join(', ')})`;
+                    footerHoursClosed.style.display = '';
+                } else {
+                    footerHoursClosed.style.display = 'none';
+                }
+            }
+
+            // Header badge: compact summary using short day names
+            if (headerHoursBadge) {
+                headerHoursBadge.textContent = openRuns.length
+                    ? `🕒 ${describeOpenRun(openRuns[0], true)}`
+                    : '🕒 Currently closed';
+            }
+        }
+
         // -------------------------------------------------------------
         // 1. Time Window Logic for Collection Ordering (Fri-Sun 12:00 PM - 8:30 PM)
         // -------------------------------------------------------------
         function checkOrderingAvailability() {
+            // Online collection ordering is temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return true;
+
             const now = new Date();
             const formatter = new Intl.DateTimeFormat('en-GB', {
                 timeZone: 'Europe/London',
@@ -1066,6 +1219,9 @@
         // 2. Basket State Management (localStorage)
         // -------------------------------------------------------------
         function loadBasket() {
+            // Basket + collection ordering temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return;
+
             try {
                 const stored = localStorage.getItem('tacomood_basket');
                 basket = stored ? JSON.parse(stored) : [];
@@ -1077,6 +1233,8 @@
         }
 
         function saveBasket() {
+            if (!COLLECTION_ORDERING_ENABLED) return;
+
             localStorage.setItem('tacomood_basket', JSON.stringify(basket));
             updateBasketUI();
             updateAllCardSteppers();
@@ -1088,6 +1246,8 @@
         }
 
         function setItemQuantity(itemName, price, newQty) {
+            // Basket + collection ordering temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return;
             const idx = basket.findIndex(i => i.name === itemName);
             if (newQty <= 0) {
                 if (idx !== -1) basket.splice(idx, 1);
@@ -1102,6 +1262,9 @@
         }
 
         function updateBasketUI() {
+            // Basket + collection ordering temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return;
+
             let totalCount = 0;
             let totalPrice = 0;
 
@@ -1134,6 +1297,9 @@
         }
 
         function updateAllCardSteppers() {
+            // Basket + collection ordering temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return;
+
             document.querySelectorAll('.menu-card').forEach(card => {
                 const itemName = card.dataset.itemName;
                 if (!itemName) return;
@@ -1181,6 +1347,8 @@
         // 3. Quick Item Detail & Quantity Modal
         // -------------------------------------------------------------
         function openItemModal(item) {
+            // Basket + collection ordering temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return;
             if (item.soldOut) return;
 
             activeModalItem = item;
@@ -1212,30 +1380,34 @@
             modalQtyVal.textContent = activeModalQty;
         }
 
-        modalStepMinus.addEventListener('click', () => {
-            if (activeModalQty > 1) {
-                activeModalQty--;
-                updateModalSubtotal();
-            }
-        });
+        // Modal controls are only wired up while collection ordering is enabled
+        // (the modal markup is commented out of the page otherwise).
+        if (COLLECTION_ORDERING_ENABLED && quickItemModal) {
+            modalStepMinus.addEventListener('click', () => {
+                if (activeModalQty > 1) {
+                    activeModalQty--;
+                    updateModalSubtotal();
+                }
+            });
 
-        modalStepPlus.addEventListener('click', () => {
-            if (activeModalQty < 25) {
-                activeModalQty++;
-                updateModalSubtotal();
-            }
-        });
+            modalStepPlus.addEventListener('click', () => {
+                if (activeModalQty < 25) {
+                    activeModalQty++;
+                    updateModalSubtotal();
+                }
+            });
 
-        modalBtnConfirmAdd.addEventListener('click', () => {
-            if (!activeModalItem) return;
-            setItemQuantity(activeModalItem.name, activeModalItem.price, activeModalQty);
-            closeItemModal();
-        });
+            modalBtnConfirmAdd.addEventListener('click', () => {
+                if (!activeModalItem) return;
+                setItemQuantity(activeModalItem.name, activeModalItem.price, activeModalQty);
+                closeItemModal();
+            });
 
-        modalItemClose.addEventListener('click', closeItemModal);
-        quickItemModal.addEventListener('click', (e) => {
-            if (e.target === quickItemModal) closeItemModal();
-        });
+            modalItemClose.addEventListener('click', closeItemModal);
+            quickItemModal.addEventListener('click', (e) => {
+                if (e.target === quickItemModal) closeItemModal();
+            });
+        }
 
         // -------------------------------------------------------------
         // 4. Fetch & Render Menu with Clickable Cards & Quantity Controls
@@ -1249,6 +1421,7 @@
             })
             .then(menu => {
                 cachedMenu = menu;
+                applyStoreInfo(menu.storeInfo);
                 const container = document.getElementById('menu-container');
                 container.innerHTML = '';
 
@@ -1293,7 +1466,8 @@
                             card.dataset.itemPrice = item.price || '';
 
                             // Click card to open modal if not sold out
-                            if (!item.soldOut) {
+                            // (only while collection ordering is enabled)
+                            if (COLLECTION_ORDERING_ENABLED && !item.soldOut) {
                                 card.addEventListener('click', () => openItemModal(item));
                             }
 
@@ -1332,24 +1506,31 @@
                                 card.appendChild(desc);
                             }
 
-                            // Action footer with Stepper / Add button
-                            const actionBar = document.createElement('div');
-                            actionBar.className = 'card-action-bar';
+                            // Action footer with Stepper / Add button.
+                            // The ordering controls are only rendered while
+                            // collection ordering is enabled — otherwise only
+                            // the "Sold Out" notice is shown.
+                            if (COLLECTION_ORDERING_ENABLED || item.soldOut) {
+                                const actionBar = document.createElement('div');
+                                actionBar.className = 'card-action-bar';
 
-                            const hintSpan = document.createElement('span');
-                            hintSpan.className = 'card-action-hint';
-                            hintSpan.textContent = item.soldOut ? '' : 'Click to customize';
-                            actionBar.appendChild(hintSpan);
+                                if (COLLECTION_ORDERING_ENABLED) {
+                                    const hintSpan = document.createElement('span');
+                                    hintSpan.className = 'card-action-hint';
+                                    hintSpan.textContent = item.soldOut ? '' : 'Click to customize';
+                                    actionBar.appendChild(hintSpan);
+                                }
 
-                            const actionContainer = document.createElement('div');
-                            actionContainer.className = 'card-action-container';
+                                const actionContainer = document.createElement('div');
+                                actionContainer.className = 'card-action-container';
 
-                            if (item.soldOut) {
-                                actionContainer.innerHTML = '<span class="soldout-notice">Sold Out</span>';
+                                if (item.soldOut) {
+                                    actionContainer.innerHTML = '<span class="soldout-notice">Sold Out</span>';
+                                }
+
+                                actionBar.appendChild(actionContainer);
+                                card.appendChild(actionBar);
                             }
-
-                            actionBar.appendChild(actionContainer);
-                            card.appendChild(actionBar);
 
                             grid.appendChild(card);
                         });
@@ -1369,14 +1550,20 @@
             });
 
         // Listen for storage events (e.g. if user updates basket in another tab or returns from basket.html)
-        window.addEventListener('storage', () => {
-            loadBasket();
-        });
+        // (basket + collection ordering temporarily disabled — basic version)
+        if (COLLECTION_ORDERING_ENABLED) {
+            window.addEventListener('storage', () => {
+                loadBasket();
+            });
+        }
 
         // Initialize on load
-        checkOrderingAvailability();
-        loadBasket();
-        setInterval(checkOrderingAvailability, 60000);
+        // (basket + ordering checks are skipped while collection ordering is disabled)
+        if (COLLECTION_ORDERING_ENABLED) {
+            checkOrderingAvailability();
+            loadBasket();
+            setInterval(checkOrderingAvailability, 60000);
+        }
     </script>
 </body>
 </html>

@@ -742,7 +742,8 @@
             color: #ff9980;
         }
 
-        .soldout-checkbox {
+        .soldout-checkbox,
+        .closed-checkbox {
             appearance: none;
             -webkit-appearance: none;
             width: 18px;
@@ -759,12 +760,14 @@
             flex-shrink: 0;
         }
 
-        .soldout-checkbox:checked {
+        .soldout-checkbox:checked,
+        .closed-checkbox:checked {
             background-color: var(--accent-orange);
             border-color: var(--accent-orange);
         }
 
-        .soldout-checkbox:checked::after {
+        .soldout-checkbox:checked::after,
+        .closed-checkbox:checked::after {
             content: "✓";
             color: white;
             font-size: 13px;
@@ -782,6 +785,130 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-left: 6px;
+        }
+
+        /* Store Info & Opening Hours Editor */
+        .store-info-card {
+            background-color: var(--card-surface);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            margin-bottom: 2.25rem;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .hours-grid {
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 0.85rem;
+        }
+
+        .hours-row {
+            background-color: #0c2018;
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            padding: 0.8rem 0.95rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            transition: all 0.2s ease;
+        }
+
+        .hours-row.is-closed {
+            opacity: 0.6;
+        }
+
+        .hours-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .hours-day-name {
+            font-weight: 700;
+            color: var(--accent-lime);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .closed-toggle-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-cream);
+            opacity: 0.9;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .hours-times {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hours-times span {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .hours-time-input {
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .hours-time-input:focus {
+            border-color: var(--accent-lime);
+            color: #ffffff;
+        }
+
+        .hours-time-input:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .cutoff-row {
+            margin: 0 1.25rem 1.25rem;
+            background: rgba(123, 179, 58, 0.08);
+            border: 1px dashed var(--accent-lime);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .cutoff-label {
+            font-weight: 700;
+            color: var(--text-cream);
+            font-size: 0.92rem;
+        }
+
+        .cutoff-label small {
+            display: block;
+            font-weight: 500;
+            opacity: 0.75;
+            margin-top: 2px;
+        }
+
+        .cutoff-row .hours-time-input {
+            max-width: 150px;
         }
 
         /* Loading Spinner */
@@ -917,7 +1044,7 @@
 
             <!-- Non-technical Owner Guide -->
             <details class="help-accordion">
-                <summary>📖 How to update dish names, descriptions, prices &amp; publish live</summary>
+                <summary>📖 How to update dish names, descriptions, prices, opening hours &amp; publish live</summary>
                 <div class="help-content">
                     <p>Welcome to the <strong>Taco Mood</strong> menu editor! Here is how to keep your store up to date:</p>
                     <ol>
@@ -925,10 +1052,14 @@
                         <li><strong>Edit Descriptions:</strong> Update ingredients, notes, dips, or preparation details in the <strong>Description</strong> field. Leave empty if no description is needed.</li>
                         <li><strong>Change Prices:</strong> Click directly into the <strong>Price</strong> field (e.g. <code>£13.00</code>) and enter the new price.</li>
                         <li><strong>Mark Sold Out:</strong> Check or uncheck <strong>"Mark Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
+                        <li><strong>Update Opening Hours:</strong> In the <strong>Store Opening Hours</strong> card, tick <strong>"Closed"</strong> for shut days and set opening/closing times for open days. The website header and footer update automatically.</li>
                         <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. The updates are committed directly to your website repository in seconds!</li>
                     </ol>
                 </div>
             </details>
+
+            <!-- Store Info & Opening Hours Editor (rendered dynamically) -->
+            <div id="store-info-container"></div>
 
             <!-- Search & Quick Filters -->
             <div class="controls-row">
@@ -982,6 +1113,7 @@
 
         const formContainer = document.getElementById('form-container');
         const filterInput = document.getElementById('filter-input');
+        const storeInfoContainer = document.getElementById('store-info-container');
         const statCategories = document.getElementById('stat-categories');
         const statItems = document.getElementById('stat-items');
         const soldoutCount = document.getElementById('soldout-count');
@@ -1096,7 +1228,7 @@
 
                 // Load menu data and render
                 loadMenuData();
-                showBanner("Welcome! Admin Portal unlocked. You can now edit dish names, descriptions, prices, and availability.", "success");
+                showBanner("Welcome! Admin Portal unlocked. You can now edit dish names, descriptions, prices, availability, and store opening hours.", "success");
 
             } catch (err) {
                 showAuthError(err.message);
@@ -1126,6 +1258,7 @@
             menuData = null;
             setDirty(false);
             formContainer.innerHTML = '';
+            if (storeInfoContainer) storeInfoContainer.innerHTML = '';
         });
 
         // Check authentication on initial page load
@@ -1150,6 +1283,7 @@
                     throw new Error(`Failed to load menu.json: HTTP ${response.status}`);
                 }
                 menuData = await response.json();
+                renderStoreInfoForm();
                 renderForm();
                 setDirty(false);
             } catch (err) {
@@ -1334,6 +1468,174 @@
             soldoutCount.textContent = totalSoldOut;
         }
 
+        // -------------------------------------------------------------
+        // Store Info & Opening Hours Editor
+        // -------------------------------------------------------------
+        const ADMIN_DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        const DEFAULT_OPENING_HOURS = [
+            { day: 'Monday',    closed: true,  open: '12:00', close: '21:00' },
+            { day: 'Tuesday',   closed: true,  open: '12:00', close: '21:00' },
+            { day: 'Wednesday', closed: true,  open: '12:00', close: '21:00' },
+            { day: 'Thursday',  closed: true,  open: '12:00', close: '21:00' },
+            { day: 'Friday',    closed: false, open: '12:00', close: '21:00' },
+            { day: 'Saturday',  closed: false, open: '12:00', close: '21:00' },
+            { day: 'Sunday',    closed: false, open: '12:00', close: '21:00' }
+        ];
+
+        function getSavedOpeningHours() {
+            const savedHours = (menuData && menuData.storeInfo && Array.isArray(menuData.storeInfo.openingHours))
+                ? menuData.storeInfo.openingHours
+                : [];
+
+            return ADMIN_DAY_ORDER.map(day => {
+                const fallback = DEFAULT_OPENING_HOURS.find(h => h.day === day);
+                const saved = savedHours.find(h => h && h.day === day);
+                if (!saved) return { ...fallback };
+                return {
+                    day: day,
+                    closed: Boolean(saved.closed),
+                    open: saved.open || fallback.open,
+                    close: saved.close || fallback.close
+                };
+            });
+        }
+
+        function renderStoreInfoForm() {
+            if (!storeInfoContainer) return;
+
+            const hours = getSavedOpeningHours();
+            const orderCutoff = (menuData && menuData.storeInfo && menuData.storeInfo.orderCutoff)
+                ? menuData.storeInfo.orderCutoff
+                : '20:30';
+
+            storeInfoContainer.innerHTML = '';
+
+            // Card shell — visually matches the category cards but is NOT tagged
+            // with .admin-category-card so the search filter ignores it.
+            const card = document.createElement('section');
+            card.className = 'store-info-card';
+
+            const cardHeader = document.createElement('div');
+            cardHeader.className = 'admin-category-header';
+
+            const title = document.createElement('h3');
+            title.className = 'admin-category-title';
+            title.textContent = 'Store Opening Hours';
+            cardHeader.appendChild(title);
+
+            const badge = document.createElement('span');
+            badge.className = 'stat-chip';
+            badge.textContent = 'Shown on the public website';
+            cardHeader.appendChild(badge);
+
+            const note = document.createElement('p');
+            note.className = 'admin-category-note';
+            note.textContent = 'Tick "Closed" for days you are shut, and set opening/closing times for the days you are open. Press "Publish Changes" to update the live website.';
+            cardHeader.appendChild(note);
+
+            card.appendChild(cardHeader);
+
+            // One editable row per weekday
+            const grid = document.createElement('div');
+            grid.className = 'hours-grid';
+
+            hours.forEach((entry, idx) => {
+                const row = document.createElement('div');
+                row.className = 'hours-row' + (entry.closed ? ' is-closed' : '');
+
+                const top = document.createElement('div');
+                top.className = 'hours-row-top';
+
+                const dayName = document.createElement('span');
+                dayName.className = 'hours-day-name';
+                dayName.textContent = entry.day;
+                top.appendChild(dayName);
+
+                const closedLabel = document.createElement('label');
+                closedLabel.className = 'closed-toggle-label';
+                closedLabel.htmlFor = `hours-closed-${idx}`;
+
+                const closedCheckbox = document.createElement('input');
+                closedCheckbox.type = 'checkbox';
+                closedCheckbox.className = 'closed-checkbox';
+                closedCheckbox.id = `hours-closed-${idx}`;
+                closedCheckbox.checked = entry.closed;
+
+                const closedText = document.createElement('span');
+                closedText.textContent = 'Closed';
+
+                closedLabel.appendChild(closedCheckbox);
+                closedLabel.appendChild(closedText);
+                top.appendChild(closedLabel);
+
+                row.appendChild(top);
+
+                const times = document.createElement('div');
+                times.className = 'hours-times';
+
+                const openInput = document.createElement('input');
+                openInput.type = 'time';
+                openInput.className = 'hours-time-input';
+                openInput.id = `hours-open-${idx}`;
+                openInput.value = entry.open;
+                openInput.disabled = entry.closed;
+                openInput.setAttribute('aria-label', `${entry.day} opening time`);
+
+                const separator = document.createElement('span');
+                separator.textContent = 'to';
+
+                const closeInput = document.createElement('input');
+                closeInput.type = 'time';
+                closeInput.className = 'hours-time-input';
+                closeInput.id = `hours-close-${idx}`;
+                closeInput.value = entry.close;
+                closeInput.disabled = entry.closed;
+                closeInput.setAttribute('aria-label', `${entry.day} closing time`);
+
+                openInput.addEventListener('input', () => setDirty(true));
+                closeInput.addEventListener('input', () => setDirty(true));
+
+                closedCheckbox.addEventListener('change', () => {
+                    row.classList.toggle('is-closed', closedCheckbox.checked);
+                    openInput.disabled = closedCheckbox.checked;
+                    closeInput.disabled = closedCheckbox.checked;
+                    setDirty(true);
+                });
+
+                times.appendChild(openInput);
+                times.appendChild(separator);
+                times.appendChild(closeInput);
+                row.appendChild(times);
+
+                grid.appendChild(row);
+            });
+
+            card.appendChild(grid);
+
+            // Online order cutoff time
+            const cutoffRow = document.createElement('div');
+            cutoffRow.className = 'cutoff-row';
+
+            const cutoffLabel = document.createElement('label');
+            cutoffLabel.className = 'cutoff-label';
+            cutoffLabel.htmlFor = 'order-cutoff-input';
+            cutoffLabel.innerHTML = 'Online order cutoff time<small>The time after which online orders stop (used by the ordering system).</small>';
+            cutoffRow.appendChild(cutoffLabel);
+
+            const cutoffInput = document.createElement('input');
+            cutoffInput.type = 'time';
+            cutoffInput.className = 'hours-time-input';
+            cutoffInput.id = 'order-cutoff-input';
+            cutoffInput.value = orderCutoff;
+            cutoffInput.addEventListener('input', () => setDirty(true));
+            cutoffRow.appendChild(cutoffInput);
+
+            card.appendChild(cutoffRow);
+
+            storeInfoContainer.appendChild(card);
+        }
+
         // Recount sold out items from form
         function updateCounts() {
             const allSoldOutCheckboxes = document.querySelectorAll('.soldout-checkbox');
@@ -1426,7 +1728,54 @@
                 }
             });
 
+            // Rebuild the store info / opening hours block from the form
+            const openingHours = [];
+            ADMIN_DAY_ORDER.forEach((day, idx) => {
+                const closedBox = document.getElementById(`hours-closed-${idx}`);
+                const openInput = document.getElementById(`hours-open-${idx}`);
+                const closeInput = document.getElementById(`hours-close-${idx}`);
+                const fallback = DEFAULT_OPENING_HOURS.find(h => h.day === day);
+
+                openingHours.push({
+                    day: day,
+                    closed: closedBox ? closedBox.checked : fallback.closed,
+                    open: (openInput && openInput.value) ? openInput.value : fallback.open,
+                    close: (closeInput && closeInput.value) ? closeInput.value : fallback.close
+                });
+            });
+
+            const cutoffInput = document.getElementById('order-cutoff-input');
+            updated.storeInfo = {
+                openingHours: openingHours,
+                orderCutoff: (cutoffInput && cutoffInput.value) ? cutoffInput.value : '20:30'
+            };
+
             return updated;
+        }
+
+        // Validate opening hours before publishing (times must make sense)
+        function validateOpeningHours() {
+            for (let idx = 0; idx < ADMIN_DAY_ORDER.length; idx++) {
+                const closedBox = document.getElementById(`hours-closed-${idx}`);
+                const openInput = document.getElementById(`hours-open-${idx}`);
+                const closeInput = document.getElementById(`hours-close-${idx}`);
+                if (!openInput || !closeInput) continue;
+                if (closedBox && closedBox.checked) continue;
+
+                if (!openInput.value || !closeInput.value) {
+                    return `${ADMIN_DAY_ORDER[idx]}: please set both an opening and closing time, or tick "Closed".`;
+                }
+                if (closeInput.value <= openInput.value) {
+                    return `${ADMIN_DAY_ORDER[idx]}: the closing time must be after the opening time.`;
+                }
+            }
+
+            const cutoffInput = document.getElementById('order-cutoff-input');
+            if (cutoffInput && !cutoffInput.value) {
+                return 'Please set an online order cutoff time.';
+            }
+
+            return null;
         }
 
         // -------------------------------------------------------------
@@ -1434,6 +1783,13 @@
         // -------------------------------------------------------------
         async function publishChanges() {
             if (isPublishing) return;
+
+            // Validate the opening hours form before publishing
+            const hoursValidationError = validateOpeningHours();
+            if (hoursValidationError) {
+                showBanner(`❌ Cannot publish — ${hoursValidationError}`, 'error');
+                return;
+            }
 
             const adminKey = sessionStorage.getItem('tacomood_admin_token');
             if (!adminKey) {
@@ -1488,10 +1844,10 @@
                 const currentSha = fileInfo.sha;
 
                 // Step B: PUT updated file to main branch
-                showBanner('Committing updated menu.json (names, descriptions, prices, availability) to main branch...', 'info');
+                showBanner('Committing updated menu.json (names, descriptions, prices, availability, opening hours) to main branch...', 'info');
 
                 const putUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-                const commitMessage = `Update menu.json via Admin Portal [${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
+                const commitMessage = `Update menu.json (menu & opening hours) via Admin Portal [${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
 
                 const putResponse = await fetch(putUrl, {
                     method: 'PUT',

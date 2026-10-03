@@ -792,6 +792,28 @@
     </header>
 
     <main class="container">
+        <!-- ============================================================
+             ONLINE COLLECTION ORDERING & BASKET — TEMPORARILY HIDDEN
+             (basic version)
+             The full basket, collection slot picker and checkout below are
+             kept in the code but hidden from the public site, and the
+             "paused" notice underneath is shown instead. The site links
+             to this page are hidden in index.html.
+             To re-enable: set COLLECTION_ORDERING_ENABLED = true in the
+             script at the bottom of this page and restore the basket links
+             in index.html (search for "COLLECTION ORDERING — HIDDEN").
+             ============================================================ -->
+
+        <!-- Paused notice shown while online collection ordering is hidden -->
+        <div id="ordering-paused-notice" class="card empty-basket" style="display: none;">
+            <div class="empty-basket-icon">🌮</div>
+            <h3>Online ordering is paused</h3>
+            <p>Our online collection ordering is taking a short break. You can still enjoy Taco Mood fresh from our kitchen at 137 Stranmillis Rd, or order for delivery via one of our partners.</p>
+            <a href="index.html" class="btn-place-order" style="max-width: 260px; margin: 0 auto; text-decoration: none;">
+                &larr; Back to the Menu
+            </a>
+        </div>
+
         <!-- Prominent Collection Date & Status Banner -->
         <div id="collection-date-banner" class="collection-date-banner">
             <div class="date-banner-left">
@@ -1000,6 +1022,17 @@
     </footer>
 
     <script>
+        // =================================================================
+        //  ONLINE COLLECTION ORDERING & BASKET — FEATURE FLAG
+        //  Temporarily hidden from the public site (basic version): the
+        //  full basket, collection slot picker and checkout are kept in
+        //  the code but hidden, and a "paused" notice is shown instead.
+        //  To re-enable: set COLLECTION_ORDERING_ENABLED = true and restore
+        //  the basket links in index.html (search for
+        //  "COLLECTION ORDERING — HIDDEN").
+        // =================================================================
+        const COLLECTION_ORDERING_ENABLED = false;
+
         // Opening schedule configuration (Europe/London time)
         const OPEN_DAYS = ['Fri', 'Sat', 'Sun'];
         const OPEN_HOUR = 12, OPEN_MIN = 0;      // 12:00 PM
@@ -1399,6 +1432,9 @@
         checkoutForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
+            // Online collection ordering is temporarily disabled (basic version)
+            if (!COLLECTION_ORDERING_ENABLED) return;
+
             // Validate basket
             if (basket.length === 0) {
                 alert("Your basket is empty. Please add items before placing an order.");
@@ -1509,9 +1545,25 @@
         }
 
         // Initialize on load
-        updateAvailabilityAndSlots();
-        loadBasket();
-        setInterval(updateAvailabilityAndSlots, 60000);
+        if (COLLECTION_ORDERING_ENABLED) {
+            // Hide the "ordering paused" notice (only needed if this page is
+            // re-enabled after the basic version)
+            const pausedNotice = document.getElementById('ordering-paused-notice');
+            if (pausedNotice) pausedNotice.style.display = 'none';
+
+            updateAvailabilityAndSlots();
+            loadBasket();
+            setInterval(updateAvailabilityAndSlots, 60000);
+        } else {
+            // Collection ordering is temporarily disabled (basic version):
+            // show the paused notice and hide the full basket/checkout UI.
+            const pausedNotice = document.getElementById('ordering-paused-notice');
+            if (pausedNotice) pausedNotice.style.display = 'block';
+
+            [collectionDateBanner, closedBanner, basketViewSection, confirmationSection].forEach(el => {
+                if (el) el.style.display = 'none';
+            });
+        }
     </script>
 </body>
 </html>
