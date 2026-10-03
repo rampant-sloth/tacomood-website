@@ -111,8 +111,28 @@ If the Worker's `workers.dev` address is switched off, enable it under
 | "Incorrect admin password." | `ADMIN_PASSWORD` on that Worker is different from what was typed | Re-enter it, or edit the variable in **Settings → Variables and Secrets** and Deploy |
 | "Publish service is not configured — this Worker has no ADMIN_PASSWORD…" | The Worker answering `/verify` has no `ADMIN_PASSWORD` (a variable saved on a *different* Worker has no effect) | Workers & Pages → **that** Worker → Settings → Variables and Secrets → add `ADMIN_PASSWORD` → save/deploy. Re-run the build if it does not apply immediately |
 | "Publish service is missing GITHUB_TOKEN." | No `GITHUB_TOKEN` secret | Add the secret |
-| "Could not publish menu.json (401)…" | Token invalid or revoked | Recreate the token, update the secret |
-| "Could not publish menu.json (403)…" | Token lacks **Contents: Read and write** | Recreate the token with that permission |
+| "Could not publish menu.json (401)…expired or revoked…" | GitHub rejected the token | Create a new fine-grained token and update the `GITHUB_TOKEN` secret |
+| "Could not publish menu.json (403)…can read … but not write to it (permissions: push=false…)" | The token has read access only | GitHub → your token → **Repository access → Only select repositories → `tacomood-website`**, **Permissions → Contents: Read and write**, then update the `GITHUB_TOKEN` secret |
+| "…cannot see rampant-sloth/tacomood-website (404)…" | The token was not granted this repository | Same as above: *Only select repositories* and pick `tacomood-website` |
+
+## Diagnose the GitHub token
+
+`/diagnose` (password-protected, read-only) reports exactly what the token is allowed
+to do, without publishing anything:
+
+```powershell
+curl.exe -X POST "https://tacomood-website.rampantsloth.workers.dev/diagnose" `
+  -H "Content-Type: application/json" -d "{\"password\":\"<admin password>\"}"
+```
+
+It answers with `canPublish`, the repository `permissions`, the token's login and a
+plain-English `verdict`, for example:
+
+```json
+{"ok":true,"report":{"repository":"rampant-sloth/tacomood-website","tokenPresent":true,
+ "tokenLogin":"rampant-sloth","permissions":{"admin":false,"push":false,"pull":true},
+ "canPublish":false,"verdict":"The token can read the repository but not write to it. Set Permissions → Contents to \"Read and write\"."}}
+```
 
 Quick check from a terminal — `{"ok":false,"error":"Use POST."}` means the publish
 Worker is live at that address (the password was not part of a POST, so it never

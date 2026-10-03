@@ -9,8 +9,9 @@
  *                              on rampant-sloth/tacomood-website ONLY
  *
  * Endpoints (all POST, JSON):
- *   /verify   { password }                    -> { ok: true }
- *   /publish  { password, content, message? } -> { ok: true, commitSha }
+ *   /verify    { password }                    -> { ok: true }
+ *   /publish   { password, content, message? } -> { ok: true, commitSha }
+ *   /diagnose  { password }                    -> what the GitHub token can do
  *
  * This file contains no secrets and is safe to keep in the public repo.
  * See README.md in this folder for setup and handover instructions.
@@ -145,6 +146,89 @@ async function readGithubError(response) {
     return data.message || response.statusText || 'GitHub request failed';
 }
 
+async function githubFetchJson(url, token) {
+    const response = await fetch(url, { headers: githubHeaders(token) });
+    const data = await response.json().catch(() => ({}));
+    return {
+        status: response.status,
+        ok: response.ok,
+        data: data,
+        scopes: response.headers.get('x-oauth-scopes')
+    };
+}
+
+// Turns a GitHub failure into advice about the token itself, because a 401/403
+// here almost always means the token's permissions rather than a code problem.
+async function explainGithubFailure(token) {
+    try {
+        const repo = await githubFetchJson(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`, token);
+
+        if (repo.ok && repo.data && repo.data.permissions) {
+            if (repo.data.permissions.push) {
+                return '';
+            }
+            return ` — the token can read ${GITHUB_OWNER}/${GITHUB_REPO} but not write to it (permissions: push=${repo.data.permissions.push}, pull=${repo.data.permissions.pull}). Recreate the fine-grained token with Repository access → Only select repositories → ${GITHUB_REPO} and Permissions → Contents: Read and write, then update the GITHUB_TOKEN secret.`;
+        }
+
+        if (repo.status === 401) {
+            return ' — GitHub rejected the token as invalid (401). It may be expired or revoked: create a new fine-grained token and update the GITHUB_TOKEN secret.';
+        }
+
+        if (repo.status === 404) {
+            return ` — the token cannot see ${GITHUB_OWNER}/${GITHUB_REPO} (404). A fine-grained token only sees repositories it is explicitly granted: set Repository access to "Only select repositories" and pick ${GITHUB_REPO}.`;
+        }
+
+        return '';
+    } catch (err) {
+        return '';
+    }
+}
+
+// Password-protected report of what the configured token is allowed to do.
+async function diagnose(env) {
+    const token = env.GITHUB_TOKEN;
+    const report = {
+        repository: `${GITHUB_OWNER}/${GITHUB_REPO}`,
+        file: GITHUB_PATH,
+        branch: GITHUB_BRANCH,
+        tokenPresent: Boolean(token)
+    };
+
+    if (!token) {
+        report.verdict = 'No GITHUB_TOKEN is set on this Worker. Add it under Settings → Variables and Secrets.';
+        return report;
+    }
+
+    const user = await githubFetchJson('https://api.github.com/user', token);
+    report.tokenLogin = user.ok && user.data ? user.data.login : null;
+    report.tokenScopes = user.scopes || null;
+
+    const repo = await githubFetchJson(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`, token);
+    report.repositoryStatus = repo.status;
+    report.permissions = repo.ok && repo.data ? repo.data.permissions || null : null;
+
+    const file = await githubFetchJson(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}`,
+        token
+    );
+    report.readMenuJsonStatus = file.status;
+    report.canPublish = Boolean(repo.ok && report.permissions && report.permissions.push);
+
+    if (report.canPublish) {
+        report.verdict = 'The token can read and write menu.json — publishing should work.';
+    } else if (!user.ok) {
+        report.verdict = 'GitHub rejected the token itself (see tokenLogin/tokenScopes). Create a new fine-grained token and update the GITHUB_TOKEN secret.';
+    } else if (repo.status === 404) {
+        report.verdict = `The token cannot see ${GITHUB_OWNER}/${GITHUB_REPO}. For a fine-grained token set Repository access to "Only select repositories" and pick ${GITHUB_REPO}.`;
+    } else if (report.permissions && !report.permissions.push) {
+        report.verdict = 'The token can read the repository but not write to it. Set Permissions → Contents to "Read and write".';
+    } else {
+        report.verdict = 'Could not confirm write access — check the token permissions in GitHub.';
+    }
+
+    return report;
+}
+
 async function publishMenu(env, content, message) {
     const token = env.GITHUB_TOKEN;
     if (!token) {
@@ -158,7 +242,8 @@ async function publishMenu(env, content, message) {
 
     if (!getResponse.ok) {
         const detail = await readGithubError(getResponse);
-        throw new Error(`Could not read menu.json (${getResponse.status}): ${detail}`);
+        const hint = await explainGithubFailure(token);
+        throw new Error(`Could not read menu.json (${getResponse.status}): ${detail}${hint}`);
     }
 
     const fileInfo = await getResponse.json();
@@ -179,7 +264,8 @@ async function publishMenu(env, content, message) {
 
     if (!putResponse.ok) {
         const detail = await readGithubError(putResponse);
-        throw new Error(`Could not publish menu.json (${putResponse.status}): ${detail}`);
+        const hint = await explainGithubFailure(token);
+        throw new Error(`Could not publish menu.json (${putResponse.status}): ${detail}${hint}`);
     }
 
     const result = await putResponse.json();
@@ -205,7 +291,7 @@ export async function handleAdminRequest(request, env) {
     const path = new URL(request.url).pathname.replace(/\/+$/, '') || '/';
 
     // Not one of our routes — leave it for the host Worker
-    if (path !== '/verify' && path !== '/publish') {
+    if (path !== '/verify' && path !== '/publish' && path !== '/diagnose') {
         return null;
     }
 
@@ -239,6 +325,14 @@ export async function handleAdminRequest(request, env) {
 
     if (path === '/verify') {
         return jsonResponse({ ok: true });
+    }
+
+    if (path === '/diagnose') {
+        try {
+            return jsonResponse({ ok: true, report: await diagnose(env) });
+        } catch (err) {
+            return jsonResponse({ ok: false, error: `Could not run the diagnosis: ${err.message || err}` }, 502);
+        }
     }
 
     const validationError = validateMenuContent(body.content);
