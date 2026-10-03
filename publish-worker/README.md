@@ -22,50 +22,53 @@ POST /publish  { password, content }   ──▶ GET menu.json (sha)            
 4. **Permissions → Repository permissions → Contents: Read and write** (Metadata stays read-only)
 5. Generate and copy the token — **never paste it into the website, an email, or a chat**
 
-### 2. Create the Worker
-1. Sign in (or sign up free) at https://dash.cloudflare.com
-2. **Workers & Pages → Create → Workers → Start with Hello World**
-3. Name it `tacomood-publish` → **Deploy**
-4. Click **Edit code**, replace everything with the contents of `worker.js`, then **Deploy**
+### 2. Deploy the bridge
 
-**It can live on its own, or inside the Worker that already serves the site.**
-Right now `tacomood-website.…workers.dev` answers `POST /verify` with a plain `404`
-and no body, because that Worker only serves static assets — the publish routes do
-not exist there. That is exactly the "HTTP 404 … but not with JSON" error the admin
-page shows. Pick one of the two setups below.
+This repository is deployed by Cloudflare Workers Builds, and the bridge is already
+wired into that build, so there is normally nothing to create by hand:
 
-Its URL will look like `https://tacomood-publish.<your-subdomain>.workers.dev` if you
-give it its own Worker.
+- `wrangler.jsonc` (repo root) declares the Worker `tacomood-website`, its static
+  assets (`assets.directory: "."`) **and** the entry point `main: worker/index.js`
+- `worker/index.js` answers `POST /verify` and `POST /publish` through the bridge and
+  forwards every other request to the site's static assets
 
-### Fastest option: paste it into the site Worker instead
-If the site is served by a Cloudflare Worker (yours is — `…rampantsloth.workers.dev`
-returns the page HTML), you can skip creating a second Worker. `worker.js` is written
-to work in both places: it answers `/verify` and `/publish` itself and hands every
-other request to `env.ASSETS`, so the website keeps working.
+Push to `main` and Cloudflare rebuilds. Because the Worker was originally created from
+the dashboard (which generated its own assets-only config), the repository config now
+takes over and adds the Worker script.
 
-1. **Workers & Pages → the Worker that serves the site → Edit code**
-2. Replace the code with the contents of `worker.js`, then **Deploy**
-   *(if that Worker already has extra logic, keep it and add this at the top of its
-   `fetch` handler instead: `const admin = await handleAdminRequest(request, env);`
-   `if (admin) return admin;`)*
-3. On **that same Worker**, add `ADMIN_PASSWORD` and `GITHUB_TOKEN`
-4. Leave `PUBLISH_ENDPOINT` as `https://tacomood-website.<subdomain>.workers.dev` —
-   no new URL to wire up
+#### If the build does not pick it up
+Some Workers Builds projects keep their configuration in the dashboard instead of the
+repository. If the rebuild succeeds but `/verify` is still missing (see the check in
+step 5), create the bridge as its own Worker instead:
 
-Confirm it took with a `GET` (JSON means the bridge is live; an empty 404 means it is not):
-```powershell
-Invoke-WebRequest -Uri "https://<site-worker>.<subdomain>.workers.dev/verify" -Method GET -UseBasicParsing |
-    Select-Object -ExpandProperty Content
-# expect: {"ok":false,"error":"Use POST."}
-```
+1. **Workers & Pages → Create → Workers → Connect to Git**
+2. Choose this repository
+3. Set the **deploy command** to `npx wrangler deploy --config publish-worker/wrangler.jsonc`
+   (`publish-worker/wrangler.jsonc` names the Worker `tacomood-publish`)
+4. Deploy, then point `PUBLISH_ENDPOINT` in `admin.html` at
+   `https://tacomood-publish.<your-subdomain>.workers.dev`
 
-### Mounting it inside an existing Worker (manual)
-`worker.js` also exports a composable `handleAdminRequest(request, env)` that returns
-`null` for any request that is not `/verify` or `/publish`. Copy the file next to your
-site Worker and add the routes to it:
+### 3. Add the settings on the Worker
+Worker → **Settings → Variables and Secrets → Add** (this is configuration, not code):
+
+| Name             | Type   | Value                                              |
+|------------------|--------|----------------------------------------------------|
+| `ADMIN_PASSWORD` | Secret | The simple password the owner will type            |
+| `GITHUB_TOKEN`   | Secret | The fine-grained token from step 1                 |
+
+(Choose a password of a few random words — it is the only guard on publishing.)
+`ADMIN_PASSWORD` may also be a plain text variable; both work. Add them to whichever
+Worker is answering `/verify` — a variable saved on a different Worker has no effect.
+
+
+### Mounting the bridge by hand (alternative)
+`publish-worker/worker.js` exports a composable `handleAdminRequest(request, env)` that
+returns `null` for anything that is not `/verify` or `/publish`, which is what
+`worker/index.js` uses. If the site is ever hosted somewhere else, this is all that is
+needed in front of the assets:
 
 ```js
-import { handleAdminRequest } from './admin-publish.js';
+import { handleAdminRequest } from './worker.js';
 
 export default {
     async fetch(request, env) {
@@ -74,16 +77,6 @@ export default {
     }
 };
 ```
-
-### 3. Add the secrets
-Worker → **Settings → Variables and Secrets → Add**:
-
-| Name             | Type   | Value                                              |
-|------------------|--------|----------------------------------------------------|
-| `ADMIN_PASSWORD` | Secret | The simple password the owner will type            |
-| `GITHUB_TOKEN`   | Secret | The fine-grained token from step 1                 |
-
-(Choose a password of a few random words — it is the only guard on publishing.)
 
 ### 4. Point the admin portal at the Worker
 1. Copy the **publish** Worker's URL — looks like `https://tacomood-publish.<your-subdomain>.workers.dev`.

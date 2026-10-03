@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tacomood-website",
+  "compatibility_date": "2026-10-01",
+  "observability": {
+    "enabled": true
+  },
+  // The Worker now has an entry point as well as static assets. Requests that
+  // match an asset are served directly; anything else (POST /verify, POST
+  // /publish) falls through to worker/index.js, which handles the admin publish
+  // bridge and forwards everything else to ASSETS.
+  "main": "worker/index.js",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  }
+}

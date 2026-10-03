@@ -1,0 +1,13 @@
+{
+  // Used only if you would rather run the publish bridge as a SECOND Worker
+  // instead of mounting it on the site Worker (see README.md). Point a second
+  // Cloudflare Worker project at this repository with the deploy command:
+  //   npx wrangler deploy --config publish-worker/wrangler.jsonc
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "tacomood-publish",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "observability": {
+    "enabled": true
+  }
+}
