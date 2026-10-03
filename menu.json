@@ -21,34 +21,98 @@
       "category": "Tacos",
       "note": "3x Soft Tacos — Served with pico de gallo, pickled onions, pickled cabbage, salsa roja, taco sauce, coriander & lime.",
       "items": [
-        { "name": "Beef Tacos", "price": "£13.00", "soldOut": false },
-        { "name": "Chicken Tacos", "price": "£12.00", "soldOut": false },
-        { "name": "Mexican Chorizo Tacos", "price": "£11.00", "soldOut": false },
-        { "name": "Mixed Meats Tacos", "price": "£14.00", "soldOut": false },
-        { "name": "Shrimp Tacos", "price": "£14.00", "soldOut": false },
-        { "name": "Vegan / Veggie Tacos", "price": "£10.00", "soldOut": false }
+        {
+          "name": "Beef Tacos",
+          "price": "£13.00",
+          "soldOut": false
+        },
+        {
+          "name": "Chicken Tacos",
+          "price": "£12.00",
+          "soldOut": false
+        },
+        {
+          "name": "Mexican Chorizo Tacos",
+          "price": "£11.00",
+          "soldOut": false
+        },
+        {
+          "name": "Mixed Meats Tacos",
+          "price": "£14.00",
+          "soldOut": false
+        },
+        {
+          "name": "Shrimp Tacos",
+          "price": "£14.00",
+          "soldOut": false
+        },
+        {
+          "name": "Vegan / Veggie Tacos",
+          "price": "£10.00",
+          "soldOut": false
+        }
       ]
     },
     {
       "category": "Burritos",
       "note": "Served with spicy Mexican rice, pickled onions, pico de gallo, cheddar cheese, salsa roja, taco sauce, coriander & charred pineapple.",
       "items": [
-        { "name": "Beef Burrito", "price": "£12.00", "soldOut": false },
-        { "name": "Chicken Adobo Burrito", "price": "£11.00", "soldOut": false },
-        { "name": "Mexican Chorizo Burrito", "price": "£10.00", "soldOut": false },
-        { "name": "All Meats Burrito", "price": "£14.00", "soldOut": false }
+        {
+          "name": "Beef Burrito",
+          "price": "£12.00",
+          "soldOut": false
+        },
+        {
+          "name": "Chicken Adobo Burrito",
+          "price": "£11.00",
+          "soldOut": false
+        },
+        {
+          "name": "Mexican Chorizo Burrito",
+          "price": "£10.00",
+          "soldOut": false
+        },
+        {
+          "name": "All Meats Burrito",
+          "price": "£14.00",
+          "soldOut": false
+        }
       ]
     },
     {
       "category": "Rice Bowls",
       "note": "Served with pico de gallo, pickled onions, pickled cabbage, salsa roja, cheese, jalapeños, Mexican beans, taco sauce, coriander & lime. Add Guacamole +£1.",
       "items": [
-        { "name": "Beef Barbacoa Bowl", "price": "£13.00", "soldOut": false },
-        { "name": "Chicken Adobo Bowl", "price": "£11.00", "soldOut": false },
-        { "name": "Mexican Chorizo Bowl", "price": "£10.00", "soldOut": false },
-        { "name": "Shrimp Bowl", "price": "£14.00", "soldOut": false },
-        { "name": "All Meats Bowl", "price": "£14.00", "soldOut": false },
-        { "name": "Vegan / Veggie Bowl", "price": "£9.00", "soldOut": false }
+        {
+          "name": "Beef Barbacoa Bowl",
+          "price": "£13.00",
+          "soldOut": false
+        },
+        {
+          "name": "Chicken Adobo Bowl",
+          "price": "£11.00",
+          "soldOut": false
+        },
+        {
+          "name": "Mexican Chorizo Bowl",
+          "price": "£10.00",
+          "soldOut": false
+        },
+        {
+          "name": "Shrimp Bowl",
+          "price": "£14.00",
+          "soldOut": false
+        },
+        {
+          "name": "All Meats Bowl",
+          "price": "£14.00",
+          "soldOut": false
+        },
+        {
+          "name": "Vegan / Veggie Bowl",
+          "price": "£9.00",
+          "soldOut": false
+        }
       ]
     },
     {
@@ -84,33 +148,105 @@
           "price": "£9.00",
           "soldOut": false
         },
-        { "name": "Plain Chips", "price": "£4.50", "soldOut": false },
-        { "name": "Churros", "description": "Served with chocolate dip.", "price": "£5.00", "soldOut": false }
+        {
+          "name": "Plain Chips",
+          "price": "£4.50",
+          "soldOut": false
+        },
+        {
+          "name": "Churros",
+          "description": "Served with chocolate dip.",
+          "price": "£5.00",
+          "soldOut": false
+        }
       ]
     },
     {
       "category": "Drinks & Dips",
       "items": [
-        { "name": "Jarritos", "price": "£3.50", "soldOut": false },
-        { "name": "Coke / Coke Zero", "price": "£2.00", "soldOut": false },
-        { "name": "Fanta", "price": "£2.00", "soldOut": false },
-        { "name": "Water", "price": "£1.50", "soldOut": false },
-        { "name": "Taco Sauce Dip", "price": "£1.50", "soldOut": false },
-        { "name": "Garlic Dip", "price": "£1.50", "soldOut": false },
-        { "name": "Salsa Roja Dip", "price": "£1.50", "soldOut": false }
+        {
+          "name": "Jarritos",
+          "price": "£3.50",
+          "soldOut": false
+        },
+        {
+          "name": "Coke / Coke Zero",
+          "price": "£2.00",
+          "soldOut": false
+        },
+        {
+          "name": "Fanta",
+          "price": "£2.00",
+          "soldOut": false
+        },
+        {
+          "name": "Water",
+          "price": "£1.50",
+          "soldOut": false
+        },
+        {
+          "name": "Taco Sauce Dip",
+          "price": "£1.50",
+          "soldOut": false
+        },
+        {
+          "name": "Garlic Dip",
+          "price": "£1.50",
+          "soldOut": false
+        },
+        {
+          "name": "Salsa Roja Dip",
+          "price": "£1.50",
+          "soldOut": false
+        }
       ]
     }
   ],
   "storeInfo": {
     "openingHours": [
-      { "day": "Monday", "closed": true, "open": "12:00", "close": "21:00" },
-      { "day": "Tuesday", "closed": true, "open": "12:00", "close": "21:00" },
-      { "day": "Wednesday", "closed": true, "open": "12:00", "close": "21:00" },
-      { "day": "Thursday", "closed": true, "open": "12:00", "close": "21:00" },
-      { "day": "Friday", "closed": false, "open": "12:00", "close": "21:00" },
-      { "day": "Saturday", "closed": false, "open": "12:00", "close": "21:00" },
-      { "day": "Sunday", "closed": false, "open": "12:00", "close": "21:00" }
+      {
+        "day": "Monday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      },
+      {
+        "day": "Tuesday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      },
+      {
+        "day": "Wednesday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      },
+      {
+        "day": "Thursday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      },
+      {
+        "day": "Friday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      },
+      {
+        "day": "Saturday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      },
+      {
+        "day": "Sunday",
+        "closed": false,
+        "open": "12:00",
+        "close": "22:00"
+      }
     ],
-    "orderCutoff": "20:30"
+    "orderCutoff": "21:30"
   }
 }
