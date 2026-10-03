@@ -1122,7 +1122,7 @@
         // URL of the Cloudflare Worker that publishes menu.json to GitHub.
         // The Worker holds the GitHub token and admin password server-side —
         // this page never sees either secret. See publish-worker/README.md.
-        const PUBLISH_ENDPOINT = 'https://tacomood-publish.YOUR-SUBDOMAIN.workers.dev';
+        const PUBLISH_ENDPOINT = 'https://tacomood-website.rampantsloth.workers.dev/publish';
 
         // State
         let menuData = null;
@@ -1207,7 +1207,13 @@
         const PASSWORD_STORAGE_KEY = 'tacomood_admin_password';
 
         function publishEndpoint(path) {
-            return `${PUBLISH_ENDPOINT.replace(/\/+$/, '')}/${path}`;
+            // Accepts the Worker base URL with or without a trailing /publish or
+            // /verify, so both `https://<worker>.workers.dev` and
+            // `https://<worker>.workers.dev/publish` work.
+            const base = PUBLISH_ENDPOINT.trim()
+                .replace(/\/+$/, '')
+                .replace(/\/(publish|verify)$/, '');
+            return `${base}/${path}`;
         }
 
         function savedPassword() {
