@@ -1919,6 +1919,78 @@
         // ------------------------------------------------------------
         // Publish Changes through the Cloudflare Worker
         // ------------------------------------------------------------
+        // ------------------------------------------------------------
+        // Live-site check
+        // Publishing only commits menu.json to GitHub; the website itself changes
+        // when the host rebuilds. These helpers fetch the file the live site is
+        // actually serving, so the portal can say which of the two has happened
+        // instead of reporting "published" for a change nobody can see yet.
+        // ------------------------------------------------------------
+        const LIVE_CHECK_INTERVAL_MS = 10000;
+        const LIVE_CHECK_TIMEOUT_MS = 180000;
+
+        function setStatusText(text) {
+            saveStatusText.textContent = text;
+            mobileStatusText.textContent = text;
+        }
+
+        async function sha256Hex(text) {
+            // No Web Crypto (old browser or insecure context) — skip verification
+            if (!window.crypto || !window.crypto.subtle) return null;
+            const digest = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+            return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // The menu.json the live website is serving right now (cache-busted).
+        async function fetchLiveMenu() {
+            const response = await fetch(`/menu.json?live=${Date.now()}`, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.text();
+        }
+
+        // Waits for the live file to match what was just published.
+        async function verifyPublishWentLive(expectedContent, commitLink) {
+            const expectedHash = await sha256Hex(expectedContent);
+            const deadline = Date.now() + LIVE_CHECK_TIMEOUT_MS;
+            let liveBytes = null;
+            let lastError = null;
+
+            setStatusText('Committed — waiting for the website…');
+
+            while (Date.now() < deadline) {
+                try {
+                    const live = await fetchLiveMenu();
+                    liveBytes = new TextEncoder().encode(live).length;
+
+                    if (live === expectedContent || (expectedHash && await sha256Hex(live) === expectedHash)) {
+                        setStatusText('Live on the website');
+                        showBanner(`
+                            <strong>Live on the website! 🎉</strong><br>
+                            The public menu now matches what you published (${liveBytes} bytes).
+                            ${commitLink}
+                        `, 'success');
+                        return true;
+                    }
+                } catch (err) {
+                    lastError = err.message;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, LIVE_CHECK_INTERVAL_MS));
+            }
+
+            setStatusText('Website has not updated');
+            showBanner(`
+                <strong>Committed to GitHub, but the website has not updated yet.</strong><br>
+                Nothing is lost — your change is saved in GitHub. The public site is still serving
+                ${liveBytes ? liveBytes + ' bytes' : 'the previous menu'}, so the host has not rebuilt yet.
+                Wait a minute and reload the public site; if it stays behind, open this Worker's
+                <strong>Deployments</strong> tab in the Cloudflare dashboard.
+                ${lastError ? `<br><small>Last check failed: ${lastError}</small>` : ''}
+                ${commitLink}
+            `, 'error');
+            return false;
+        }
+
         async function publishChanges() {
             if (isPublishing) return;
 
@@ -1989,7 +2061,18 @@
                     throw new Error(describePublishFailure(response, parsed, publishUrl, 'Publish failed'));
                 }
 
-                // 3. Success handling
+                // 3. Nothing changed — do not pretend a publish happened
+                if (data.changed === false) {
+                    menuData = updatedJsonObj; // sync local state
+                    setDirty(false);
+                    showBanner(
+                        '<strong>Nothing to publish.</strong> The menu on GitHub already matches this portal, so no new commit was created and the live site is already up to date.',
+                        'info'
+                    );
+                    return;
+                }
+
+                // 4. Success handling
                 menuData = updatedJsonObj; // sync local state
                 setDirty(false);
 
@@ -1997,10 +2080,12 @@
                     ? `<a href="${data.commitUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; margin-left: 8px;">View Commit &rarr;</a>`
                     : '';
                 showBanner(`
-                    <strong>Menu Successfully Published! 🎉</strong><br>
-                    Dish names, descriptions, prices, availability and opening hours are committed to the website.
+                    <strong>Committed to GitHub ✓</strong> — now waiting for the live website.<br>
+                    Dish names, descriptions, prices, availability and opening hours are saved in GitHub; the public site updates as soon as the host rebuilds.
                     ${commitLink}
-                `, 'success');
+                `, 'info');
+                // Runs in the background and updates the banner once the site catches up
+                verifyPublishWentLive(jsonString, commitLink);
 
             } catch (err) {
                 console.error('Publish error:', err);

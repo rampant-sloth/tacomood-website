@@ -6,18 +6,25 @@
  *
  *   ADMIN_PASSWORD  (secret) — the password the site owner types in admin.html
  *   GITHUB_TOKEN    (secret) — fine-grained PAT with Contents: Read and write
- *                              on rampant-sloth/tacomood-website ONLY
+ *                              on tacomood-admin/tacomood-website ONLY
  *
  * Endpoints (all POST, JSON):
  *   /verify    { password }                    -> { ok: true }
- *   /publish   { password, content, message? } -> { ok: true, commitSha }
+ *   /publish   { password, content, message? } -> { ok: true, changed, commitSha, commitUrl }
  *   /diagnose  { password }                    -> what the GitHub token can do
+ *
+ * `changed: false` means the file on GitHub already held exactly those bytes, so
+ * no commit was created. Publishing an unchanged menu used to write an empty
+ * commit and still report success.
+ *
+ * Note: GITHUB_OWNER below is the account that owns the repository. If the repo
+ * is ever transferred again, update it here too (see README.md, "Handover").
  *
  * This file contains no secrets and is safe to keep in the public repo.
  * See README.md in this folder for setup and handover instructions.
  */
 
-const GITHUB_OWNER = 'rampant-sloth';
+const GITHUB_OWNER = 'tacomood-admin';
 const GITHUB_REPO = 'tacomood-website';
 const GITHUB_PATH = 'menu.json';
 const GITHUB_BRANCH = 'main';
@@ -247,6 +254,24 @@ async function publishMenu(env, content, message) {
     }
 
     const fileInfo = await getResponse.json();
+
+    // The admin portal can publish without anything having changed (a re-click, or
+    // an edit to a field that is not written to menu.json). Committing identical
+    // bytes creates an empty commit and tells the owner "published!" when nothing
+    // happened, so compare with GitHub first and report that honestly.
+    const contentToWrite = content.endsWith('\n') ? content : content + '\n';
+    const currentBase64 = typeof fileInfo.content === 'string'
+        ? fileInfo.content.replace(/\s+/g, '')
+        : null;
+
+    if (currentBase64 && currentBase64 === utf8ToBase64(contentToWrite)) {
+        return {
+            changed: false,
+            fileSha: fileInfo.sha || null,
+            commitSha: null,
+            commitUrl: null
+        };
+    }
     const commitMessage = (typeof message === 'string' && message.trim())
         ? message.trim().slice(0, MAX_MESSAGE_LENGTH)
         : 'Update menu.json via Admin Portal';
@@ -256,7 +281,7 @@ async function publishMenu(env, content, message) {
         headers: Object.assign({ 'Content-Type': 'application/json' }, githubHeaders(token)),
         body: JSON.stringify({
             message: commitMessage,
-            content: utf8ToBase64(content.endsWith('\n') ? content : content + '\n'),
+            content: utf8ToBase64(contentToWrite),
             sha: fileInfo.sha,
             branch: GITHUB_BRANCH
         })
@@ -270,6 +295,8 @@ async function publishMenu(env, content, message) {
 
     const result = await putResponse.json();
     return {
+        changed: true,
+        fileSha: result.content && result.content.sha ? result.content.sha : null,
         commitSha: result.commit && result.commit.sha ? result.commit.sha : null,
         commitUrl: result.commit && result.commit.html_url ? result.commit.html_url : null
     };
@@ -342,7 +369,13 @@ export async function handleAdminRequest(request, env) {
 
     try {
         const published = await publishMenu(env, body.content, body.message);
-        return jsonResponse({ ok: true, commitSha: published.commitSha, commitUrl: published.commitUrl });
+        return jsonResponse({
+            ok: true,
+            changed: published.changed,
+            fileSha: published.fileSha,
+            commitSha: published.commitSha,
+            commitUrl: published.commitUrl
+        });
     } catch (err) {
         return jsonResponse({ ok: false, error: err.message || 'Publish failed.' }, 502);
     }

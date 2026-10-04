@@ -1,0 +1,20 @@
+# Files and folders listed here are NOT uploaded as public static assets.
+#
+# This Worker is deployed with assets.directory = "." (the repository root), so
+# without this file the whole repository is downloadable from the live site —
+# including /.git/config, /.git/index and /publish-worker/worker.js. Deleting a
+# file from the repository is not enough: it stays on the live site until it is
+# removed from the deployed asset bundle, which happens on the next deploy.
+#
+# Keep this list to repository internals only. index.html, basket.html,
+# admin.html and menu.json must stay public.
+.git/
+.gitignore
+.assetsignore
+.dev.vars
+.wrangler/
+node_modules/
+wrangler.jsonc
+worker/
+publish-worker/
+README.md

@@ -10,7 +10,7 @@ admin.html (browser)                       Cloudflare Worker (this folder)      
 POST /verify   { password }            ──▶ checks ADMIN_PASSWORD secret
 POST /publish  { password, content }   ──▶ GET menu.json (sha)                       ──▶ api.github.com
                                            PUT menu.json (commit)                     ◀──
-                                       ◀── { ok: true, commitSha }
+                                       ◀── { ok: true, changed, commitSha }
 ```
 
 ## One-time setup
@@ -18,7 +18,7 @@ POST /publish  { password, content }   ──▶ GET menu.json (sha)            
 ### 1. Create the GitHub token
 1. GitHub → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**
 2. Name: `Taco Mood Publisher` — Expiration: 1 year (set a calendar reminder to renew)
-3. **Repository access:** Only select repositories → `rampant-sloth/tacomood-website`
+3. **Repository access:** Only select repositories → `tacomood-admin/tacomood-website`
 4. **Permissions → Repository permissions → Contents: Read and write** (Metadata stays read-only)
 5. Generate and copy the token — **never paste it into the website, an email, or a chat**
 
@@ -113,7 +113,7 @@ If the Worker's `workers.dev` address is switched off, enable it under
 | "Publish service is missing GITHUB_TOKEN." | No `GITHUB_TOKEN` secret | Add the secret |
 | "Could not publish menu.json (401)…expired or revoked…" | GitHub rejected the token | Create a new fine-grained token and update the `GITHUB_TOKEN` secret |
 | "Could not publish menu.json (403)…can read … but not write to it (permissions: push=false…)" | The token has read access only | GitHub → your token → **Repository access → Only select repositories → `tacomood-website`**, **Permissions → Contents: Read and write**, then update the `GITHUB_TOKEN` secret |
-| "…cannot see rampant-sloth/tacomood-website (404)…" | The token was not granted this repository | Same as above: *Only select repositories* and pick `tacomood-website` |
+| "…cannot see tacomood-admin/tacomood-website (404)…" | The token was not granted this repository | Same as above: *Only select repositories* and pick `tacomood-website` |
 
 ## Diagnose the GitHub token
 
@@ -129,8 +129,8 @@ It answers with `canPublish`, the repository `permissions`, the token's login an
 plain-English `verdict`, for example:
 
 ```json
-{"ok":true,"report":{"repository":"rampant-sloth/tacomood-website","tokenPresent":true,
- "tokenLogin":"rampant-sloth","permissions":{"admin":false,"push":false,"pull":true},
+{"ok":true,"report":{"repository":"tacomood-admin/tacomood-website","tokenPresent":true,
+ "tokenLogin":"tacomood-admin","permissions":{"admin":false,"push":false,"pull":true},
  "canPublish":false,"verdict":"The token can read the repository but not write to it. Set Permissions → Contents to \"Read and write\"."}}
 ```
 
@@ -143,6 +143,27 @@ Invoke-WebRequest -Uri "https://<publish-worker>.<subdomain>.workers.dev/verify"
     Select-Object StatusCode, Content
 ```
 
+## Check what the live site is actually serving
+
+`GET /version` (public, read-only, no password) reports the deployment that answered the
+request: the byte size and SHA-256 of the `menu.json` the live site is serving right now.
+
+```powershell
+curl.exe https://tacomood-website.rampantsloth.workers.dev/version
+```
+
+```json
+{"ok":true,"worker":"tacomood-website","deployedCommit":null,"branch":null,
+ "checkedAt":"2026-10-04T23:10:00.000Z",
+ "menu":{"bytes":6622,"sha256":"0ee93867a68c0321edf6c5de36526be2ebee7139...","lastModified":null}}
+```
+
+`deployedCommit` is only filled in if the build supplies it (Workers Builds passes
+`WORKERS_CI_COMMIT_SHA` to build commands, not to the running Worker). The `menu`
+fingerprint is the useful part: it is how `admin.html` confirms that a publish really
+reached the website, and how you can compare the live file with
+`raw.githubusercontent.com/tacomood-admin/tacomood-website/main/menu.json`.
+
 ## Changing the password or token later
 
 Worker → **Settings → Variables and Secrets → Edit** the secret → **Deploy**.
@@ -154,13 +175,34 @@ GitHub → **Settings → Developer settings → Personal access tokens → Fine
 
 ## If the public site does not update
 
-Publishing only commits `menu.json` to `main`. The live site updates only if its host
-watches that branch.
+Publishing only commits `menu.json` to `main`; the live site updates when Cloudflare
+Workers Builds notices the push and rebuilds. Those are two separate things, and either
+can be the one that is broken:
 
-- **GitHub Pages:** repo → **Settings → Pages → Build and deployment → Deploy from branch `main` / root**.
-  This repo currently has Pages turned off, so confirm where the public site is actually hosted first.
-- **Cloudflare Pages / Netlify / similar:** connect the GitHub repo and set the production branch to `main`.
-  A static site needs no build command.
+1. **The commit did not happen.** The portal shows an error. Note that
+   `"changed": false` in the reply means the file on GitHub was already identical, so no
+   commit was created (this is normal when nothing was edited).
+2. **The commit happened but no build ran.** Cloudflare posts every build as a check run
+   on the commit. Open the commit on GitHub and look for
+   "Workers Builds: tacomood-website", or ask the API:
+
+   ```powershell
+   curl.exe -sL "https://api.github.com/repos/tacomood-admin/tacomood-website/commits/<sha>/check-runs"
+   ```
+
+   `"total_count": 0` means the push never reached Cloudflare. The usual cause is that the
+   repository was transferred to a different GitHub account, which removes the build
+   connection's access even though pushes and publishes keep working (GitHub redirects the
+   old URL). Fix it in **Workers & Pages → the Worker → Settings → Builds**: disconnect the
+   repository and connect it again from the new owner, then create a deployment for the
+   latest commit. The repository root `README.md` has the full handover checklist.
+
+`GET /version` shows what the live site is serving, so the two cases can be told apart
+without guessing:
+
+```powershell
+curl.exe https://tacomood-website.rampantsloth.workers.dev/version
+```
 
 ## What this Worker will not do
 
