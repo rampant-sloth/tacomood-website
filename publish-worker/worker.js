@@ -150,6 +150,36 @@ function validateMenuContent(content) {
             if (item.soldOut !== undefined && typeof item.soldOut !== 'boolean') {
                 return `${category.category} → ${item.name}: soldOut must be true or false.`;
             }
+            if (item.hidden !== undefined && typeof item.hidden !== 'boolean') {
+                return `${category.category} → ${item.name}: hidden must be true or false.`;
+            }
+        }
+    }
+
+    // Optional page wording — the "Website Text & Headings" boxes in the owner
+    // portal. Empty strings are allowed: that is how a line is hidden on the site.
+    const siteContentLimits = {
+        brandTitle: 60,
+        tagline: 120,
+        menuHeading: 80,
+        menuIntro: 400
+    };
+
+    if (menu.siteContent !== undefined) {
+        const siteContent = menu.siteContent;
+        if (!siteContent || typeof siteContent !== 'object' || Array.isArray(siteContent)) {
+            return 'siteContent must be an object of text values.';
+        }
+
+        for (const key of Object.keys(siteContentLimits)) {
+            const value = siteContent[key];
+            if (value === undefined) continue;
+            if (typeof value !== 'string') {
+                return `siteContent.${key} must be text.`;
+            }
+            if (value.length > siteContentLimits[key]) {
+                return `siteContent.${key} is longer than ${siteContentLimits[key]} characters.`;
+            }
         }
     }
 

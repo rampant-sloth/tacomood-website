@@ -211,6 +211,8 @@ curl.exe https://tacomood-website.rampantsloth.workers.dev/version
   allowed), every dish needs a name, and `hidden`, `soldOut`, `note` and `price` must be the right
   type. This is the backstop behind the checks in the owner portal, so a half-finished edit can never
   be published.
+- It also checks the owner-editable page wording (`siteContent`: the title, tagline, menu heading and
+  menu sentence) is text within sensible lengths, and that `hidden` on a section or dish is true/false.
 - The password is checked on every verify and every publish. A saved browser password is not a token.
 - Do not put `ADMIN_PASSWORD` or `GITHUB_TOKEN` in `admin.html`, `menu.json`, or this README.
 

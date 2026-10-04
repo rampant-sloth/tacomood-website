@@ -955,8 +955,8 @@
 
     <header>
         <div class="header-content">
-            <h1>Taco Mood</h1>
-            <div class="tagline">Fresh Food. Good Mood.</div>
+            <h1 id="site-brand-title">Taco Mood</h1>
+            <div class="tagline" id="site-tagline">Fresh Food. Good Mood.</div>
 
             <!-- Real Store Details: Address, Hours, Social, Basket -->
             <div class="header-badges">
@@ -1043,8 +1043,8 @@
         <!-- Menu Section -->
         <section class="menu-wrapper" id="menu-section">
             <div class="section-header">
-                <h2>Our Street Food Menu</h2>
-                <p class="section-desc">Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.</p>
+                <h2 id="site-menu-heading">Our Street Food Menu</h2>
+                <p class="section-desc" id="site-menu-intro">Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.</p>
             </div>
             
             <div id="menu-container">
@@ -1118,7 +1118,7 @@
             <div class="footer-grid">
                 <!-- Store Details & Hours -->
                 <div class="footer-info">
-                    <h3>Taco Mood</h3>
+                    <h3 id="site-footer-brand">Taco Mood</h3>
                     <p>Authentic Mexican Street Food &amp; Birria</p>
                     <p class="footer-address">
                         <a href="https://maps.app.goo.gl/Jd5obVVXCtuAUGHm7" target="_blank" rel="noopener noreferrer" class="footer-address-link" title="Open the Taco Mood Google Maps listing (opens in new tab)">
@@ -1195,6 +1195,52 @@
         //       basket links in the header and footer.
         // =================================================================
         const COLLECTION_ORDERING_ENABLED = false;
+
+        // -------------------------------------------------------------
+        // Owner-editable page text (menu.json → siteContent)
+        // The portal edits these under "Website Text & Headings". A field
+        // that is missing from the file keeps the wording in the HTML; a
+        // field that has been cleared hides that text on the page.
+        // -------------------------------------------------------------
+        const SITE_TEXT_DEFAULTS = {
+            brandTitle: 'Taco Mood',
+            tagline: 'Fresh Food. Good Mood.',
+            menuHeading: 'Our Street Food Menu',
+            menuIntro: 'Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.'
+        };
+
+        function applySiteText(elementId, value, fallback) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            if (typeof value === 'string') {
+                const text = value.trim();
+                element.textContent = text;
+                element.style.display = text ? '' : 'none';
+                return;
+            }
+
+            element.textContent = fallback;
+            element.style.display = '';
+        }
+
+        function applySiteContent(siteContent) {
+            const content = (siteContent && typeof siteContent === 'object') ? siteContent : {};
+
+            applySiteText('site-brand-title', content.brandTitle, SITE_TEXT_DEFAULTS.brandTitle);
+            applySiteText('site-tagline', content.tagline, SITE_TEXT_DEFAULTS.tagline);
+            applySiteText('site-menu-heading', content.menuHeading, SITE_TEXT_DEFAULTS.menuHeading);
+            applySiteText('site-menu-intro', content.menuIntro, SITE_TEXT_DEFAULTS.menuIntro);
+
+            // The footer name and the browser tab follow the title, so a rename
+            // stays consistent everywhere on the page.
+            applySiteText('site-footer-brand', content.brandTitle, SITE_TEXT_DEFAULTS.brandTitle);
+
+            const brand = (typeof content.brandTitle === 'string' && content.brandTitle.trim())
+                ? content.brandTitle.trim()
+                : SITE_TEXT_DEFAULTS.brandTitle;
+            document.title = brand + ' | Authentic Mexican Street Food | Belfast';
+        }
 
         // When collection ordering is hidden the dish cards are not clickable,
         // so remove the pointer cursor / hover affordance on the menu cards.
@@ -1727,6 +1773,7 @@
             })
             .then(menu => {
                 cachedMenu = menu;
+                applySiteContent(menu.siteContent);
                 applyStoreInfo(menu.storeInfo);
                 const container = document.getElementById('menu-container');
                 container.innerHTML = '';
@@ -1742,7 +1789,7 @@
                     if (!category || category.hidden) return;
 
                     const visibleItems = Array.isArray(category.items)
-                        ? category.items.filter(item => item && item.name)
+                        ? category.items.filter(item => item && item.name && !item.hidden)
                         : [];
                     if (!visibleItems.length) return;
                     const section = document.createElement('section');

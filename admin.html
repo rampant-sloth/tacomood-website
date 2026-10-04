@@ -1077,6 +1077,32 @@
             color: #ffffff;
         }
 
+        /* Dish-level tools: hide from website / delete dish, plus the
+           Website Text & Headings card */
+        .admin-item-card .admin-section-tools {
+            margin-top: 0.1rem;
+        }
+
+        .admin-item-card.is-hidden-dish {
+            border-left-color: var(--accent-orange);
+            background-color: rgba(232, 80, 37, 0.03);
+        }
+
+        .admin-item-card.is-hidden-dish .item-name-input {
+            color: #ffb3a0;
+        }
+
+        .site-text-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            padding: 1.25rem;
+        }
+
+        .site-text-actions {
+            padding: 0 1.25rem 1.25rem;
+        }
+
         /* Loading Spinner */
         .spinner {
             width: 16px;
@@ -1397,6 +1423,10 @@
                         <li><strong>Add a section:</strong> press <strong>"➕ Add Section"</strong> above the menu, next to the search box. The name you type is the heading customers see, for example <em>Sides</em> or <em>Desserts</em>.</li>
                         <li><strong>Add a dish:</strong> press <strong>"➕ Add Dish"</strong> at the top of the section you want it in, then fill in the name and price. Prices can be typed as <code>10</code>, <code>10.5</code> or <code>£10.00</code> — they are tidied up for you.</li>
                         <li><strong>Delete a section:</strong> press <strong>"🗑️ Delete Section"</strong> and then type the section name to confirm, so it cannot happen by accident. If you change your mind, press <strong>Undo</strong> in the green message that appears.</li>
+                        <li><strong>Hide a dish:</strong> tick <strong>"Hide from website"</strong> on the dish. It comes off the website but stays in your menu file, so you can bring it back at any time.</li>
+                        <li><strong>Sold Out:</strong> ticking <strong>"Mark Sold Out"</strong> keeps the dish on the menu with a "Sold Out" badge. Use <strong>"Hide from website"</strong> instead if you want the dish to disappear.</li>
+                        <li><strong>Delete a dish:</strong> press <strong>"🗑️ Delete Dish"</strong> on the dish, then type the dish name to confirm. Undo is offered straight afterwards.</li>
+                        <li><strong>Change the wording at the top of the site:</strong> use the <strong>"Website Text &amp; Headings"</strong> card — the big title, the tagline, the menu heading and the sentence under it. Clear a box to hide that line.</li>
                         <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. Your updates go straight to the live website — it usually refreshes within a minute.</li>
                     </ol>
                 </div>
@@ -1774,6 +1804,7 @@
             formContainer.innerHTML = '';
             let totalItems = 0;
             let totalSoldOut = 0;
+            let totalHidden = 0;
 
             menuData.categories.forEach((cat, catIdx) => {
                 const categoryCard = document.createElement('section');
@@ -1823,10 +1854,11 @@
                 if (cat.items && Array.isArray(cat.items)) {
                     cat.items.forEach((item, itemIdx) => {
                         totalItems++;
+                        if (item.hidden) totalHidden++;
                         if (item.soldOut) totalSoldOut++;
 
                         const itemCard = document.createElement('div');
-                        itemCard.className = 'admin-item-card' + (item.soldOut ? ' is-sold-out' : '');
+                        itemCard.className = 'admin-item-card' + (item.soldOut ? ' is-sold-out' : '') + (item.hidden ? ' is-hidden-dish' : '');
                         itemCard.id = `card-${catIdx}-${itemIdx}`;
 
                         // TOP ROW: Dish Name, Price, Sold Out Toggle
@@ -1932,6 +1964,74 @@
                         descTextarea.addEventListener('input', () => setDirty(true));
                         bottomRow.appendChild(descTextarea);
 
+                        // Controls for this dish: hide it from the website, or
+                        // delete it (typed confirmation, with an Undo).
+                        const itemTools = document.createElement('div');
+                        itemTools.className = 'admin-section-tools';
+                        itemTools.setAttribute('role', 'group');
+                        itemTools.setAttribute('aria-label', `Tools for the dish ${item.name || 'in this section'}`);
+
+                        if (item.hidden) {
+                            const hiddenItemChip = document.createElement('span');
+                            hiddenItemChip.className = 'hidden-chip';
+                            hiddenItemChip.textContent = 'Hidden from website';
+                            itemTools.appendChild(hiddenItemChip);
+                        }
+
+                        const itemHideId = `hide-item-${catIdx}-${itemIdx}`;
+                        const itemHideLabel = document.createElement('label');
+                        itemHideLabel.className = 'hide-toggle-label';
+                        itemHideLabel.htmlFor = itemHideId;
+                        itemHideLabel.title = 'Hides this dish from the public website. It stays in your menu file, so nothing is lost.';
+
+                        const itemHideBox = document.createElement('input');
+                        itemHideBox.type = 'checkbox';
+                        itemHideBox.className = 'hide-checkbox';
+                        itemHideBox.id = itemHideId;
+                        itemHideBox.checked = Boolean(item.hidden);
+                        itemHideBox.addEventListener('change', () => {
+                            const nowHidden = itemHideBox.checked;
+
+                            syncFormIntoData();
+                            const targetCategory = menuData.categories[catIdx];
+                            const targetItem = (targetCategory && Array.isArray(targetCategory.items))
+                                ? targetCategory.items[itemIdx]
+                                : null;
+                            if (!targetItem) return;
+
+                            if (nowHidden) {
+                                targetItem.hidden = true;
+                            } else {
+                                delete targetItem.hidden;
+                            }
+
+                            setDirty(true);
+                            renderForm();
+
+                            const refocused = document.getElementById(itemHideId);
+                            if (refocused) refocused.focus({ preventScroll: true });
+
+                            announce(nowHidden
+                                ? `"${item.name}" is hidden. Press Publish Changes to take it off the website. It has not been deleted.`
+                                : `"${item.name}" is visible again. Press Publish Changes to show it on the website.`);
+                        });
+
+                        const itemHideText = document.createElement('span');
+                        itemHideText.textContent = 'Hide from website';
+                        itemHideLabel.appendChild(itemHideBox);
+                        itemHideLabel.appendChild(itemHideText);
+                        itemTools.appendChild(itemHideLabel);
+
+                        const deleteItemBtn = document.createElement('button');
+                        deleteItemBtn.type = 'button';
+                        deleteItemBtn.className = 'tool-btn tool-btn-danger';
+                        deleteItemBtn.textContent = '🗑️ Delete Dish';
+                        deleteItemBtn.setAttribute('aria-label', `Delete the dish ${item.name || 'in this section'}`);
+                        deleteItemBtn.addEventListener('click', () => openDeleteItemDialog(catIdx, itemIdx));
+                        itemTools.appendChild(deleteItemBtn);
+
+                        itemCard.appendChild(itemTools);
+
                         itemCard.appendChild(bottomRow);
                         itemsList.appendChild(itemCard);
                     });
@@ -1952,7 +2052,8 @@
             const hiddenSections = menuData.categories.filter(cat => cat && cat.hidden).length;
             statCategories.innerHTML = `Categories: <strong>${menuData.categories.length}</strong>`
                 + (hiddenSections ? ` <span class="hidden-chip">${hiddenSections} hidden</span>` : '');
-            statItems.innerHTML = `Total Items: <strong>${totalItems}</strong>`;
+            statItems.innerHTML = `Total Items: <strong>${totalItems}</strong>`
+                + (totalHidden ? ` <span class="hidden-chip">${totalHidden} hidden</span>` : '');
             soldoutCount.textContent = totalSoldOut;
         }
 
@@ -1994,6 +2095,16 @@
         // menu.json is preserved and published unchanged. Set this to true to show
         // the control again.
         const ONLINE_ORDERING_SETTINGS_ENABLED = false;
+
+        // The wording that is currently in index.html. The four boxes in the
+        // "Website Text & Headings" card start from these values, so the owner
+        // always sees what the public website is showing today.
+        const SITE_TEXT_DEFAULTS = {
+            brandTitle: 'Taco Mood',
+            tagline: 'Fresh Food. Good Mood.',
+            menuHeading: 'Our Street Food Menu',
+            menuIntro: 'Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.'
+        };
 
         function renderStoreInfoForm() {
             if (!storeInfoContainer) return;
@@ -2131,6 +2242,129 @@
 
                 card.appendChild(cutoffRow);
             }
+
+            // ---- Website Text & Headings (the words at the top of the site) ----
+            const storedSiteContent = (menuData && menuData.siteContent && typeof menuData.siteContent === 'object')
+                ? menuData.siteContent
+                : {};
+
+            const textCard = document.createElement('section');
+            textCard.className = 'store-info-card';
+
+            const textHeader = document.createElement('div');
+            textHeader.className = 'admin-category-header';
+
+            const textTitleEl = document.createElement('h3');
+            textTitleEl.className = 'admin-category-title';
+            textTitleEl.textContent = 'Website Text & Headings';
+            textHeader.appendChild(textTitleEl);
+
+            const textBadge = document.createElement('span');
+            textBadge.className = 'stat-chip';
+            textBadge.textContent = 'Shown at the top of the public website';
+            textHeader.appendChild(textBadge);
+
+            const textNote = document.createElement('p');
+            textNote.className = 'admin-category-note';
+            textNote.textContent = 'The words customers read above your menu. Empty a box to hide that line on the website. Press "Publish Changes" to update the live site.';
+            textHeader.appendChild(textNote);
+            textCard.appendChild(textHeader);
+
+            const textGrid = document.createElement('div');
+            textGrid.className = 'site-text-grid';
+
+            const siteTextFields = [
+                {
+                    key: 'brandTitle',
+                    id: 'site-text-brand',
+                    label: 'Website title (the big heading at the top)',
+                    maxLength: 60,
+                    help: 'For example: Taco Mood. The footer name and the browser tab follow this too.'
+                },
+                {
+                    key: 'tagline',
+                    id: 'site-text-tagline',
+                    label: 'Tagline under the title',
+                    maxLength: 120,
+                    help: 'For example: Fresh Food. Good Mood.'
+                },
+                {
+                    key: 'menuHeading',
+                    id: 'site-text-menu-heading',
+                    label: 'Menu section heading',
+                    maxLength: 80,
+                    help: 'The heading directly above your dishes.'
+                },
+                {
+                    key: 'menuIntro',
+                    id: 'site-text-menu-intro',
+                    label: 'Sentence under the menu heading',
+                    maxLength: 400,
+                    multiline: true,
+                    help: 'A short line about your food and where to find you.'
+                }
+            ];
+
+            siteTextFields.forEach(field => {
+                const group = document.createElement('div');
+                group.className = 'field-group';
+
+                const fieldLabel = document.createElement('label');
+                fieldLabel.className = 'field-label';
+                fieldLabel.htmlFor = field.id;
+                fieldLabel.textContent = field.label;
+                group.appendChild(fieldLabel);
+
+                let input;
+                if (field.multiline) {
+                    input = document.createElement('textarea');
+                    input.rows = 3;
+                    input.className = 'item-desc-input';
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'item-name-input';
+                }
+
+                input.id = field.id;
+                input.maxLength = field.maxLength;
+                input.value = (typeof storedSiteContent[field.key] === 'string')
+                    ? storedSiteContent[field.key]
+                    : SITE_TEXT_DEFAULTS[field.key];
+                input.setAttribute('aria-describedby', field.id + '-help');
+                input.addEventListener('input', () => setDirty(true));
+                group.appendChild(input);
+
+                const fieldHelp = document.createElement('p');
+                fieldHelp.className = 'dialog-hint';
+                fieldHelp.id = field.id + '-help';
+                fieldHelp.textContent = `${field.help} Leave it empty to hide it (up to ${field.maxLength} characters).`;
+                group.appendChild(fieldHelp);
+
+                textGrid.appendChild(group);
+            });
+
+            textCard.appendChild(textGrid);
+
+            // One-click way back to the original wording, in case a box is emptied
+            // by accident or an experiment is abandoned.
+            const textActions = document.createElement('div');
+            textActions.className = 'site-text-actions';
+
+            const resetTextBtn = document.createElement('button');
+            resetTextBtn.type = 'button';
+            resetTextBtn.className = 'tool-btn';
+            resetTextBtn.textContent = '↩️ Restore the original wording';
+            resetTextBtn.addEventListener('click', () => {
+                siteTextFields.forEach(field => {
+                    const input = document.getElementById(field.id);
+                    if (input) input.value = SITE_TEXT_DEFAULTS[field.key];
+                });
+                setDirty(true);
+                announce('The original wording has been put back in the boxes. Press Publish Changes to update the website.');
+            });
+            textActions.appendChild(resetTextBtn);
+            textCard.appendChild(textActions);
 
             storeInfoContainer.appendChild(card);
         }
@@ -2595,6 +2829,41 @@
             return tools;
         }
 
+        // Offers an immediate undo for a dish that was just deleted. The section is
+        // looked up by name, so the dish lands back in the right place even if the
+        // list has moved on in the meantime.
+        function showUndoDishBanner(dishName, sectionName, catIdx, removedItem, restoreIndex) {
+            showBanner(`<strong>"${escapeHtmlText(dishName)}" deleted from ${escapeHtmlText(sectionName)}.</strong> Press Publish Changes to update the website. <button type="button" class="banner-action-btn" id="banner-undo-dish-btn">Undo</button>`, 'success');
+
+            const undoBtn = document.getElementById('banner-undo-dish-btn');
+            if (!undoBtn) return;
+
+            undoBtn.addEventListener('click', () => {
+                syncFormIntoData();
+
+                let targetIndex = menuData.categories.findIndex(cat =>
+                    (cat && cat.category ? cat.category : '').trim().toLowerCase() === sectionName.toLowerCase());
+                if (targetIndex === -1) targetIndex = catIdx;
+
+                const targetCategory = menuData.categories[targetIndex];
+                if (!targetCategory) {
+                    showBanner('The section that held that dish is gone, so there is nothing to undo into. Reload the page to start again.', 'error');
+                    return;
+                }
+
+                if (!Array.isArray(targetCategory.items)) targetCategory.items = [];
+                const at = Math.max(0, Math.min(restoreIndex, targetCategory.items.length));
+                targetCategory.items.splice(at, 0, removedItem);
+
+                setDirty(true);
+                renderForm();
+                closeBanner();
+
+                const nameInput = document.getElementById(`name-${targetIndex}-${at}`);
+                focusAndAnnounce(nameInput, `"${dishName}" is back in ${sectionName}. Nothing had been published, so the website never changed.`);
+            });
+        }
+
         // "Add Section" — sits above the menu, next to the search box
         const addSectionBtn = document.getElementById('btn-add-section');
         if (addSectionBtn) {
@@ -2727,6 +2996,7 @@
                         const descInput = document.getElementById(`desc-${catIdx}-${itemIdx}`);
                         const priceInput = document.getElementById(`price-${catIdx}-${itemIdx}`);
                         const soldOutCheckbox = document.getElementById(`soldout-${catIdx}-${itemIdx}`);
+                        const hiddenCheckbox = document.getElementById(`hide-item-${catIdx}-${itemIdx}`);
 
                         // 1. Update Name
                         if (nameInput) {
@@ -2751,6 +3021,15 @@
                         // 4. Update Availability
                         if (soldOutCheckbox) {
                             item.soldOut = soldOutCheckbox.checked;
+                        }
+
+                        // 5. Update whether the dish is shown on the website at all
+                        if (hiddenCheckbox) {
+                            if (hiddenCheckbox.checked) {
+                                item.hidden = true;
+                            } else {
+                                delete item.hidden;
+                            }
                         }
                     });
                 }
@@ -2782,6 +3061,28 @@
                 openingHours: openingHours,
                 orderCutoff: (cutoffInput && cutoffInput.value) ? cutoffInput.value : storedCutoff
             };
+
+            // Website text & headings — the boxes in the "Website Text" card.
+            // All four are always written, so emptying a box is what hides that
+            // line on the public website.
+            const siteTextIds = {
+                brandTitle: 'site-text-brand',
+                tagline: 'site-text-tagline',
+                menuHeading: 'site-text-menu-heading',
+                menuIntro: 'site-text-menu-intro'
+            };
+            const siteContent = {};
+            Object.keys(siteTextIds).forEach(key => {
+                const input = document.getElementById(siteTextIds[key]);
+                if (input) {
+                    siteContent[key] = input.value.replace(/\s+/g, ' ').trim();
+                } else if (menuData && menuData.siteContent && typeof menuData.siteContent[key] === 'string') {
+                    siteContent[key] = menuData.siteContent[key];
+                } else {
+                    siteContent[key] = SITE_TEXT_DEFAULTS[key];
+                }
+            });
+            updated.siteContent = siteContent;
 
             return updated;
         }
@@ -3087,6 +3388,84 @@
                 const card = formContainer.querySelector(`.admin-category-card[data-category-index="${at}"]`);
                 focusAndAnnounce(card, `Section "${sectionName}" is back. Nothing had been published, so the website was never changed.`);
             });
+        }
+
+        // -------------------------------------------------------------
+        // Delete a single dish (type the dish name to confirm) and Undo
+        // -------------------------------------------------------------
+        function openDeleteItemDialog(catIdx, itemIdx) {
+            const category = (menuData && Array.isArray(menuData.categories)) ? menuData.categories[catIdx] : null;
+            const item = (category && Array.isArray(category.items)) ? category.items[itemIdx] : null;
+
+            if (!item) {
+                showBanner('That dish is no longer there — please reload the page and try again.', 'error');
+                return;
+            }
+
+            const dishName = (item.name || '').trim() || 'this dish';
+            const sectionName = (category.category || 'this section').trim();
+
+            const warning = document.createElement('div');
+            warning.className = 'dialog-warning';
+            warning.innerHTML = `<strong>This deletes "${escapeHtmlText(dishName)}" from ${escapeHtmlText(sectionName)}.</strong><br>`
+                + 'If you publish afterwards it disappears from the live website too. You can press <strong>Undo</strong> straight after deleting, but not once you publish or reload the page.<br>'
+                + 'If you only want it off the website for now, use <strong>Hide from website</strong> instead — that keeps the dish in your menu file.';
+
+            const confirmField = makeField({
+                id: 'delete-dish-confirm',
+                label: `Type "${dishName}" to confirm`,
+                required: true,
+                autocomplete: 'off',
+                placeholder: dishName,
+                help: 'Typing the name means a dish cannot be deleted by a stray click.'
+            });
+
+            const namesMatch = () => confirmField.input.value.trim().toLowerCase() === dishName.toLowerCase();
+            const refreshConfirmState = () => {
+                dialogConfirmBtn.disabled = !namesMatch();
+                if (namesMatch()) setDialogError('');
+            };
+            confirmField.input.addEventListener('input', refreshConfirmState);
+
+            openDialog({
+                title: `Delete the dish "${dishName}"?`,
+                intro: 'This cannot be undone from the website.',
+                bodyNodes: [warning, confirmField.group],
+                confirmLabel: 'Delete dish',
+                confirmTone: 'danger',
+                firstFocusId: 'delete-dish-confirm',
+                onConfirm: () => {
+                    if (!namesMatch()) {
+                        setDialogError(`Type "${dishName}" exactly to confirm, or press Cancel.`);
+                        confirmField.input.focus();
+                        return;
+                    }
+
+                    syncFormIntoData();
+
+                    const targetCategory = menuData.categories[catIdx];
+                    const targetItem = (targetCategory && Array.isArray(targetCategory.items))
+                        ? targetCategory.items[itemIdx]
+                        : null;
+
+                    if (!targetItem) {
+                        setDialogError('That dish is no longer in the form. Press Cancel, then reload the page.');
+                        return;
+                    }
+
+                    const removedItem = targetCategory.items.splice(itemIdx, 1)[0];
+                    const restoreIndex = itemIdx;
+
+                    setDirty(true);
+                    renderForm();
+                    closeDialog();
+                    showUndoDishBanner(dishName, sectionName, catIdx, removedItem, restoreIndex);
+                    announce(`"${dishName}" deleted from ${sectionName}. Press Publish Changes to update the website, or Undo to put it back.`);
+                }
+            });
+
+            // Nothing is typed yet, so the delete button starts disabled
+            refreshConfirmState();
         }
 
         // Attach Publish Event Handlers
