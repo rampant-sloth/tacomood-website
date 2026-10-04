@@ -38,7 +38,7 @@ A publish therefore has two independent halves, and they can fail separately:
 "Live on the website! 🎉" or "Committed to GitHub, but the website has not updated yet."
 
 ```powershell
-curl.exe https://tacomood-website.rampantsloth.workers.dev/version
+curl.exe https://tacomood.co.uk/version
 ```
 
 ## Accounts, and where the secrets live
@@ -46,7 +46,7 @@ curl.exe https://tacomood-website.rampantsloth.workers.dev/version
 | Thing | Where |
 |---|---|
 | GitHub repository | `github.com/tacomood-admin/tacomood-website` (public) |
-| Cloudflare Worker | `tacomood-website` in the Cloudflare account signed in as tacomood.admin@gmail.com; still answers on the legacy subdomain `rampantsloth.workers.dev` |
+| Cloudflare Worker | `tacomood-website` in the Cloudflare account signed in as tacomood.admin@gmail.com; serves the site at `tacomood.co.uk` (the legacy `rampantsloth.workers.dev` subdomain is only a fallback) |
 | `ADMIN_PASSWORD` | Cloudflare → Worker → Settings → Variables and Secrets (Secret) |
 | `GITHUB_TOKEN` | Cloudflare → same place: fine-grained PAT, Contents: Read and write, access to `tacomood-admin/tacomood-website` |
 
@@ -65,17 +65,21 @@ Everything for this site now belongs to the **tacomood.admin@gmail.com** account
 | Cloudflare account, Worker and builds | the Cloudflare account signed in as tacomood.admin@gmail.com |
 | Google Business Profile | tacomood.admin@gmail.com |
 
-Two leftovers from the old setup, both worth finishing:
+The site is now served at **`tacomood.co.uk`**. `admin.html` always tries the address it was
+served from first, so the custom domain is used automatically; the legacy
+`rampantsloth.workers.dev` addresses only remain as fallbacks in its `PUBLISH_ENDPOINTS` list
+and can be deleted from `admin.html` once the old subdomain is retired.
 
-- **The Worker still answers on the legacy `rampantsloth.workers.dev` subdomain.** The account
-  subdomain can be changed in the Cloudflare dashboard (or a custom domain added instead). The
-  portal no longer depends on it — it tries the address it was served from first, then the
-  legacy ones — so a rename is a one-step change with nothing to update in this repository.
-- **The push credential stored on this machine is still the old `rampant-sloth` account.** To
-  switch, remove that stored credential and sign in as `tacomood-admin` on the next push
-  (Windows Credential Manager, or `git credential reject`), or install the GitHub CLI and run
-  `gh auth login`. Until then commits are *authored* correctly but the *push* is authenticated
-  as the old account, which still has access to the repository.
+One leftover from the old setup is still being finished:
+
+- **The machine's git/GitHub identity is moving from `rampant-sloth` to `tacomood-admin`.** The
+  stored push credential has been removed from Windows Credential Manager, so the next
+  `git push` will ask for credentials — sign in as `tacomood-admin` with a fine-grained token
+  (Contents: Read and write). Still to change: the **global** git identity (`~/.gitconfig`
+  still has `user.email = rampantsloth@proton.me` and a global `credential.helper = store`
+  that overrides the system `manager`), and the GitHub account signed into VS Code (still
+  `TheRampantSloth`). The repository itself already commits as `Tacomood Admin` via its local
+  `.git/config`.
 
 ## Handover: moving the repository to another GitHub account
 

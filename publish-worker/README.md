@@ -123,7 +123,7 @@ If the Worker's `workers.dev` address is switched off, enable it under
 to do, without publishing anything:
 
 ```powershell
-curl.exe -X POST "https://tacomood-website.rampantsloth.workers.dev/diagnose" `
+curl.exe -X POST "https://tacomood.co.uk/diagnose" `
   -H "Content-Type: application/json" -d "{\"password\":\"<admin password>\"}"
 ```
 
@@ -151,7 +151,7 @@ Invoke-WebRequest -Uri "https://<publish-worker>.<subdomain>.workers.dev/verify"
 request: the byte size and SHA-256 of the `menu.json` the live site is serving right now.
 
 ```powershell
-curl.exe https://tacomood-website.rampantsloth.workers.dev/version
+curl.exe https://tacomood.co.uk/version
 ```
 
 ```json
@@ -203,7 +203,7 @@ can be the one that is broken:
 without guessing:
 
 ```powershell
-curl.exe https://tacomood-website.rampantsloth.workers.dev/version
+curl.exe https://tacomood.co.uk/version
 ```
 
 ## What this Worker will not do
