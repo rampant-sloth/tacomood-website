@@ -1623,13 +1623,16 @@
             });
         }
 
+        // Online ordering is not being programmed yet, so the "Online order cutoff
+        // time" control is hidden from the owner. The value already stored in
+        // menu.json is preserved and published unchanged. Set this to true to show
+        // the control again.
+        const ONLINE_ORDERING_SETTINGS_ENABLED = false;
+
         function renderStoreInfoForm() {
             if (!storeInfoContainer) return;
 
             const hours = getSavedOpeningHours();
-            const orderCutoff = (menuData && menuData.storeInfo && menuData.storeInfo.orderCutoff)
-                ? menuData.storeInfo.orderCutoff
-                : '20:30';
 
             storeInfoContainer.innerHTML = '';
 
@@ -1735,25 +1738,33 @@
 
             card.appendChild(grid);
 
-            // Online order cutoff time
-            const cutoffRow = document.createElement('div');
-            cutoffRow.className = 'cutoff-row';
+            // Online order cutoff time — hidden while online ordering is not in use
+            // (see ONLINE_ORDERING_SETTINGS_ENABLED). The stored value is kept and
+            // republished unchanged.
+            if (ONLINE_ORDERING_SETTINGS_ENABLED) {
+                const orderCutoff = (menuData && menuData.storeInfo && menuData.storeInfo.orderCutoff)
+                    ? menuData.storeInfo.orderCutoff
+                    : '20:30';
 
-            const cutoffLabel = document.createElement('label');
-            cutoffLabel.className = 'cutoff-label';
-            cutoffLabel.htmlFor = 'order-cutoff-input';
-            cutoffLabel.innerHTML = 'Online order cutoff time<small>The time after which online orders stop (used by the ordering system).</small>';
-            cutoffRow.appendChild(cutoffLabel);
+                const cutoffRow = document.createElement('div');
+                cutoffRow.className = 'cutoff-row';
 
-            const cutoffInput = document.createElement('input');
-            cutoffInput.type = 'time';
-            cutoffInput.className = 'hours-time-input';
-            cutoffInput.id = 'order-cutoff-input';
-            cutoffInput.value = orderCutoff;
-            cutoffInput.addEventListener('input', () => setDirty(true));
-            cutoffRow.appendChild(cutoffInput);
+                const cutoffLabel = document.createElement('label');
+                cutoffLabel.className = 'cutoff-label';
+                cutoffLabel.htmlFor = 'order-cutoff-input';
+                cutoffLabel.innerHTML = 'Online order cutoff time<small>The time after which online orders stop (used by the ordering system).</small>';
+                cutoffRow.appendChild(cutoffLabel);
 
-            card.appendChild(cutoffRow);
+                const cutoffInput = document.createElement('input');
+                cutoffInput.type = 'time';
+                cutoffInput.className = 'hours-time-input';
+                cutoffInput.id = 'order-cutoff-input';
+                cutoffInput.value = orderCutoff;
+                cutoffInput.addEventListener('input', () => setDirty(true));
+                cutoffRow.appendChild(cutoffInput);
+
+                card.appendChild(cutoffRow);
+            }
 
             storeInfoContainer.appendChild(card);
         }
@@ -1866,10 +1877,15 @@
                 });
             });
 
+            // Keep the stored cutoff when the control is hidden, so publishing
+            // never silently changes it.
             const cutoffInput = document.getElementById('order-cutoff-input');
+            const storedCutoff = (menuData && menuData.storeInfo && menuData.storeInfo.orderCutoff)
+                ? menuData.storeInfo.orderCutoff
+                : '20:30';
             updated.storeInfo = {
                 openingHours: openingHours,
-                orderCutoff: (cutoffInput && cutoffInput.value) ? cutoffInput.value : '20:30'
+                orderCutoff: (cutoffInput && cutoffInput.value) ? cutoffInput.value : storedCutoff
             };
 
             return updated;
