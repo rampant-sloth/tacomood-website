@@ -79,13 +79,15 @@ export default {
 ```
 
 ### 4. Point the admin portal at the Worker
-`admin.html` already lists both addresses and uses whichever one is deployed **and**
-configured, so there is normally nothing to change:
+`admin.html` tries the address it was served from first — so it keeps working after a
+`workers.dev` subdomain change or a move to a custom domain — then the legacy addresses below,
+using whichever one is deployed **and** configured. There is normally nothing to change:
 
 ```js
 const PUBLISH_ENDPOINTS = [
-    'https://tacomood-website.rampantsloth.workers.dev',   // bridge mounted on the site Worker
-    'https://tacomood-publish.rampantsloth.workers.dev'    // dedicated bridge Worker (optional)
+    window.location.origin,                               // the Worker serving this portal
+    'https://tacomood-website.rampantsloth.workers.dev',  // legacy workers.dev address
+    'https://tacomood-publish.rampantsloth.workers.dev'   // dedicated bridge Worker (optional)
 ];
 ```
 

@@ -1500,9 +1500,16 @@
         // Both URL forms work (with or without a trailing /publish or /verify), and
         // the portal uses the first entry that is deployed *and* configured, so
         // adding the dedicated bridge Worker later needs no change here.
+        // The Worker that served this page is tried first, so the portal keeps
+        // working after a workers.dev subdomain change or a custom domain move;
+        // the legacy addresses stay as fallbacks. (Both URL forms work, with or
+        // without a trailing /publish or /verify.)
         const PUBLISH_ENDPOINTS = [
-            'https://tacomood-website.rampantsloth.workers.dev',   // bridge mounted on the site Worker
-            'https://tacomood-publish.rampantsloth.workers.dev'    // dedicated bridge Worker (optional)
+            (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+                ? window.location.origin
+                : '',                                                  // the Worker serving this portal
+            'https://tacomood-website.rampantsloth.workers.dev',       // legacy workers.dev address
+            'https://tacomood-publish.rampantsloth.workers.dev'        // dedicated bridge Worker (optional)
         ];
 
         // State

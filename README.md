@@ -46,11 +46,36 @@ curl.exe https://tacomood-website.rampantsloth.workers.dev/version
 | Thing | Where |
 |---|---|
 | GitHub repository | `github.com/tacomood-admin/tacomood-website` (public) |
-| Cloudflare Worker | `tacomood-website`, subdomain `rampantsloth.workers.dev` |
+| Cloudflare Worker | `tacomood-website` in the Cloudflare account signed in as tacomood.admin@gmail.com; still answers on the legacy subdomain `rampantsloth.workers.dev` |
 | `ADMIN_PASSWORD` | Cloudflare → Worker → Settings → Variables and Secrets (Secret) |
 | `GITHUB_TOKEN` | Cloudflare → same place: fine-grained PAT, Contents: Read and write, access to `tacomood-admin/tacomood-website` |
 
 No secret is stored in this repository — the token and password live only in Cloudflare.
+
+## Who owns what
+
+Everything for this site now belongs to the **tacomood.admin@gmail.com** accounts, not the old
+`rampantsloth@proton.me` ones.
+
+| Asset | Owner |
+|---|---|
+| GitHub repository | `tacomood-admin/tacomood-website` (user account, id 337700782) |
+| Commit identity from this machine | `Tacomood Admin <337700782+tacomood-admin@users.noreply.github.com>` — set with `git config --local`, so other projects on this machine are unaffected |
+| Portal publish commits | whoever owns the `GITHUB_TOKEN` secret; `POST /diagnose` reports `tokenLogin` |
+| Cloudflare account, Worker and builds | the Cloudflare account signed in as tacomood.admin@gmail.com |
+| Google Business Profile | tacomood.admin@gmail.com |
+
+Two leftovers from the old setup, both worth finishing:
+
+- **The Worker still answers on the legacy `rampantsloth.workers.dev` subdomain.** The account
+  subdomain can be changed in the Cloudflare dashboard (or a custom domain added instead). The
+  portal no longer depends on it — it tries the address it was served from first, then the
+  legacy ones — so a rename is a one-step change with nothing to update in this repository.
+- **The push credential stored on this machine is still the old `rampant-sloth` account.** To
+  switch, remove that stored credential and sign in as `tacomood-admin` on the next push
+  (Windows Credential Manager, or `git credential reject`), or install the GitHub CLI and run
+  `gh auth login`. Until then commits are *authored* correctly but the *push* is authenticated
+  as the old account, which still has access to the repository.
 
 ## Handover: moving the repository to another GitHub account
 
