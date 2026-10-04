@@ -764,6 +764,7 @@
         }
 
         .soldout-checkbox,
+        .hide-checkbox,
         .closed-checkbox {
             appearance: none;
             -webkit-appearance: none;
@@ -782,12 +783,14 @@
         }
 
         .soldout-checkbox:checked,
+        .hide-checkbox:checked,
         .closed-checkbox:checked {
             background-color: var(--accent-orange);
             border-color: var(--accent-orange);
         }
 
         .soldout-checkbox:checked::after,
+        .hide-checkbox:checked::after,
         .closed-checkbox:checked::after {
             content: "✓";
             color: white;
@@ -932,6 +935,148 @@
             max-width: 150px;
         }
 
+        /* -----------------------------------------------------------------
+           Owner dialogs (Add Section / Add Dish / Delete Section)
+           ----------------------------------------------------------------- */
+        .admin-dialog-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 12, 9, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            z-index: 200;
+        }
+
+        .admin-dialog-backdrop.open {
+            display: flex;
+        }
+
+        .admin-dialog {
+            background-color: #0b1f17;
+            border: 1.5px solid var(--border-green);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .admin-dialog h2 {
+            margin: 0 0 0.4rem 0;
+            color: var(--accent-lime);
+            font-size: 1.25rem;
+            line-height: 1.3;
+        }
+
+        .dialog-intro {
+            margin: 0;
+            color: var(--text-cream);
+            opacity: 0.9;
+            font-size: 0.93rem;
+            line-height: 1.5;
+        }
+
+        .dialog-hint {
+            font-size: 0.84rem;
+            opacity: 0.8;
+            margin: 6px 0 0 0;
+            line-height: 1.45;
+        }
+
+        .dialog-warning {
+            background: rgba(232, 80, 37, 0.12);
+            border: 1px solid rgba(232, 80, 37, 0.5);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            color: #ffd2c4;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .dialog-warning strong {
+            color: #ff9980;
+        }
+
+        .required-mark {
+            color: var(--accent-orange);
+        }
+
+        .dialog-error {
+            margin: 0.9rem 0 0 0;
+            color: #ffb3a0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .dialog-error.show {
+            display: block;
+        }
+
+        .admin-dialog-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 1.4rem;
+        }
+
+        .dialog-btn {
+            min-height: 44px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: 1px solid var(--border-green);
+            background: transparent;
+            color: var(--text-cream);
+            transition: all 0.2s;
+        }
+
+        .dialog-btn:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .dialog-btn:focus-visible {
+            outline: 3px solid var(--accent-lime);
+            outline-offset: 2px;
+        }
+
+        .dialog-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .dialog-btn-primary {
+            background: var(--accent-lime);
+            border-color: var(--accent-lime);
+            color: #0c2018;
+        }
+
+        .dialog-btn-primary:hover {
+            background: #8fcc45;
+            color: #0c2018;
+        }
+
+        .dialog-btn-danger {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .dialog-btn-danger:hover {
+            background: #ff6a3d;
+            color: #ffffff;
+        }
+
         /* Loading Spinner */
         .spinner {
             width: 16px;
@@ -945,6 +1090,45 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Text for screen readers only, plus the announcement region and the
+           button used inside success/undo banners. */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .banner-action-btn {
+            margin-left: 10px;
+            background: transparent;
+            border: 1px solid currentColor;
+            color: inherit;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            min-height: 34px;
+        }
+
+        .banner-action-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .admin-item-card,
+            .tool-btn,
+            .hide-toggle-label,
+            .dialog-btn { transition: none; }
         }
 
         /* Mobile Floating Bottom Bar */
@@ -979,6 +1163,135 @@
                 padding-bottom: 6rem;
             }
         }
+        /* -----------------------------------------------------------------
+           Section tools (hide / add dish / delete). Real buttons and a real
+           labelled checkbox, sized for touch (40px+) with a visible focus ring.
+           ----------------------------------------------------------------- */
+        .admin-section-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-top: 0.4rem;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: 1px solid var(--border-green);
+            color: var(--text-cream);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .tool-btn:focus-visible {
+            outline: 3px solid var(--accent-lime);
+            outline-offset: 2px;
+        }
+
+        .tool-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .tool-btn-danger {
+            border-color: rgba(232, 80, 37, 0.55);
+            color: #ff9980;
+        }
+
+        .tool-btn-danger:hover {
+            border-color: var(--accent-orange);
+            background: rgba(232, 80, 37, 0.14);
+            color: #ffb3a0;
+        }
+
+        .tool-btn-add-section {
+            border-color: var(--accent-lime);
+            color: var(--accent-lime);
+        }
+
+        .hide-toggle-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            min-height: 40px;
+            border-radius: 6px;
+            border: 1px solid var(--border-green);
+            background: var(--input-bg);
+            transition: all 0.2s;
+        }
+
+        .hide-toggle-label:hover {
+            border-color: rgba(232, 80, 37, 0.5);
+        }
+
+        .hide-toggle-label:focus-within {
+            outline: 3px solid var(--accent-lime);
+            outline-offset: 2px;
+        }
+
+        /* A section the owner has hidden from the website */
+        .admin-category-card.is-hidden-section {
+            border-color: rgba(232, 80, 37, 0.45);
+        }
+
+        .admin-category-card.is-hidden-section .admin-category-header {
+            background-color: rgba(232, 80, 37, 0.10);
+        }
+
+        .admin-category-card.is-hidden-section .admin-category-title {
+            color: #ff9980;
+        }
+
+        .admin-category-card.is-hidden-section .items-list-container,
+        .admin-category-card.is-hidden-section .empty-section-hint {
+            opacity: 0.55;
+        }
+
+        .hidden-chip {
+            background: rgba(232, 80, 37, 0.18);
+            border: 1px solid rgba(232, 80, 37, 0.5);
+            color: #ffb3a0;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .empty-section-hint {
+            border: 1px dashed var(--border-green);
+            border-radius: 8px;
+            padding: 1rem 1.15rem;
+            color: var(--text-cream);
+            opacity: 0.85;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            background: rgba(123, 179, 58, 0.05);
+            margin: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -1071,7 +1384,7 @@
 
             <!-- Non-technical Owner Guide -->
             <details class="help-accordion">
-                <summary>📖 How to update dish names, descriptions, prices, opening hours &amp; publish live</summary>
+                <summary>📖 How to add, hide or delete sections, edit dishes and publish live</summary>
                 <div class="help-content">
                     <p>Welcome to the <strong>Taco Mood</strong> menu editor! Here is how to keep your store up to date:</p>
                     <ol>
@@ -1080,6 +1393,10 @@
                         <li><strong>Change Prices:</strong> Click directly into the <strong>Price</strong> field (e.g. <code>£13.00</code>) and enter the new price.</li>
                         <li><strong>Mark Sold Out:</strong> Check or uncheck <strong>"Mark Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
                         <li><strong>Update Opening Hours:</strong> In the <strong>Store Opening Hours</strong> card, tick <strong>"Closed"</strong> for shut days and set opening/closing times for open days. The website header and footer update automatically.</li>
+                        <li><strong>Hide a section:</strong> tick <strong>"Hide section"</strong> at the top of a section. The whole section (and its dishes) disappears from the website, but nothing is deleted — untick it any time to bring it back.</li>
+                        <li><strong>Add a section:</strong> press <strong>"➕ Add Section"</strong> above the menu, next to the search box. The name you type is the heading customers see, for example <em>Sides</em> or <em>Desserts</em>.</li>
+                        <li><strong>Add a dish:</strong> press <strong>"➕ Add Dish"</strong> at the top of the section you want it in, then fill in the name and price. Prices can be typed as <code>10</code>, <code>10.5</code> or <code>£10.00</code> — they are tidied up for you.</li>
+                        <li><strong>Delete a section:</strong> press <strong>"🗑️ Delete Section"</strong> and then type the section name to confirm, so it cannot happen by accident. If you change your mind, press <strong>Undo</strong> in the green message that appears.</li>
                         <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. Your updates go straight to the live website — it usually refreshes within a minute.</li>
                     </ol>
                 </div>
@@ -1096,6 +1413,9 @@
                 <div class="quick-actions">
                     <button type="button" class="btn-small" id="btn-expand-all">Expand All</button>
                     <button type="button" class="btn-small" id="btn-collapse-all">Collapse All</button>
+                    <button type="button" class="btn-small tool-btn-add-section" id="btn-add-section">
+                        ➕ Add Section
+                    </button>
                 </div>
             </div>
 
@@ -1114,6 +1434,30 @@
             <button type="button" id="btn-publish-mobile" class="btn-publish" style="padding: 8px 16px; font-size: 0.85rem;">
                 Publish Changes
             </button>
+        </div>
+    </div>
+
+    <!-- Live region: every change made with the section tools is announced to
+         screen readers here (visually hidden). -->
+    <div id="portal-live-region" class="sr-only" role="status" aria-live="polite"></div>
+
+    <!-- -------------------------------------------------------------
+         Owner dialog, used by "Add Section", "Add Dish" and the delete
+         confirmation. Its content is built by script each time it opens.
+         Keyboard: Tab and Shift+Tab stay inside, Escape cancels, and
+         focus returns to the button that opened it.
+         ------------------------------------------------------------- -->
+    <div id="admin-dialog-backdrop" class="admin-dialog-backdrop">
+        <div id="admin-dialog" class="admin-dialog" role="dialog" aria-modal="true"
+             aria-labelledby="admin-dialog-title" aria-describedby="admin-dialog-intro">
+            <h2 id="admin-dialog-title">Action</h2>
+            <p id="admin-dialog-intro" class="dialog-intro"></p>
+            <div id="admin-dialog-body"></div>
+            <p id="admin-dialog-error" class="dialog-error" role="alert"></p>
+            <div class="admin-dialog-footer">
+                <button type="button" class="dialog-btn" id="admin-dialog-cancel">Cancel</button>
+                <button type="button" class="dialog-btn dialog-btn-primary" id="admin-dialog-confirm">Save</button>
+            </div>
         </div>
     </div>
 
@@ -1435,6 +1779,8 @@
                 const categoryCard = document.createElement('section');
                 categoryCard.className = 'admin-category-card';
                 categoryCard.dataset.categoryName = cat.category.toLowerCase();
+                categoryCard.dataset.categoryIndex = String(catIdx);
+                if (cat.hidden) categoryCard.classList.add('is-hidden-section');
 
                 // Category Header
                 const catHeader = document.createElement('div');
@@ -1450,12 +1796,23 @@
                 countBadge.textContent = `${cat.items ? cat.items.length : 0} items`;
                 catHeader.appendChild(countBadge);
 
+                if (cat.hidden) {
+                    const hiddenChip = document.createElement('span');
+                    hiddenChip.className = 'hidden-chip';
+                    hiddenChip.textContent = 'Hidden from website';
+                    catHeader.appendChild(hiddenChip);
+                }
+
                 if (cat.note) {
                     const note = document.createElement('p');
                     note.className = 'admin-category-note';
                     note.textContent = cat.note;
                     catHeader.appendChild(note);
                 }
+
+                // Hide / Add Dish / Delete Section, grouped and labelled so screen
+                // readers know which section these controls act on
+                catHeader.appendChild(buildSectionActions(cat, catIdx));
 
                 categoryCard.appendChild(catHeader);
 
@@ -1580,12 +1937,21 @@
                     });
                 }
 
+                if (!cat.items || !cat.items.length) {
+                    const emptyHint = document.createElement('p');
+                    emptyHint.className = 'empty-section-hint';
+                    emptyHint.textContent = 'No dishes in this section yet. Press "Add Dish" above to add the first one, or tick "Hide section" if customers should not see it.';
+                    itemsList.appendChild(emptyHint);
+                }
+
                 categoryCard.appendChild(itemsList);
                 formContainer.appendChild(categoryCard);
             });
 
             // Update stats
-            statCategories.innerHTML = `Categories: <strong>${menuData.categories.length}</strong>`;
+            const hiddenSections = menuData.categories.filter(cat => cat && cat.hidden).length;
+            statCategories.innerHTML = `Categories: <strong>${menuData.categories.length}</strong>`
+                + (hiddenSections ? ` <span class="hidden-chip">${hiddenSections} hidden</span>` : '');
             statItems.innerHTML = `Total Items: <strong>${totalItems}</strong>`;
             soldoutCount.textContent = totalSoldOut;
         }
@@ -1769,6 +2135,166 @@
             storeInfoContainer.appendChild(card);
         }
 
+        // -------------------------------------------------------------
+        // Sections and dishes: hide, add and delete
+        // Everything here edits menuData and then re-renders the form. Each
+        // action explains itself, is announced to screen readers, and (for a
+        // deleted section) can be undone until the page is reloaded or published.
+        // -------------------------------------------------------------
+        const liveRegion = document.getElementById('portal-live-region');
+        const MAX_SECTION_NAME = 40;
+        const MAX_ITEM_NAME = 60;
+        const MAX_SECTIONS = 30;
+        const MAX_DISHES_PER_SECTION = 60;
+
+        // Announcements for screen readers. Clearing first matters because
+        // assistive technology ignores a repeat of the same message.
+        function announce(message) {
+            if (!liveRegion) return;
+            liveRegion.textContent = '';
+            window.setTimeout(() => { liveRegion.textContent = message; }, 60);
+        }
+
+        // Used whenever a name typed by the owner is placed into HTML
+        function escapeHtmlText(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function plural(count, singular, pluralForm) {
+            return count === 1 ? singular : pluralForm;
+        }
+
+        // Copies anything typed into the inputs into menuData before the form is
+        // rebuilt, so adding, hiding or deleting never discards other edits.
+        function syncFormIntoData() {
+            const rebuilt = buildUpdatedJson();
+            if (rebuilt) menuData = rebuilt;
+            return menuData;
+        }
+
+        // If the owner had typed a search, a brand new section or dish could land
+        // outside the filter and look missing. Clear it so the new entry is shown.
+        function clearSearchFilter() {
+            if (filterInput && filterInput.value) {
+                filterInput.value = '';
+                filterInput.dispatchEvent(new Event('input'));
+            }
+        }
+
+        function focusAndAnnounce(element, message) {
+            if (element) {
+                if (typeof element.focus === 'function') element.focus({ preventScroll: true });
+                if (typeof element.scrollIntoView === 'function') {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            announce(message);
+        }
+
+        // Prices are stored exactly as they are displayed ("£13.00"). Whatever the
+        // owner types is accepted and tidied — 13, 13.5, £13 and 13.00 all become
+        // "£13.00" — and anything else is refused with a reason they can act on.
+        function normalisePrice(raw) {
+            const cleaned = String(raw || '').replace(/[£\s]/g, '').replace(/,/g, '.');
+            if (!cleaned) {
+                return { ok: false, reason: 'Please enter a price, for example 10 or £10.00.' };
+            }
+            if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) {
+                return { ok: false, reason: 'Use numbers only, for example 10 or 10.50.' };
+            }
+            const value = Number(cleaned);
+            if (!isFinite(value) || value <= 0) {
+                return { ok: false, reason: 'The price must be more than £0.00.' };
+            }
+            if (value > 999) {
+                return { ok: false, reason: 'That price looks too high — please check it.' };
+            }
+            return { ok: true, value: '£' + value.toFixed(2) };
+        }
+
+        // Builds one labelled field for a dialog. Returns the wrapper and the input.
+        function makeField(options) {
+            const group = document.createElement('div');
+            group.className = 'field-group';
+            group.style.marginTop = '0.95rem';
+
+            const label = document.createElement('label');
+            label.className = 'field-label';
+            label.htmlFor = options.id;
+            label.textContent = options.label;
+            if (options.required) {
+                const mark = document.createElement('span');
+                mark.className = 'required-mark';
+                mark.textContent = ' *';
+                mark.setAttribute('aria-hidden', 'true');
+                label.appendChild(mark);
+            }
+            group.appendChild(label);
+
+            let input;
+            if (options.multiline) {
+                input = document.createElement('textarea');
+                input.rows = options.rows || 3;
+                input.className = 'item-desc-input';
+            } else {
+                input = document.createElement('input');
+                input.type = options.type || 'text';
+                input.className = DIALOG_FIELD_CLASS;
+                if (options.autocomplete) input.autocomplete = options.autocomplete;
+            }
+
+            input.id = options.id;
+            if (options.value) input.value = options.value;
+            if (options.placeholder) input.placeholder = options.placeholder;
+            if (options.maxLength) input.maxLength = options.maxLength;
+            if (options.required) input.required = true;
+            if (options.help) input.setAttribute('aria-describedby', options.id + '-help');
+            group.appendChild(input);
+
+            if (options.help) {
+                const help = document.createElement('p');
+                help.className = 'dialog-hint';
+                help.id = options.id + '-help';
+                help.textContent = options.help;
+                group.appendChild(help);
+            }
+
+            return { group: group, input: input };
+        }
+
+        function makeCheckboxField(options) {
+            const wrap = document.createElement('div');
+            wrap.style.marginTop = '1rem';
+
+            const label = document.createElement('label');
+            label.className = 'hide-toggle-label';
+
+            const box = document.createElement('input');
+            box.type = 'checkbox';
+            box.className = 'hide-checkbox';
+            box.id = options.id;
+            box.checked = Boolean(options.checked);
+            label.appendChild(box);
+
+            const text = document.createElement('span');
+            text.textContent = options.label;
+            label.appendChild(text);
+            wrap.appendChild(label);
+
+            if (options.help) {
+                const help = document.createElement('p');
+                help.className = 'dialog-hint';
+                help.textContent = options.help;
+                wrap.appendChild(help);
+            }
+
+            return { wrap: wrap, input: box };
+        }
+
         // Recount sold out items from form
         function updateCounts() {
             const allSoldOutCheckboxes = document.querySelectorAll('.soldout-checkbox');
@@ -1778,6 +2304,122 @@
             });
             soldoutCount.textContent = count;
         }
+
+        // -------------------------------------------------------------
+        // The dialog behind Add Section, Add Dish and Delete Section.
+        // Accessible by construction: a real role="dialog" with aria-modal,
+        // Tab and Shift+Tab stay inside it, Escape cancels, clicking the dark
+        // area cancels, and focus returns to whatever opened it.
+        // -------------------------------------------------------------
+        const dialogBackdrop = document.getElementById('admin-dialog-backdrop');
+        const dialogEl = document.getElementById('admin-dialog');
+        const dialogTitleEl = document.getElementById('admin-dialog-title');
+        const dialogIntroEl = document.getElementById('admin-dialog-intro');
+        const dialogBodyEl = document.getElementById('admin-dialog-body');
+        const dialogErrorEl = document.getElementById('admin-dialog-error');
+        const dialogCancelBtn = document.getElementById('admin-dialog-cancel');
+        const dialogConfirmBtn = document.getElementById('admin-dialog-confirm');
+
+        const FOCUSABLE_SELECTOR = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+        const DIALOG_FIELD_CLASS = 'item-name-input';
+
+        let dialogState = null;   // { onConfirm, trigger, firstFocusId }
+
+        function dialogIsOpen() {
+            return dialogBackdrop.classList.contains('open');
+        }
+
+        function setDialogError(message) {
+            dialogErrorEl.textContent = message || '';
+            dialogErrorEl.classList.toggle('show', Boolean(message));
+        }
+
+        function openDialog(options) {
+            dialogState = {
+                onConfirm: options.onConfirm,
+                trigger: document.activeElement,
+                firstFocusId: options.firstFocusId || null
+            };
+
+            dialogTitleEl.textContent = options.title;
+            dialogIntroEl.textContent = options.intro || '';
+            dialogIntroEl.style.display = options.intro ? '' : 'none';
+
+            dialogBodyEl.innerHTML = '';
+            (options.bodyNodes || []).forEach(node => dialogBodyEl.appendChild(node));
+
+            dialogConfirmBtn.textContent = options.confirmLabel || 'Save';
+            dialogConfirmBtn.disabled = false;
+            dialogConfirmBtn.className = 'dialog-btn ' + (options.confirmTone === 'danger' ? 'dialog-btn-danger' : 'dialog-btn-primary');
+            dialogCancelBtn.textContent = options.cancelLabel || 'Cancel';
+
+            setDialogError('');
+            dialogBackdrop.classList.add('open');
+
+            const firstField = dialogState.firstFocusId ? document.getElementById(dialogState.firstFocusId) : null;
+            window.setTimeout(() => (firstField || dialogConfirmBtn).focus(), 40);
+        }
+
+        function closeDialog() {
+            if (!dialogIsOpen()) return;
+
+            dialogBackdrop.classList.remove('open');
+            dialogBodyEl.innerHTML = '';
+            setDialogError('');
+
+            const trigger = dialogState ? dialogState.trigger : null;
+            dialogState = null;
+
+            if (trigger && document.contains(trigger) && typeof trigger.focus === 'function') {
+                trigger.focus({ preventScroll: true });
+            }
+        }
+
+        dialogCancelBtn.addEventListener('click', () => {
+            closeDialog();
+            announce('Cancelled. Nothing was changed.');
+        });
+
+        // Clicking the dark area outside the card cancels — it never confirms
+        dialogBackdrop.addEventListener('mousedown', (event) => {
+            if (event.target === dialogBackdrop) closeDialog();
+        });
+
+        dialogConfirmBtn.addEventListener('click', () => {
+            if (dialogState && typeof dialogState.onConfirm === 'function') dialogState.onConfirm();
+        });
+
+        // Enter confirms from a single-line field, Escape cancels, Tab stays inside
+        dialogEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeDialog();
+                return;
+            }
+
+            if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
+                event.preventDefault();
+                if (!dialogConfirmBtn.disabled) dialogConfirmBtn.click();
+                return;
+            }
+
+            if (event.key !== 'Tab') return;
+
+            const focusables = Array.from(dialogEl.querySelectorAll(FOCUSABLE_SELECTOR))
+                .filter(el => el.offsetParent !== null);
+            if (!focusables.length) return;
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        });
 
         // Live search/filtering across Name, Description, and Category
         filterInput.addEventListener('input', () => {
@@ -1810,6 +2452,155 @@
             });
         });
 
+        // -------------------------------------------------------------
+        // Add Section
+        // -------------------------------------------------------------
+        function openAddSectionDialog() {
+            if (!menuData || !Array.isArray(menuData.categories)) {
+                showBanner('The menu has not finished loading — please reload the page and try again.', 'error');
+                return;
+            }
+
+            if (menuData.categories.length >= MAX_SECTIONS) {
+                showBanner(`<strong>${MAX_SECTIONS} sections is the limit.</strong> Consider combining a few sections instead of adding another.`, 'error');
+                announce(`A section was not added: the limit of ${MAX_SECTIONS} sections has been reached.`);
+                return;
+            }
+
+            const name = makeField({
+                id: 'new-section-name',
+                label: 'New section name',
+                required: true,
+                maxLength: MAX_SECTION_NAME,
+                placeholder: 'e.g. Sides',
+                help: 'This becomes the heading on the website, for example "Sides" or "Desserts".'
+            });
+
+            const note = makeField({
+                id: 'new-section-note',
+                label: 'Note shown under the heading (optional)',
+                maxLength: 160,
+                placeholder: 'e.g. Served with pico de gallo, pickled onions & lime.'
+            });
+
+            openDialog({
+                title: 'Add a new section',
+                intro: 'A section is a group of dishes, like "Tacos" or "Drinks & Dips". You can add dishes to it straight away, and hide or delete it later.',
+                bodyNodes: [name.group, note.group],
+                confirmLabel: 'Add section',
+                firstFocusId: 'new-section-name',
+                onConfirm: () => {
+                    const sectionName = name.input.value.trim().replace(/\s+/g, ' ');
+
+                    if (!sectionName) {
+                        setDialogError('Please type a name for the new section.');
+                        name.input.focus();
+                        return;
+                    }
+
+                    const clash = menuData.categories.some(cat => (cat.category || '').trim().toLowerCase() === sectionName.toLowerCase());
+                    if (clash) {
+                        setDialogError(`There is already a section called "${sectionName}". Use a different name, or edit the existing one.`);
+                        name.input.focus();
+                        return;
+                    }
+
+                    syncFormIntoData();
+
+                    clearSearchFilter();
+
+                    const newCategory = { category: sectionName, items: [] };
+                    const noteText = note.input.value.trim();
+                    if (noteText) newCategory.note = noteText;
+                    menuData.categories.push(newCategory);
+
+                    setDirty(true);
+                    renderForm();
+                    closeDialog();
+
+                    const newCard = formContainer.querySelector(`.admin-category-card[data-category-index="${menuData.categories.length - 1}"]`);
+                    const addDishBtn = newCard ? newCard.querySelector('.tool-btn-add-item') : null;
+                    focusAndAnnounce(addDishBtn || newCard, `Section "${sectionName}" added. It is empty for now — press Add Dish to put a dish in it, then Publish Changes to show it on the website.`);
+                }
+            });
+        }
+
+        // The controls shown in each section header: hide it, add a dish, delete it
+        function buildSectionActions(cat, catIdx) {
+            const tools = document.createElement('div');
+            tools.className = 'admin-section-tools';
+            tools.setAttribute('role', 'group');
+            tools.setAttribute('aria-label', `Tools for the ${cat.category} section`);
+
+            // 1. Hide this section from the website
+            const hideId = `hide-section-${catIdx}`;
+            const hideLabel = document.createElement('label');
+            hideLabel.className = 'hide-toggle-label';
+            hideLabel.htmlFor = hideId;
+            hideLabel.title = 'Hides this whole section on the public website. The section and its dishes stay here, so nothing is lost.';
+
+            const hideBox = document.createElement('input');
+            hideBox.type = 'checkbox';
+            hideBox.className = 'hide-checkbox';
+            hideBox.id = hideId;
+            hideBox.checked = Boolean(cat.hidden);
+            hideBox.addEventListener('change', () => {
+                const nowHidden = hideBox.checked;
+
+                syncFormIntoData();
+                const target = menuData.categories[catIdx];
+                if (!target) return;
+                if (nowHidden) {
+                    target.hidden = true;
+                } else {
+                    delete target.hidden;
+                }
+
+                setDirty(true);
+                renderForm();
+
+                // renderForm rebuilds the checkbox, so put focus back where it was
+                const refocused = document.getElementById(hideId);
+                if (refocused) refocused.focus({ preventScroll: true });
+
+                announce(nowHidden
+                    ? `Section "${cat.category}" is hidden. Press Publish Changes to remove it from the website. Nothing has been deleted.`
+                    : `Section "${cat.category}" is visible again. Press Publish Changes to show it on the website.`);
+            });
+
+            const hideText = document.createElement('span');
+            hideText.textContent = 'Hide section';
+            hideLabel.appendChild(hideBox);
+            hideLabel.appendChild(hideText);
+            tools.appendChild(hideLabel);
+
+            // 2. Add a dish to this section
+            const addItemBtn = document.createElement('button');
+            addItemBtn.type = 'button';
+            addItemBtn.className = 'tool-btn tool-btn-add-item';
+            addItemBtn.textContent = '➕ Add Dish';
+            addItemBtn.setAttribute('aria-label', `Add a dish to ${cat.category}`);
+            addItemBtn.addEventListener('click', () => openAddItemDialog(catIdx));
+            tools.appendChild(addItemBtn);
+
+            // 3. Delete the whole section (typed confirmation)
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'tool-btn tool-btn-danger';
+            deleteBtn.textContent = '🗑️ Delete Section';
+            deleteBtn.setAttribute('aria-label', `Delete the ${cat.category} section`);
+            deleteBtn.addEventListener('click', () => openDeleteSectionDialog(catIdx));
+            tools.appendChild(deleteBtn);
+
+            return tools;
+        }
+
+        // "Add Section" — sits above the menu, next to the search box
+        const addSectionBtn = document.getElementById('btn-add-section');
+        if (addSectionBtn) {
+            addSectionBtn.addEventListener('click', openAddSectionDialog);
+        }
+
         // Expand / Collapse
         btnExpandAll.addEventListener('click', () => {
             document.querySelectorAll('.items-list-container').forEach(tbl => tbl.style.display = 'flex');
@@ -1817,6 +2608,110 @@
         btnCollapseAll.addEventListener('click', () => {
             document.querySelectorAll('.items-list-container').forEach(tbl => tbl.style.display = 'none');
         });
+
+        // -------------------------------------------------------------
+        // Add Dish (into any section)
+        // -------------------------------------------------------------
+        function openAddItemDialog(catIdx) {
+            const category = (menuData && Array.isArray(menuData.categories)) ? menuData.categories[catIdx] : null;
+            if (!category) {
+                showBanner('That section is no longer there — please reload the page and try again.', 'error');
+                return;
+            }
+
+            const sectionName = (category.category || 'this section').trim();
+            const existingItems = Array.isArray(category.items) ? category.items : [];
+
+            if (existingItems.length >= MAX_DISHES_PER_SECTION) {
+                showBanner(`<strong>"${escapeHtmlText(sectionName)}" already has ${MAX_DISHES_PER_SECTION} dishes</strong> — that is the limit for one section.`, 'error');
+                announce(`A dish was not added: the section already has ${MAX_DISHES_PER_SECTION} dishes.`);
+                return;
+            }
+
+            const name = makeField({
+                id: 'new-item-name',
+                label: 'Dish name',
+                required: true,
+                maxLength: MAX_ITEM_NAME,
+                placeholder: 'e.g. Loaded Nachos - Beef',
+                help: 'Type it exactly as it should appear on the website.'
+            });
+
+            const price = makeField({
+                id: 'new-item-price',
+                label: 'Price',
+                required: true,
+                placeholder: 'e.g. 10 or £10.00',
+                help: 'Numbers only. It is saved and displayed as £10.00.'
+            });
+
+            const desc = makeField({
+                id: 'new-item-desc',
+                label: 'Description (optional)',
+                multiline: true,
+                rows: 3,
+                maxLength: 300,
+                placeholder: 'Ingredients, dips, allergen notes...'
+            });
+
+            const soldOut = makeCheckboxField({
+                id: 'new-item-soldout',
+                label: 'Show as Sold Out',
+                help: 'Leave this unticked unless the dish is off today. Sold-out dishes stay listed but appear greyed out.'
+            });
+
+            openDialog({
+                title: `Add a dish to "${sectionName}"`,
+                intro: 'Fill in the name and price. The dish appears on the website the next time you press Publish Changes.',
+                bodyNodes: [name.group, price.group, desc.group, soldOut.wrap],
+                confirmLabel: 'Add dish',
+                firstFocusId: 'new-item-name',
+                onConfirm: () => {
+                    const dishName = name.input.value.trim().replace(/\s+/g, ' ');
+
+                    if (!dishName) {
+                        setDialogError('Please type the dish name.');
+                        name.input.focus();
+                        return;
+                    }
+
+                    const duplicate = existingItems.some(item => (item && item.name ? item.name : '').trim().toLowerCase() === dishName.toLowerCase());
+                    if (duplicate) {
+                        setDialogError(`"${dishName}" is already in ${sectionName}. Give this one a different name so the two can be told apart.`);
+                        name.input.focus();
+                        return;
+                    }
+
+                    const priceResult = normalisePrice(price.input.value);
+                    if (!priceResult.ok) {
+                        setDialogError(priceResult.reason);
+                        price.input.focus();
+                        return;
+                    }
+
+                    syncFormIntoData();
+
+                    const target = menuData.categories[catIdx];
+                    if (!Array.isArray(target.items)) target.items = [];
+
+                    clearSearchFilter();
+
+                    const newItem = { name: dishName, price: priceResult.value, soldOut: soldOut.input.checked };
+                    const descText = desc.input.value.trim();
+                    if (descText) newItem.description = descText;
+                    target.items.push(newItem);
+
+                    const newItemIndex = target.items.length - 1;
+
+                    setDirty(true);
+                    renderForm();
+                    closeDialog();
+
+                    const nameInput = document.getElementById(`name-${catIdx}-${newItemIndex}`);
+                    focusAndAnnounce(nameInput, `"${dishName}" added to ${sectionName} at ${priceResult.value}. Press Publish Changes when you are ready to put it on the website.`);
+                }
+            });
+        }
 
         // Reconstruct updated JSON object from form (including Name, Description, Price, SoldOut)
         function buildUpdatedJson() {
@@ -2097,6 +2992,101 @@
                 btnPublishHeader.innerHTML = '<span>Publish Changes</span>';
                 btnPublishMobile.innerHTML = '<span>Publish Changes</span>';
             }
+        }
+
+        // -------------------------------------------------------------
+        // Delete Section (type the name to confirm) and Undo
+        // -------------------------------------------------------------
+        function openDeleteSectionDialog(catIdx) {
+            const category = (menuData && Array.isArray(menuData.categories)) ? menuData.categories[catIdx] : null;
+            if (!category) {
+                showBanner('That section is no longer there — please reload the page and try again.', 'error');
+                return;
+            }
+
+            const sectionName = (category.category || '').trim();
+
+            if (menuData.categories.length <= 1) {
+                showBanner('<strong>That is the only section.</strong> The website needs at least one section, so it cannot be deleted. Add another section first, then delete this one.', 'error');
+                announce('Delete cancelled: a menu must keep at least one section.');
+                return;
+            }
+
+            const dishCount = Array.isArray(category.items) ? category.items.length : 0;
+
+            const warning = document.createElement('div');
+            warning.className = 'dialog-warning';
+            warning.innerHTML = `<strong>This deletes "${escapeHtmlText(sectionName)}" and its ${dishCount} ${plural(dishCount, 'dish', 'dishes')}.</strong><br>`
+                + 'If you publish afterwards it disappears from the live website too. You can press <strong>Undo</strong> straight after deleting, but not once you publish or reload the page.';
+
+            const confirmField = makeField({
+                id: 'delete-section-confirm',
+                label: `Type "${sectionName}" to confirm`,
+                required: true,
+                autocomplete: 'off',
+                placeholder: sectionName,
+                help: 'Typing the name means a whole section cannot be deleted by a stray click.'
+            });
+
+            const namesMatch = () => confirmField.input.value.trim().toLowerCase() === sectionName.toLowerCase();
+            const refreshConfirmState = () => {
+                dialogConfirmBtn.disabled = !namesMatch();
+                if (namesMatch()) setDialogError('');
+            };
+            confirmField.input.addEventListener('input', refreshConfirmState);
+
+            openDialog({
+                title: `Delete the section "${sectionName}"?`,
+                intro: 'This cannot be undone from the website.',
+                bodyNodes: [warning, confirmField.group],
+                confirmLabel: 'Delete section',
+                confirmTone: 'danger',
+                firstFocusId: 'delete-section-confirm',
+                onConfirm: () => {
+                    if (!namesMatch()) {
+                        setDialogError(`Type "${sectionName}" exactly to confirm, or press Cancel.`);
+                        confirmField.input.focus();
+                        return;
+                    }
+
+                    syncFormIntoData();
+
+                    const removed = menuData.categories.splice(catIdx, 1)[0];
+                    const restoreIndex = catIdx;
+
+                    setDirty(true);
+                    renderForm();
+                    closeDialog();
+                    showUndoBanner(sectionName, removed, restoreIndex);
+                    announce(`Section "${sectionName}" deleted, along with ${dishCount} ${plural(dishCount, 'dish', 'dishes')}. Press Publish Changes to update the website, or Undo to put it back.`);
+                }
+            });
+
+            // Nothing is typed yet, so the delete button starts disabled
+            refreshConfirmState();
+        }
+
+        // Offers an immediate undo for the section that was just deleted, because
+        // that is the one action here that cannot easily be re-typed by hand.
+        function showUndoBanner(sectionName, removedCategory, restoreIndex) {
+            showBanner(`<strong>Section "${escapeHtmlText(sectionName)}" deleted.</strong> Press Publish Changes to update the website. <button type="button" class="banner-action-btn" id="banner-undo-btn">Undo</button>`, 'success');
+
+            const undoBtn = document.getElementById('banner-undo-btn');
+            if (!undoBtn) return;
+
+            undoBtn.addEventListener('click', () => {
+                syncFormIntoData();
+
+                const at = Math.max(0, Math.min(restoreIndex, menuData.categories.length));
+                menuData.categories.splice(at, 0, removedCategory);
+
+                setDirty(true);
+                renderForm();
+                closeBanner();
+
+                const card = formContainer.querySelector(`.admin-category-card[data-category-index="${at}"]`);
+                focusAndAnnounce(card, `Section "${sectionName}" is back. Nothing had been published, so the website was never changed.`);
+            });
         }
 
         // Attach Publish Event Handlers

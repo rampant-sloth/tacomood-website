@@ -1737,6 +1737,14 @@
                 }
 
                 menu.categories.forEach(category => {
+                    // Sections the owner has hidden in the admin portal, and sections
+                    // with no dishes in them, are not rendered on the public site.
+                    if (!category || category.hidden) return;
+
+                    const visibleItems = Array.isArray(category.items)
+                        ? category.items.filter(item => item && item.name)
+                        : [];
+                    if (!visibleItems.length) return;
                     const section = document.createElement('section');
                     section.className = 'menu-category-section';
 
@@ -1765,7 +1773,7 @@
                     grid.className = 'menu-grid';
 
                     if (category.items && Array.isArray(category.items)) {
-                        category.items.forEach(item => {
+                        visibleItems.forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'menu-card' + (item.soldOut ? ' is-sold-out' : '');
                             card.dataset.itemName = item.name;
@@ -1845,6 +1853,12 @@
                     section.appendChild(grid);
                     container.appendChild(section);
                 });
+
+                // If every section has been hidden or emptied, say so rather than
+                // leaving a blank space where the menu should be.
+                if (!container.children.length) {
+                    container.innerHTML = '<div class="error-notice">Our menu is being updated — please check back shortly, or call us to order.</div>';
+                }
 
                 // Update steppers with stored quantities
                 updateAllCardSteppers();

@@ -112,11 +112,44 @@ function validateMenuContent(content) {
 
     for (let i = 0; i < menu.categories.length; i++) {
         const category = menu.categories[i];
-        if (!category || typeof category !== 'object' || typeof category.category !== 'string') {
-            return `categories[${i}] is missing a category name.`;
+        const where = `categories[${i}]`;
+
+        if (!category || typeof category !== 'object' || Array.isArray(category)) {
+            return `${where} must be an object.`;
+        }
+        if (typeof category.category !== 'string' || !category.category.trim()) {
+            return `${where} is missing a category name.`;
+        }
+        if (category.hidden !== undefined && typeof category.hidden !== 'boolean') {
+            return `${where}.hidden must be true or false (or left out).`;
+        }
+        if (category.note !== undefined && typeof category.note !== 'string') {
+            return `${where}.note must be text.`;
         }
         if (!Array.isArray(category.items)) {
-            return `categories[${i}] is missing an items array.`;
+            return `${where} is missing an items array.`;
+        }
+
+        // A section may be empty (the owner may still be filling it in), but every
+        // dish needs a name, and prices are stored as they are displayed.
+        for (let j = 0; j < category.items.length; j++) {
+            const item = category.items[j];
+
+            if (!item || typeof item !== 'object' || Array.isArray(item)) {
+                return `${category.category}: one of the dishes is not a valid entry.`;
+            }
+            if (typeof item.name !== 'string' || !item.name.trim()) {
+                return `${category.category}: dish ${j + 1} has no name. Give it a name in the owner portal, or delete it.`;
+            }
+            if (item.price !== undefined && typeof item.price !== 'string') {
+                return `${category.category} → ${item.name}: the price must be text, for example "£10.00".`;
+            }
+            if (item.description !== undefined && typeof item.description !== 'string') {
+                return `${category.category} → ${item.name}: the description must be text.`;
+            }
+            if (item.soldOut !== undefined && typeof item.soldOut !== 'boolean') {
+                return `${category.category} → ${item.name}: soldOut must be true or false.`;
+            }
         }
     }
 

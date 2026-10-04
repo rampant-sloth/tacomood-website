@@ -207,6 +207,10 @@ curl.exe https://tacomood-website.rampantsloth.workers.dev/version
 ## What this Worker will not do
 
 - It only writes `menu.json` on `main`. It cannot change HTML, delete files, or touch other repos.
+- It validates what it is given: every section needs a name and an `items` array (an empty section is
+  allowed), every dish needs a name, and `hidden`, `soldOut`, `note` and `price` must be the right
+  type. This is the backstop behind the checks in the owner portal, so a half-finished edit can never
+  be published.
 - The password is checked on every verify and every publish. A saved browser password is not a token.
 - Do not put `ADMIN_PASSWORD` or `GITHUB_TOKEN` in `admin.html`, `menu.json`, or this README.
 
