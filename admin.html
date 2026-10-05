@@ -498,9 +498,20 @@
             padding-top: 0.75rem;
         }
 
-        .help-content ol {
+        .help-content ol,
+        .help-content ul {
             padding-left: 1.2rem;
-            margin: 0.5rem 0;
+            margin: 0.35rem 0 0.75rem;
+        }
+
+        .help-content h4 {
+            margin: 1.1rem 0 0.15rem;
+            color: var(--accent-lime);
+            font-size: 0.95rem;
+        }
+
+        .help-content h4:first-of-type {
+            margin-top: 0.6rem;
         }
 
         .help-content code {
@@ -1412,23 +1423,45 @@
             <details class="help-accordion">
                 <summary>📖 How to add, hide or delete sections, edit dishes and publish live</summary>
                 <div class="help-content">
-                    <p>Welcome to the <strong>Taco Mood</strong> menu editor! Here is how to keep your store up to date:</p>
-                    <ol>
-                        <li><strong>Edit Dish Names:</strong> Click into the <strong>Dish Name</strong> field to rename any item.</li>
-                        <li><strong>Edit Descriptions:</strong> Update ingredients, notes, dips, or preparation details in the <strong>Description</strong> field. Leave empty if no description is needed.</li>
-                        <li><strong>Change Prices:</strong> Click directly into the <strong>Price</strong> field (e.g. <code>£13.00</code>) and enter the new price.</li>
-                        <li><strong>Mark Sold Out:</strong> Check or uncheck <strong>"Mark Sold Out"</strong> next to any dish. Sold-out dishes will immediately show a bright orange badge on your live website.</li>
-                        <li><strong>Update Opening Hours:</strong> In the <strong>Store Opening Hours</strong> card, tick <strong>"Closed"</strong> for shut days and set opening/closing times for open days. The website header and footer update automatically.</li>
-                        <li><strong>Hide a section:</strong> tick <strong>"Hide section"</strong> at the top of a section. The whole section (and its dishes) disappears from the website, but nothing is deleted — untick it any time to bring it back.</li>
-                        <li><strong>Add a section:</strong> press <strong>"➕ Add Section"</strong> above the menu, next to the search box. The name you type is the heading customers see, for example <em>Sides</em> or <em>Desserts</em>.</li>
-                        <li><strong>Add a dish:</strong> press <strong>"➕ Add Dish"</strong> at the top of the section you want it in, then fill in the name and price. Prices can be typed as <code>10</code>, <code>10.5</code> or <code>£10.00</code> — they are tidied up for you.</li>
-                        <li><strong>Delete a section:</strong> press <strong>"🗑️ Delete Section"</strong> and then type the section name to confirm, so it cannot happen by accident. If you change your mind, press <strong>Undo</strong> in the green message that appears.</li>
-                        <li><strong>Hide a dish:</strong> tick <strong>"Hide from website"</strong> on the dish. It comes off the website but stays in your menu file, so you can bring it back at any time.</li>
-                        <li><strong>Sold Out:</strong> ticking <strong>"Mark Sold Out"</strong> keeps the dish on the menu with a "Sold Out" badge. Use <strong>"Hide from website"</strong> instead if you want the dish to disappear.</li>
-                        <li><strong>Delete a dish:</strong> press <strong>"🗑️ Delete Dish"</strong> on the dish, then type the dish name to confirm. Undo is offered straight afterwards.</li>
-                        <li><strong>Change the wording at the top of the site:</strong> use the <strong>"Website Text &amp; Headings"</strong> card — the big title, the tagline, the menu heading and the sentence under it. Clear a box to hide that line.</li>
-                        <li><strong>Publish Changes:</strong> Click the green <strong>"Publish Changes"</strong> button at the top. Your updates go straight to the live website — it usually refreshes within a minute.</li>
-                    </ol>
+                    <p>Welcome to the <strong>Taco Mood</strong> menu editor! Each card on this page does one job. Make your changes, then press <strong>Publish Changes</strong> at the top.</p>
+
+                    <h4>✏️ Change a dish</h4>
+                    <ul>
+                        <li><strong>Name:</strong> click into the <strong>Dish Name</strong> box and type the new name.</li>
+                        <li><strong>Description:</strong> update the <strong>Description</strong> box (ingredients, dips, notes). Leave it empty for no description.</li>
+                        <li><strong>Price:</strong> click into the <strong>Price</strong> box, e.g. <code>£13.00</code>.</li>
+                        <li><strong>Sold out:</strong> tick <strong>"Mark Sold Out"</strong> to keep the dish listed with an orange "Sold Out" badge on the website.</li>
+                    </ul>
+
+                    <h4>🙈 Hide something (nothing is deleted)</h4>
+                    <ul>
+                        <li><strong>A dish:</strong> tick <strong>"Hide from website"</strong> on it; untick to bring it back.</li>
+                        <li><strong>A whole section:</strong> tick <strong>"Hide section"</strong> at the top of it; untick to bring it back.</li>
+                        <li><strong>Sold Out vs Hidden:</strong> "Sold Out" keeps the dish on the menu with a badge — use <strong>"Hide from website"</strong> if it should disappear completely.</li>
+                    </ul>
+
+                    <h4>➕ Add or 🗑️ remove</h4>
+                    <ul>
+                        <li><strong>Add a section:</strong> press <strong>"➕ Add Section"</strong> above the menu, next to the search box. The name is the heading customers see, for example <em>Sides</em> or <em>Desserts</em>.</li>
+                        <li><strong>Add a dish:</strong> press <strong>"➕ Add Dish"</strong> at the top of the section, then fill in the name and price. Prices can be typed as <code>10</code>, <code>10.5</code> or <code>£10.00</code> — they are tidied up for you.</li>
+                        <li><strong>Delete a section:</strong> press <strong>"🗑️ Delete Section"</strong> and type the section name to confirm, so it cannot happen by accident. Press <strong>Undo</strong> in the green message if you change your mind.</li>
+                        <li><strong>Delete a dish:</strong> press <strong>"🗑️ Delete Dish"</strong> and type the dish name to confirm. Undo is offered straight afterwards.</li>
+                    </ul>
+
+                    <h4>🕒 Opening hours</h4>
+                    <ul>
+                        <li>In the <strong>Store Opening Hours</strong> card, tick <strong>"Closed"</strong> for shut days and set opening/closing times for open days. The website header and footer update automatically.</li>
+                    </ul>
+
+                    <h4>🔤 Wording at the top of the site</h4>
+                    <ul>
+                        <li>Use the <strong>"Website Text &amp; Headings"</strong> card — the big title, the tagline, the menu heading and the sentence under it. Clear a box to hide that line, or press <strong>"↩️ Restore the original wording"</strong> to put it back.</li>
+                    </ul>
+
+                    <h4>🚀 Publish</h4>
+                    <ul>
+                        <li>Press the green <strong>"Publish Changes"</strong> button at the top. Your updates go straight to the live website — it usually refreshes within a minute.</li>
+                    </ul>
                 </div>
             </details>
 
@@ -2374,6 +2407,7 @@
             textCard.appendChild(textActions);
 
             storeInfoContainer.appendChild(card);
+            storeInfoContainer.appendChild(textCard);
         }
 
         // -------------------------------------------------------------
