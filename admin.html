@@ -1455,7 +1455,7 @@
 
                     <h4>🔤 Wording at the top of the site</h4>
                     <ul>
-                        <li>Use the <strong>"Website Text &amp; Headings"</strong> card — the big title, the tagline, the menu heading and the sentence under it. Clear a box to hide that line, or press <strong>"↩️ Restore the original wording"</strong> to put it back.</li>
+                        <li>Use the <strong>"Website Text &amp; Headings"</strong> card — the big title, the tagline, the footer line, the menu heading and the sentence under it. Clear a box to hide that line, or press <strong>"↩️ Restore the original wording"</strong> to put it back.</li>
                     </ul>
 
                     <h4>🚀 Publish</h4>
@@ -2136,14 +2136,15 @@
         // the control again.
         const ONLINE_ORDERING_SETTINGS_ENABLED = false;
 
-        // The wording that is currently in index.html. The four boxes in the
+        // The wording that is currently in index.html. The boxes in the
         // "Website Text & Headings" card start from these values, so the owner
         // always sees what the public website is showing today.
         const SITE_TEXT_DEFAULTS = {
             brandTitle: 'Taco Mood',
             tagline: 'Fresh Food. Good Mood.',
             menuHeading: 'Our Street Food Menu',
-            menuIntro: 'Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.'
+            menuIntro: 'Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.',
+            footerTagline: 'Authentic Mexican Street Food & Birria'
         };
 
         function renderStoreInfoForm() {
@@ -2342,6 +2343,13 @@
                     maxLength: 400,
                     multiline: true,
                     help: 'A short line about your food and where to find you.'
+                },
+                {
+                    key: 'footerTagline',
+                    id: 'site-text-footer-tagline',
+                    label: 'Footer line (bottom of the page)',
+                    maxLength: 80,
+                    help: 'The line under your name in the footer, for example: Authentic Mexican Street Food & Birria.'
                 }
             ];
 
@@ -3104,13 +3112,14 @@
             };
 
             // Website text & headings — the boxes in the "Website Text" card.
-            // All four are always written, so emptying a box is what hides that
+            // All five are always written, so emptying a box is what hides that
             // line on the public website.
             const siteTextIds = {
                 brandTitle: 'site-text-brand',
                 tagline: 'site-text-tagline',
                 menuHeading: 'site-text-menu-heading',
-                menuIntro: 'site-text-menu-intro'
+                menuIntro: 'site-text-menu-intro',
+                footerTagline: 'site-text-footer-tagline'
             };
             const siteContent = {};
             Object.keys(siteTextIds).forEach(key => {

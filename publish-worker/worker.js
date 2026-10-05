@@ -162,7 +162,8 @@ function validateMenuContent(content) {
         brandTitle: 60,
         tagline: 120,
         menuHeading: 80,
-        menuIntro: 400
+        menuIntro: 400,
+        footerTagline: 80
     };
 
     if (menu.siteContent !== undefined) {

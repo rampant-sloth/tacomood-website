@@ -1119,7 +1119,7 @@
                 <!-- Store Details & Hours -->
                 <div class="footer-info">
                     <h3 id="site-footer-brand">Taco Mood</h3>
-                    <p>Authentic Mexican Street Food &amp; Birria</p>
+                    <p id="site-footer-tagline">Authentic Mexican Street Food &amp; Birria</p>
                     <p class="footer-address">
                         <a href="https://maps.app.goo.gl/Jd5obVVXCtuAUGHm7" target="_blank" rel="noopener noreferrer" class="footer-address-link" title="Open the Taco Mood Google Maps listing (opens in new tab)">
                             📍 137 Stranmillis Rd, Belfast BT9 5AJ ↗
@@ -1206,7 +1206,8 @@
             brandTitle: 'Taco Mood',
             tagline: 'Fresh Food. Good Mood.',
             menuHeading: 'Our Street Food Menu',
-            menuIntro: 'Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.'
+            menuIntro: 'Freshly prepared Mexican street food, made to order. Visit us in store at 137 Stranmillis Rd.',
+            footerTagline: 'Authentic Mexican Street Food & Birria'
         };
 
         function applySiteText(elementId, value, fallback) {
@@ -1231,6 +1232,7 @@
             applySiteText('site-tagline', content.tagline, SITE_TEXT_DEFAULTS.tagline);
             applySiteText('site-menu-heading', content.menuHeading, SITE_TEXT_DEFAULTS.menuHeading);
             applySiteText('site-menu-intro', content.menuIntro, SITE_TEXT_DEFAULTS.menuIntro);
+            applySiteText('site-footer-tagline', content.footerTagline, SITE_TEXT_DEFAULTS.footerTagline);
 
             // The footer name and the browser tab follow the title, so a rename
             // stays consistent everywhere on the page.

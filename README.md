@@ -8,7 +8,7 @@ owner portal for editing `menu.json`.
 | `index.html` | Public site (menu, opening hours) |
 | `basket.html` | Collection ordering — kept behind a feature flag |
 | `admin.html` | Owner portal: edit the menu and opening hours, add/hide/delete sections, add dishes, publish |
-| `menu.json` | The menu data (the only file the portal writes). A section or dish with `"hidden": true` stays in the file but is not shown on the site; `siteContent` holds the wording at the top of the page |
+| `menu.json` | The menu data (the only file the portal writes). A section or dish with `"hidden": true` stays in the file but is not shown on the site; `siteContent` holds the editable page wording (title, tagline, footer line, menu heading and menu sentence) |
 | `worker/index.js` | Worker entry point: `POST /verify`, `POST /publish`, `GET /version`, then static assets |
 | `publish-worker/worker.js` | The publish bridge (GitHub commit logic) — see its own README |
 | `wrangler.jsonc` | Worker + static asset configuration |
